@@ -4,8 +4,12 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="js, Hexo">
-    <meta name="description" content="娃哈哈11">
+    <meta name="keywords" content="springmvc, Hexo">
+    <meta name="description" content="spring mvchttps://www.w3cschool.cn/wkspring/
+
+一、springmvc(sping+v:jsp)1.构建项目框架
+构建项目框架：maven类型项目
+修改pom.xml文件，导入spring相关的依">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +21,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>js | Hexo</title>
+    <title>springmvc | Hexo</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
 
@@ -334,12 +338,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/21.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">js</h1>
+                    <h1 class="description center-align post-title">springmvc</h1>
                 </div>
             </div>
         </div>
@@ -396,7 +400,34 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="娃哈哈"><a href="#娃哈哈" class="headerlink" title="娃哈哈"></a>娃哈哈</h1><h2 id="11"><a href="#11" class="headerlink" title="11"></a>11</h2>
+                <h1 id="spring-mvc"><a href="#spring-mvc" class="headerlink" title="spring mvc"></a>spring mvc</h1><p><a target="_blank" rel="noopener" href="https://www.w3cschool.cn/wkspring/">https://www.w3cschool.cn/wkspring/</a></p>
+<hr>
+<h2 id="一、springmvc-sping-v-jsp"><a href="#一、springmvc-sping-v-jsp" class="headerlink" title="一、springmvc(sping+v:jsp)"></a>一、springmvc(sping+v:jsp)</h2><h3 id="1-构建项目框架"><a href="#1-构建项目框架" class="headerlink" title="1.构建项目框架"></a>1.构建项目框架</h3><ol>
+<li>构建项目框架：maven类型项目</li>
+<li>修改<em><strong>pom.xml</strong></em>文件，导入spring相关的依赖：org.springframework(srping-web&#x2F;spring-aspects&#x2F;spring-webmvc)</li>
+<li>明确为web类型，增加<em><strong>web.xml</strong></em>:路径为src&#x2F;webapp&#x2F;WEB-INF&#x2F;web.xml</li>
+<li>配置<em><strong>web.xml</strong></em>（通过编程WebApplicationInitializer实现）:<servlet>映射到xx-servlet.xml;<servlet-mapping>哪些url由xx-servlet.xml处理</li>
+<li>增加<em><strong>xx-servlet.xml</strong></em>：路径为src&#x2F;webapp&#x2F;WEB-INF&#x2F;xx-servlet.xml，<a href="context:component-scan">context:component-scan</a>扫描路径；&lt;bean class:”org.springframework.web.servlet.view.InternalResourceViewResolver”&gt;定位jsp</li>
+<li>增加jsp文件：路径src&#x2F;webapp&#x2F;WEB-INF&#x2F;jsp&#x2F;xx.jsp</li>
+<li>jsp需要web服务器：tomcat</li>
+<li>配置tomcat.(实际环境部署启动、api方式、maven插件、IDE配置)</li>
+</ol>
+<h3 id="2-开发代码"><a href="#2-开发代码" class="headerlink" title="2.开发代码"></a>2.开发代码</h3><ol>
+<li>开发M:model，模型属性被试图访问，发送给试图处理，试图返回给客户端</li>
+<li>开发V：view，jsp文件</li>
+<li>开发C：controller (@Controller作用累，@RequestMappping作用类或者方法)<br>转发逻辑：</li>
+</ol>
+<h3 id="3、增强功能"><a href="#3、增强功能" class="headerlink" title="3、增强功能"></a>3、增强功能</h3><ol>
+<li>动态试图</li>
+<li>静态试图</li>
+<li>重定向</li>
+<li>异常处理</li>
+</ol>
+<hr>
+<h2 id="二、总结"><a href="#二、总结" class="headerlink" title="二、总结"></a>二、总结</h2><p>在Spring WEB MVC中，你可以使用任何对象来作为命令对象或表单返回对象，而无需实现一个框架相关的接口或基类；相比于servlet，更解耦与框架。</p>
+<h2 id="三、样例代码"><a href="#三、样例代码" class="headerlink" title="三、样例代码"></a>三、样例代码</h2><p>D:\oldpc\work_java\servicecomb\SpringMVC</p>
+<p>![[Pasted image 20220405160759.png]]</p>
+
                 
             </div>
             <hr/>
@@ -422,7 +453,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2022/12/09/js/">http://example.com/2022/12/09/js/</a>
+                    <a href="http://example.com/2022/12/09/springmvc/">http://example.com/2022/12/09/springmvc/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -536,9 +567,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+                <i class="far fa-dot-circle"></i>&nbsp;Current
+            </div>
             <div class="card">
                 <a href="/2022/12/09/springmvc/">
                     <div class="card-image">
@@ -556,9 +588,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-12-09
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-09
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -567,6 +599,7 @@
                         </span>
                     </div>
                 </div>
+
                 
             </div>
         </div>
@@ -577,13 +610,13 @@
                 Next&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2022/12/09/my-first-blog/">
+                <a href="/2022/12/09/js/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="spring boot基础">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="js">
                         
-                        <span class="card-title">spring boot基础</span>
+                        <span class="card-title">js</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
