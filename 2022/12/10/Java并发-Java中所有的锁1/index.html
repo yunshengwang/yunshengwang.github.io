@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Java并发 - Java中所有的锁1 | Mr.Wang Blog</title>
+  <meta name="keywords" content=" java , 多线程 ">
+  <meta name="description" content="Java并发 - Java中所有的锁1 | Mr.Wang Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="Java 全栈知识体系 ❁导航 ♥面试 ✿导读 JavaJava *   #### Java 面向对象和基础        *   Java 面向对象基础    *   Java 基础知识体系 *   #### Java进阶 - 集合框架        *   Java 集合框架详解 *   #### Java进阶 - 并发框架        *   Java 并发知识体系    *   Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发 - Java中所有的锁1">
+<meta property="og:url" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/index.html">
+<meta property="og:site_name" content="Mr.Wang Blog">
+<meta property="og:description" content="Java 全栈知识体系 ❁导航 ♥面试 ✿导读 JavaJava *   #### Java 面向对象和基础        *   Java 面向对象基础    *   Java 基础知识体系 *   #### Java进阶 - 集合框架        *   Java 集合框架详解 *   #### Java进阶 - 并发框架        *   Java 并发知识体系    *   Java">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-1.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-2.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-4.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-6.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-7.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-8.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-12.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-13.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-14.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-15.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-thread-x-lock-all.png">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/pdai.jpg">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/pdai_gzh.jpg">
+<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/pdai-guli.png">
+<meta property="article:published_time" content="2022-12-10T13:27:05.000Z">
+<meta property="article:modified_time" content="2022-12-10T13:28:04.090Z">
+<meta property="article:author" content="王云生">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-1.png">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>王云生</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="cnblogs"
+               href="https://home.cnblogs.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-cnblogs"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/a996358a335f"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/yun-sheng-10-62-26"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="csdn"
+               href="https://blog.csdn.net/u011593571?type=collect"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-csdn"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/u/4978723"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="juejin"
+               href="https://juejin.cn/user/2604099346111086"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-juejin"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:w_huilong@163.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(5)</small>
+            
+        </div>
+    </li>
+    
+        
+            
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(1)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="JAVA">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        JAVA
+                        <small>(3)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->多线程">
+                                        
+                                        多线程
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA多线程&amp;并发">
+                                        
+                                        JAVA多线程&amp;并发
+                                        
+                                            <small>(2
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="5">
+<input type="hidden" id="yelog_site_word_count" value="16.6k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>多线程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>hexo</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>js</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tool</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程&amp;并发 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁1">Java并发 - Java中所有的锁1</span>
+            <span class="post-date" title="2022-12-10 21:27:05">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程&amp;并发 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁">Java并发 - Java中所有的锁</span>
+            <span class="post-date" title="2022-12-10 21:25:40">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 "
+           href="/2022/12/10/xmind/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="xmind">xmind</span>
+            <span class="post-date" title="2022-12-10 20:08:18">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 HEXO "
+           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           data-tag="hexo,tool"
+           data-author="" >
+            <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
+            <span class="post-date" title="2022-12-10 19:02:24">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA 多线程 "
+           href="/2022/12/09/my-first-blog/"
+           data-tag="java,js"
+           data-author="" >
+            <span class="post-title" title="spring boot基础">spring boot基础</span>
+            <span class="post-date" title="2022-12-09 20:55:45">2022/12/09</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-Java并发-Java中所有的锁1" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Java并发 - Java中所有的锁1</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="JAVA">JAVA</a> > 
+            
+            <a  data-rel="JAVA&lt;---&gt;JAVA多线程&amp;并发">JAVA多线程&amp;并发</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">java</a>
+            
+            <a class="color4">多线程</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-10 21:28:04'>2022-12-10 21:27</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:7.9k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a target="_blank" rel="noopener" href="https://www.pdai.tech/">Java 全栈知识体系</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/resource/tools.html">❁导航</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/interview/x-interview.html">♥面试</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/outline/x-outline.html">✿导读</a> JavaJava *   #### Java 面向对象和基础        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-oop.html">Java 面向对象基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-lan-basic.html">Java 基础知识体系</a> *   #### Java进阶 - 集合框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-collection-all.html">Java 集合框架详解</a> *   #### Java进阶 - 并发框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-overview.html">Java 并发知识体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-theorty.html">Java 并发理论基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-thread-basic.html">Java 并发线程基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-overview.html">J.U.C 知识体系与详解</a> *   #### Java进阶 - IO框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-overview.html">Java IO&#x2F;NIO&#x2F;AIO详解</a> *   #### Java进阶 - 新版本特性        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8.html">Java 8 特性详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java-8-up-overview.html">Java 8 以上版本特性体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java9-11.html">Java 8 升Java 11特性必读</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java12-17.html">Java 11 升Java 17特性必读</a> *   #### Java进阶 - JVM相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-classload.html">Java 类加载机制</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-class.html">Java 字节码和增强技术</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-struct.html">JVM 内存结构详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-gc.html">JVM 垃圾回收机制</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-debug-tools-linux.html">Java 调试排错相关</a> 算法算法 *   #### 算法基础和思想        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-basic-overview.html">数据结构基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-sort-overview.html">常见排序算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-core-divide-and-conquer.html">算法思想</a> *   #### 一些领域算法        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-security-degist.html">安全算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-char-match.html">字符串匹配算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-distribute-overview.html">分布式系统算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-bigdata-overview.html">海量数据处理</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-load-balance.html">负载均衡算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-suggest.html">推荐算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-machine.html">数据挖掘算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-id-snowflake.html">ID生成算法</a> *   #### 其它算法相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-other-mind.html">头脑风暴</a> 数据库数据库 *   #### 数据库基础和原理        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/sql/sql-db.html">数据库原理</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/sql-lan/sql-lan.html">SQL语言</a> *   #### SQL 数据库        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/sql-mysql/sql-mysql-overview.html">MySQL 详解</a> *   #### NoSQL 数据库        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/nosql-redis/db-redis-overview.html">Redis 详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/nosql-mongo/mongo.html">MongoDB 详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/nosql-es/elasticsearch.html">ElasticSearch 详解</a> 开发开发 *   #### 开发 - 常用开发基础        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/package/dev-package-x-overview.html">常用类库详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/regex/dev-regex-all.html">正则表达式详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/cron/dev-cron-x-usage.html">CRON表达式详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/protocol/dev-protocol-overview.html">网络协议和工具详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/security/dev-security-overview.html">安全相关详解</a> *   #### 开发 - 质量保障        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/ut/dev-ut-unit-test.html">单元测试详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/ut/dev-qt-code-style.html">统一风格详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/ut/dev-qt-sonarlint.html">质量管理详解</a> *   #### 开发 - 代码重构        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/refactor/dev-refactor-if-else.html">代码重构相关</a> SpringSpring *   #### Spring Framework(v5.3)        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring.html">Spring框架知识体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-introduce.html">Spring框架组成</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-ioc.html">控制反转(IOC)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop.html">面向切面编程(AOP)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-springmvc.html">SpringMVC</a> *   #### SpringBoot系列(v2.5)        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot.html">SpringBoot知识体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-hello-world.html">SpringBoot入门</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-interface-response.html">SpringBoot接口设计和实现</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-mysql-jpa.html">SpringBoot集成MySQL</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-mysql-shardingjdbc.html">SpringBoot集成ShardingJDBC</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-redis-jedis.html">SpringBoot集成Redis</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-postgre-jpa.html">SpringBoot集成Postgre</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-elastic-template.html">SpringBoot集成ElasticSearch</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-socket-websocket.html">SpringBoot集成Socket</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-task-timer.html">SpringBoot定时任务</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-view-thymeleaf.html">SpringBoot后端视图</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-monitor-actuator.html">SpringBoot监控</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-y-auo-config.html">SpringBoot进阶</a> 框架|中间件框架|中间件 *   #### Web 容器        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/framework/tomcat/tomcat-overview.html">Tomcat 源码详解</a> *   #### ORM 框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/framework/orm-mybatis/mybatis-overview.html">MyBatis 源码详解</a> *   #### 分表分库框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/framework/ds-sharding/sharding-overview.html">ShardingSphere 详解</a> 架构架构 *   #### 架构基础和技术点        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-overview.html">架构知识体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-view.html">从角色视角看架构</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-view-2.html">从分层视角看架构</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-evolution.html">从演化视角看架构</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-pattern.html">从模式视角看架构</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-cache.html">高并发之缓存</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-ratelimit.html">高并发之限流</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-reduce.html">高并发之降级和熔断</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-loadbalance.html">高可用之负载均衡</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-backup.html">高可用之容灾备份</a> *   #### 分布式系统        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-theory.html">分布式理论和一致性算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-id.html">全局唯一ID实现方案</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-lock.html">分布式锁及实现方案</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-transection.html">分布式事务及实现方案</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-job.html">分布式任务及实现方案</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-session.html">分布式会话及实现方案</a> *   #### 微服务系统        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/microservice/arch-m-singleton-2.html">微服务系统和设计</a> *   #### 系统设计之商业业务平台        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-seckill.html">秒杀抽奖相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-goods-detail.html">电商交易相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-jishiwuliu.html">仓储物流相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-xianyu-laxintoufang.html">拉新投放相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-waimai.html">其它综合相关设计</a> *   #### 系统设计之数据仓库平台        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-db-hp.html">数据库架构相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-db-binlog.html">数据同步相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-data-cangchu.html">数据仓库相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-data-zhili.html">数据治理相关设计</a> 工具|部署工具|部署 *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/tool/tool-list-overview.html">开发工具</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/tool/tool-git.html">Git详解</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/linux/linux.html">Linux</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/docker/docker-00-overview.html">Docker</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/project/project-x-overview.html">项目</a> 方法论方法论 *   #### 开发理论        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-solid.html">开发原则(SOLID)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-cap.html">分布式理论(CAP)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-base.html">分布式理论(BASE)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-acid.html">事务理论(ACID)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-microservice-kangwei.html">微服务理论(康威定律)</a> *   #### 开源协议        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/opensource/dev-opensource.html">常见开源协议详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/opensource/dev-knowledge.html">知识共享许可协议</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/opensource/dev-mulan.html">国产开源木兰协议</a> *   #### 代码规范        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/code-style/code-style-alibaba.html">阿里巴巴 Java开发手册</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/code-style/code-style-google.html">Google Java 编程风格指南</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/code-style/code-style-twitter.html">Twitter Java代码规范</a> *   #### 开发流程        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-waterfall-model.html">软件生命周期与传统模型</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-waterfall-vwxh.html">结合测试演化的过程模型</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-agile.html">敏捷开发项目管理理论</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-agile-xp.html">敏捷之极限编程(XP)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-agile-scrum.html">敏捷之Scrum &amp; Kanban</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-pratice-tdd.html">敏捷实践之测试驱动开发</a> *   #### 设计模式        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/pattern/1_overview.html">设计模式详解</a> *   #### 系统认证        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/certificate/cert-cmm.html">CMMI 认证</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/certificate/cert-dengbao.html">等级保护认证</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/certificate/cert-iso27001.html">ISO27001认证</a> 产品|团队产品|团队 *   #### 技术之外        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/overview-besides-tech.html">技术之外应该思考什么</a> *   #### 个人相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-tixi.html">个人成长和认知</a> *   #### 产品相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-wechat.html">产品设计和思考</a> *   #### 团队相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-task-emergency.html">管对管理和成长</a> *   #### 其它相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-arch-future.html">其它软实力等</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/about/me/about-me.html">关于</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/resource/tools.html">❁导航</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/interview/x-interview.html">♥面试</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/outline/x-outline.html">✿导读</a> JavaJava *   #### Java 面向对象和基础        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-oop.html">Java 面向对象基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-lan-basic.html">Java 基础知识体系</a> *   #### Java进阶 - 集合框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-collection-all.html">Java 集合框架详解</a> *   #### Java进阶 - 并发框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-overview.html">Java 并发知识体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-theorty.html">Java 并发理论基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-thread-basic.html">Java 并发线程基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-overview.html">J.U.C 知识体系与详解</a> *   #### Java进阶 - IO框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-overview.html">Java IO&#x2F;NIO&#x2F;AIO详解</a> *   #### Java进阶 - 新版本特性        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8.html">Java 8 特性详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java-8-up-overview.html">Java 8 以上版本特性体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java9-11.html">Java 8 升Java 11特性必读</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java12-17.html">Java 11 升Java 17特性必读</a> *   #### Java进阶 - JVM相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-classload.html">Java 类加载机制</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-class.html">Java 字节码和增强技术</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-struct.html">JVM 内存结构详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-gc.html">JVM 垃圾回收机制</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-debug-tools-linux.html">Java 调试排错相关</a> 算法算法 *   #### 算法基础和思想        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-basic-overview.html">数据结构基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-sort-overview.html">常见排序算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-core-divide-and-conquer.html">算法思想</a> *   #### 一些领域算法        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-security-degist.html">安全算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-char-match.html">字符串匹配算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-distribute-overview.html">分布式系统算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-bigdata-overview.html">海量数据处理</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-load-balance.html">负载均衡算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-suggest.html">推荐算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-machine.html">数据挖掘算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-id-snowflake.html">ID生成算法</a> *   #### 其它算法相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-other-mind.html">头脑风暴</a> 数据库数据库 *   #### 数据库基础和原理        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/sql/sql-db.html">数据库原理</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/sql-lan/sql-lan.html">SQL语言</a> *   #### SQL 数据库        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/sql-mysql/sql-mysql-overview.html">MySQL 详解</a> *   #### NoSQL 数据库        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/nosql-redis/db-redis-overview.html">Redis 详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/nosql-mongo/mongo.html">MongoDB 详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/nosql-es/elasticsearch.html">ElasticSearch 详解</a> 开发开发 *   #### 开发 - 常用开发基础        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/package/dev-package-x-overview.html">常用类库详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/regex/dev-regex-all.html">正则表达式详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/cron/dev-cron-x-usage.html">CRON表达式详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/protocol/dev-protocol-overview.html">网络协议和工具详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/security/dev-security-overview.html">安全相关详解</a> *   #### 开发 - 质量保障        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/ut/dev-ut-unit-test.html">单元测试详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/ut/dev-qt-code-style.html">统一风格详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/ut/dev-qt-sonarlint.html">质量管理详解</a> *   #### 开发 - 代码重构        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/refactor/dev-refactor-if-else.html">代码重构相关</a> SpringSpring *   #### Spring Framework(v5.3)        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring.html">Spring框架知识体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-introduce.html">Spring框架组成</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-ioc.html">控制反转(IOC)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop.html">面向切面编程(AOP)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-springmvc.html">SpringMVC</a> *   #### SpringBoot系列(v2.5)        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot.html">SpringBoot知识体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-hello-world.html">SpringBoot入门</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-interface-response.html">SpringBoot接口设计和实现</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-mysql-jpa.html">SpringBoot集成MySQL</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-mysql-shardingjdbc.html">SpringBoot集成ShardingJDBC</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-redis-jedis.html">SpringBoot集成Redis</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-postgre-jpa.html">SpringBoot集成Postgre</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-elastic-template.html">SpringBoot集成ElasticSearch</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-socket-websocket.html">SpringBoot集成Socket</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-task-timer.html">SpringBoot定时任务</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-view-thymeleaf.html">SpringBoot后端视图</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-x-monitor-actuator.html">SpringBoot监控</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/springboot/springboot-y-auo-config.html">SpringBoot进阶</a> 框架|中间件框架|中间件 *   #### Web 容器        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/framework/tomcat/tomcat-overview.html">Tomcat 源码详解</a> *   #### ORM 框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/framework/orm-mybatis/mybatis-overview.html">MyBatis 源码详解</a> *   #### 分表分库框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/framework/ds-sharding/sharding-overview.html">ShardingSphere 详解</a> 架构架构 *   #### 架构基础和技术点        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-overview.html">架构知识体系</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-view.html">从角色视角看架构</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-view-2.html">从分层视角看架构</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-evolution.html">从演化视角看架构</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-pattern.html">从模式视角看架构</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-cache.html">高并发之缓存</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-ratelimit.html">高并发之限流</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-reduce.html">高并发之降级和熔断</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-loadbalance.html">高可用之负载均衡</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-backup.html">高可用之容灾备份</a> *   #### 分布式系统        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-theory.html">分布式理论和一致性算法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-id.html">全局唯一ID实现方案</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-lock.html">分布式锁及实现方案</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-transection.html">分布式事务及实现方案</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-job.html">分布式任务及实现方案</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-z-session.html">分布式会话及实现方案</a> *   #### 微服务系统        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/microservice/arch-m-singleton-2.html">微服务系统和设计</a> *   #### 系统设计之商业业务平台        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-seckill.html">秒杀抽奖相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-goods-detail.html">电商交易相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-jishiwuliu.html">仓储物流相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-xianyu-laxintoufang.html">拉新投放相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-waimai.html">其它综合相关设计</a> *   #### 系统设计之数据仓库平台        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-db-hp.html">数据库架构相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-db-binlog.html">数据同步相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-data-cangchu.html">数据仓库相关设计</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-meituan-data-zhili.html">数据治理相关设计</a> 工具|部署工具|部署 *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/tool/tool-list-overview.html">开发工具</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/tool/tool-git.html">Git详解</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/linux/linux.html">Linux</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/docker/docker-00-overview.html">Docker</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/project/project-x-overview.html">项目</a> 方法论方法论 *   #### 开发理论        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-solid.html">开发原则(SOLID)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-cap.html">分布式理论(CAP)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-base.html">分布式理论(BASE)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-acid.html">事务理论(ACID)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-microservice-kangwei.html">微服务理论(康威定律)</a> *   #### 开源协议        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/opensource/dev-opensource.html">常见开源协议详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/opensource/dev-knowledge.html">知识共享许可协议</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/opensource/dev-mulan.html">国产开源木兰协议</a> *   #### 代码规范        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/code-style/code-style-alibaba.html">阿里巴巴 Java开发手册</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/code-style/code-style-google.html">Google Java 编程风格指南</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/code-style/code-style-twitter.html">Twitter Java代码规范</a> *   #### 开发流程        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-waterfall-model.html">软件生命周期与传统模型</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-waterfall-vwxh.html">结合测试演化的过程模型</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-agile.html">敏捷开发项目管理理论</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-agile-xp.html">敏捷之极限编程(XP)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-th-agile-scrum.html">敏捷之Scrum &amp; Kanban</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/dev-agile/dev-pratice-tdd.html">敏捷实践之测试驱动开发</a> *   #### 设计模式        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/pattern/1_overview.html">设计模式详解</a> *   #### 系统认证        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/certificate/cert-cmm.html">CMMI 认证</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/certificate/cert-dengbao.html">等级保护认证</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/certificate/cert-iso27001.html">ISO27001认证</a> 产品|团队产品|团队 *   #### 技术之外        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/overview-besides-tech.html">技术之外应该思考什么</a> *   #### 个人相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-tixi.html">个人成长和认知</a> *   #### 产品相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-wechat.html">产品设计和思考</a> *   #### 团队相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-task-emergency.html">管对管理和成长</a> *   #### 其它相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-arch-future.html">其它软实力等</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/about/me/about-me.html">关于</a> *   Java 基础        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-oop.html">Java 基础 - 面向对象</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-lan-basic.html">Java 基础 - 知识点</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-lan-sum.html">Java 基础 - 图谱 &amp; Q&#x2F;A</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-x-generic.html">Java 基础 - 泛型机制详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-x-annotation.html">Java 基础 - 注解机制详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-x-exception.html">Java 基础 - 异常机制详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-x-reflection.html">Java 基础 - 反射机制详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/advanced/java-advanced-spi.html">Java常用机制 - SPI机制详解</a> *   Java 集合框架        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-collection-all.html">Collection 类关系图</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-collection-ArrayList.html">Collection - ArrayList 源码解析</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-collection-LinkedList.html">Collection - LinkedList源码解析</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-collection-Queue&Stack.html">Collection - Stack &amp; Queue 源码解析</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-collection-PriorityQueue.html">Collection - PriorityQueue源码解析</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-map-HashMap&HashSet.html">Map - HashSet &amp; HashMap 源码解析</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-map-LinkedHashMap&LinkedHashSet.html">Map - LinkedHashSet&amp;Map源码解析</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-map-TreeMap&TreeSet.html">Map - TreeSet &amp; TreeMap 源码解析</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-map-WeakHashMap.html">Map - WeakHashMap源码解析</a> *   Java 多线程与并发        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-overview.html">♥Java并发知识体系详解♥</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-theorty.html">Java 并发 - 理论基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-thread-basic.html">Java 并发 - 线程基础</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html">Java并发 - Java中所有的锁</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-synchronized.html">关键字: synchronized详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-volatile.html">关键字: volatile详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-final.html">关键字: final详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-overview.html">JUC - 类汇总和学习指南</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-AtomicInteger.html">JUC原子类: CAS, Unsafe和原子类详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-LockSupport.html">JUC锁: LockSupport详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-AbstractQueuedSynchronizer.html">JUC锁: 锁核心类AQS详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-ReentrantLock.html">JUC锁: ReentrantLock详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-ReentrantReadWriteLock.html">JUC锁: ReentrantReadWriteLock详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-collection-ConcurrentHashMap.html">JUC集合: ConcurrentHashMap详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-collection-CopyOnWriteArrayList.html">JUC集合: CopyOnWriteArrayList详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-collection-ConcurrentLinkedQueue.html">JUC集合: ConcurrentLinkedQueue详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-collection-BlockingQueue.html">JUC集合: BlockingQueue详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-executor-FutureTask.html">JUC线程池: FutureTask详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-executor-ThreadPoolExecutor.html">JUC线程池: ThreadPoolExecutor详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-executor-ScheduledThreadPoolExecutor.html">JUC线程池: ScheduledThreadPoolExecutor详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-executor-ForkJoinPool.html">JUC线程池: Fork&#x2F;Join框架详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-tool-countdownlatch.html">JUC工具类: CountDownLatch详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-tool-cyclicbarrier.html">JUC工具类: CyclicBarrier详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-tool-semaphore.html">JUC工具类: Semaphore详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-tool-phaser.html">JUC工具类: Phaser详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-tool-exchanger.html">JUC工具类: Exchanger详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-threadlocal.html">Java 并发 - ThreadLocal详解</a> *   Java IO&#x2F;NIO&#x2F;AIO        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-overview.html">♥Java IO知识体系详解♥</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-basic-category.html">Java IO - 分类(传输，操作)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-basic-design-pattern.html">Java IO - 设计模式(装饰者模式)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-basic-code-inputstream.html">Java IO - 源码: InputStream</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-basic-code-outputstream.html">Java IO - 源码: OutputStream</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-basic-usage.html">Java IO - 常见类使用</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-model.html">IO 模型 - Unix IO 模型</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-bio.html">Java IO - BIO 详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-nio.html">Java NIO - 基础详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-nio-select-epoll.html">Java NIO - IO多路复用详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-aio.html">Java AIO - 异步IO详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-nio-netty.html">Java N(A)IO - 框架: Netty</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-nio-zerocopy.html">Java NIO - 零拷贝实现</a> *   Java8 特性详解        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8.html">♥Java8特性知识体系详解♥</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-stream.html">Java 8 - 函数编程(lambda表达式)</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-optional.html">Java 8 - Optional类深度解析</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-default.html">Java 8 - 默认方法</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-type-anno.html">Java 8 - 类型注解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-anno-repeat.html">Java 8 - 重复注解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-type.html">Java 8 - 类型推断优化</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-jre.html">Java 8 - JRE精简</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-permgen.html">Java 8 - 移除Permgen</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-stampedlock.html">Java 8 - StampedLock</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-localdatetime.html">Java 8 - LocalDate&#x2F;LocalDateTime</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-javafx.html">Java 8 - JavaFx 2.0</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8-others.html">Java 8 - 其它更新: 字符串，base64,…</a> *   Java8 以上特性概述        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java-8-up-overview.html">♥Java8+特性知识体系详解♥</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java9-11.html">Java 8 升Java 11 重要特性必读</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java12-17.html">Java 11 升Java 17 重要特性必读</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java9.html">Java 9 新特性概述</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java10.html">Java 10 新特性概述</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java11.html">Java 11 新特性概述</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java12.html">Java 12 新特性概述</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java13.html">Java 13 新特性概述</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java14.html">Java 14 新特性概述</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java15.html">Java 15 新特性概述</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java16.html">Java 16 新特性概述</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java17.html">Java 17 新特性概述</a> *   JVM相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-x-overview.html">♥JVM相关知识体系详解♥</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-class.html">JVM 基础 - 类字节码详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-class-enhancer.html">JVM 基础 - 字节码的增强技术</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-classload.html">JVM 基础 - Java 类加载机制</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-struct.html">JVM 基础 - JVM 内存结构</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-x-introduce.html">JVM 基础 - Java 内存模型引入</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-jmm.html">JVM 基础 - Java 内存模型详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-gc.html">GC - Java 垃圾回收基础知识</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-gc-g1.html">GC - Java 垃圾回收器之G1详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-gc-zgc.html">GC - Java 垃圾回收器之ZGC详解</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-cms-gc.html">GC - Java 垃圾回收器之CMS GC问题分析与解决</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-param.html">调试排错 - JVM 调优参数</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-oom.html">调试排错 - Java 内存分析之堆内存和MetaSpace内存</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-oom-offheap.html">调试排错 - Java 内存分析之堆外内存</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-thread-dump.html">调试排错 - Java 线程分析之线程Dump分析</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-debug-tools-linux.html">调试排错 - Java 问题排查之Linux命令</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-debug-tools-list.html">调试排错 - Java 问题排查之工具单</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-oom-tool.html">调试排错 - Java 问题排查之JVM可视化工具</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-agent-arthas.html">调试排错 - Java 问题排查之应用在线调试Arthas</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-debug-idea.html">调试排错 - Java 问题排查之使用IDEA本地调试和远程调试</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-agent-usage.html">调试排错 - Java动态调试技术原理</a> *   Java其它相关        *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/others/java-others-awesome-java.html">Awesome Java</a>    *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/others/java-others-better-java.html">Better Java</a> <a href="about:blank#java%E5%B9%B6%E5%8F%91-java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81">#</a> Java并发 - Java中所有的锁 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; &gt; Java提供了种类丰富的锁，每种锁因其特性的不同，在适当的场景下能够展现出非常高的效率。本文旨在对锁相关源码（本文中的源码来自JDK 8和Netty 3.10.6）、使用场景进行举例，为读者介绍主流锁的知识点，以及不同的锁的适用场景。@pdai *   <a href="about:blank#java%E5%B9%B6%E5%8F%91---java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81">Java并发 - Java中所有的锁</a>    *   <a href="about:blank#%E5%89%8D%E8%A8%80">前言</a>    *   <a href="about:blank#1-%E4%B9%90%E8%A7%82%E9%94%81-vs-%E6%82%B2%E8%A7%82%E9%94%81">1. 乐观锁 VS 悲观锁</a>    *   <a href="about:blank#2-%E8%87%AA%E6%97%8B%E9%94%81-vs-%E9%80%82%E5%BA%94%E6%80%A7%E8%87%AA%E6%97%8B%E9%94%81">2. 自旋锁 VS 适应性自旋锁</a>    *   <a href="about:blank#3-%E6%97%A0%E9%94%81-vs-%E5%81%8F%E5%90%91%E9%94%81-vs-%E8%BD%BB%E9%87%8F%E7%BA%A7%E9%94%81-vs-%E9%87%8D%E9%87%8F%E7%BA%A7%E9%94%81">3. 无锁 VS 偏向锁 VS 轻量级锁 VS 重量级锁</a>    *   <a href="about:blank#4-%E5%85%AC%E5%B9%B3%E9%94%81-vs-%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81">4. 公平锁 VS 非公平锁</a>    *   <a href="about:blank#5-%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81-vs-%E9%9D%9E%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81">5. 可重入锁 VS 非可重入锁</a>    *   <a href="about:blank#6-%E7%8B%AC%E4%BA%AB%E9%94%81%E6%8E%92%E4%BB%96%E9%94%81-vs-%E5%85%B1%E4%BA%AB%E9%94%81">6. 独享锁(排他锁) VS 共享锁</a>    *   <a href="about:blank#%E7%BB%93%E8%AF%AD">结语</a>    *   <a href="about:blank#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">参考资料</a>    *   <a href="about:blank#%E4%BD%9C%E8%80%85%E7%AE%80%E4%BB%8B">作者简介</a>    *   <a href="about:blank#%E6%96%87%E7%AB%A0%E6%9D%A5%E6%BA%90">文章来源</a> <a href="about:blank#%E5%89%8D%E8%A8%80">#</a> 前言 ————————————– Java提供了种类丰富的锁，每种锁因其特性的不同，在适当的场景下能够展现出非常高的效率。本文旨在对锁相关源码（本文中的源码来自JDK 8和Netty 3.10.6）、使用场景进行举例，为读者介绍主流锁的知识点，以及不同的锁的适用场景。 Java中往往是按照是否含有某一特性来定义锁，我们通过特性将锁进行分组归类，再使用对比的方式进行介绍，帮助大家更快捷的理解相关知识。下面给出本文内容的总体分类目录： <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-1.png"> <a href="about:blank#_1-%E4%B9%90%E8%A7%82%E9%94%81-vs-%E6%82%B2%E8%A7%82%E9%94%81">#</a> 1. 乐观锁 VS 悲观锁 ——————————————————————————————– &gt; 乐观锁与悲观锁是一种广义上的概念，体现了看待线程同步的不同角度。在Java和数据库中都有此概念对应的实际应用。 先说概念。对于同一个数据的并发操作，悲观锁认为自己在使用数据的时候一定有别的线程来修改数据，因此在获取数据的时候会先加锁，确保数据不会被别的线程修改。Java中，synchronized关键字和Lock的实现类都是悲观锁。 而乐观锁认为自己在使用数据时不会有别的线程修改数据，所以不会添加锁，只是在更新数据的时候去判断之前有没有别的线程更新了这个数据。如果这个数据没有被更新，当前线程将自己修改的数据成功写入。如果数据已经被其他线程更新，则根据不同的实现方式执行不同的操作（例如报错或者自动重试）。 乐观锁在Java中是通过使用无锁编程来实现，最常采用的是CAS算法，Java原子类中的递增操作就通过CAS自旋实现的。 <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-2.png"> 根据从上面的概念描述我们可以发现： *   <strong>悲观锁适合写操作多的场景</strong>，先加锁可以保证写操作时数据正确。 *   <strong>乐观锁适合读操作多的场景</strong>，不加锁的特点能够使其读操作的性能大幅提升。 光说概念有些抽象，我们来看下乐观锁和悲观锁的调用方式示例： <code>// ------------------------- 悲观锁的调用方式 ------------------------- // synchronized public synchronized void testMethod() &#123; // 操作同步资源 &#125; // ReentrantLock private ReentrantLock lock = new ReentrantLock(); // 需要保证多个线程使用的是同一个锁 public void modifyPublicResources() &#123; lock.lock(); // 操作同步资源 lock.unlock(); &#125; // ------------------------- 乐观锁的调用方式 ------------------------- private AtomicInteger atomicInteger = new AtomicInteger();  // 需要保证多个线程使用的是同一个AtomicInteger atomicInteger.incrementAndGet(); //执行自增1</code> 通过调用方式示例，我们可以发现悲观锁基本都是在显式的锁定之后再操作同步资源，而乐观锁则直接去操作同步资源。那么，为何乐观锁能够做到不锁定同步资源也可以正确的实现线程同步呢？具体可以参看<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-AtomicInteger.html">JUC原子类: CAS, Unsafe和原子类详解</a>。 <a href="about:blank#_2-%E8%87%AA%E6%97%8B%E9%94%81-vs-%E9%80%82%E5%BA%94%E6%80%A7%E8%87%AA%E6%97%8B%E9%94%81">#</a> 2. 自旋锁 VS 适应性自旋锁 ————————————————————————————————————————– &gt; 在介绍自旋锁前，我们需要介绍一些前提知识来帮助大家明白自旋锁的概念。 阻塞或唤醒一个Java线程需要操作系统切换CPU状态来完成，这种状态转换需要耗费处理器时间。如果同步代码块中的内容过于简单，状态转换消耗的时间有可能比用户代码执行的时间还要长。 在许多场景中，同步资源的锁定时间很短，为了这一小段时间去切换线程，线程挂起和恢复现场的花费可能会让系统得不偿失。如果物理机器有多个处理器，能够让两个或以上的线程同时并行执行，我们就可以让后面那个请求锁的线程不放弃CPU的执行时间，看看持有锁的线程是否很快就会释放锁。 而为了让当前线程“稍等一下”，我们需让当前线程进行自旋，如果在自旋完成后前面锁定同步资源的线程已经释放了锁，那么当前线程就可以不必阻塞而是直接获取同步资源，从而避免切换线程的开销。这就是自旋锁。 <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-4.png"> 自旋锁本身是有缺点的，它不能代替阻塞。自旋等待虽然避免了线程切换的开销，但它要占用处理器时间。如果锁被占用的时间很短，自旋等待的效果就会非常好。反之，如果锁被占用的时间很长，那么自旋的线程只会白浪费处理器资源。所以，自旋等待的时间必须要有一定的限度，如果自旋超过了限定次数（默认是10次，可以使用-XX:PreBlockSpin来更改）没有成功获得锁，就应当挂起线程。 自旋锁的实现原理同样也是CAS，AtomicInteger中调用unsafe进行自增操作的源码中的do-while循环就是一个自旋操作，如果修改数值失败则通过循环来执行自旋，直至修改成功。 自旋锁相关可以看<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-synchronized.html#%E8%87%AA%E6%97%8B%E9%94%81%E4%B8%8E%E8%87%AA%E9%80%82%E5%BA%94%E8%87%AA%E6%97%8B%E9%94%81">关键字 - synchronized详解 - 自旋锁与自适应自旋锁</a> <a href="about:blank#_3-%E6%97%A0%E9%94%81-vs-%E5%81%8F%E5%90%91%E9%94%81-vs-%E8%BD%BB%E9%87%8F%E7%BA%A7%E9%94%81-vs-%E9%87%8D%E9%87%8F%E7%BA%A7%E9%94%81">#</a> 3. 无锁 VS 偏向锁 VS 轻量级锁 VS 重量级锁 ———————————————————————————————————————————————————————————- &gt; 这四种锁是指锁的状态，专门针对synchronized的。在介绍这四种锁状态之前还需要介绍一些额外的知识。 总结而言： 偏向锁通过对比Mark Word解决加锁问题，避免执行CAS操作。而轻量级锁是通过用CAS操作和自旋来解决加锁问题，避免线程阻塞和唤醒而影响性能。重量级锁是将除了拥有锁的线程以外的线程都阻塞。 <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-6.png"> 相关可以看<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-synchronized.html#%E9%94%81%E7%9A%84%E7%B1%BB%E5%9E%8B">关键字 - synchronized详解 - 锁的类型</a> <a href="about:blank#_4-%E5%85%AC%E5%B9%B3%E9%94%81-vs-%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81">#</a> 4. 公平锁 VS 非公平锁 —————————————————————————————————— 公平锁是指多个线程按照申请锁的顺序来获取锁，线程直接进入队列中排队，队列中的第一个线程才能获得锁。公平锁的优点是等待锁的线程不会饿死。缺点是整体吞吐效率相对非公平锁要低，等待队列中除第一个线程以外的所有线程都会阻塞，CPU唤醒阻塞线程的开销比非公平锁大。 非公平锁是多个线程加锁时直接尝试获取锁，获取不到才会到等待队列的队尾等待。但如果此时锁刚好可用，那么这个线程可以无需阻塞直接获取到锁，所以非公平锁有可能出现后申请锁的线程先获取锁的场景。非公平锁的优点是可以减少唤起线程的开销，整体的吞吐效率高，因为线程有几率不阻塞直接获得锁，CPU不必唤醒所有线程。缺点是处于等待队列中的线程可能会饿死，或者等很久才会获得锁。 直接用语言描述可能有点抽象，这里作者用从别处看到的一个例子来讲述一下公平锁和非公平锁。 <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-7.png"> 如上图所示，假设有一口水井，有管理员看守，管理员有一把锁，只有拿到锁的人才能够打水，打完水要把锁还给管理员。每个过来打水的人都要管理员的允许并拿到锁之后才能去打水，如果前面有人正在打水，那么这个想要打水的人就必须排队。管理员会查看下一个要去打水的人是不是队伍里排最前面的人，如果是的话，才会给你锁让你去打水；如果你不是排第一的人，就必须去队尾排队，这就是公平锁。 但是对于非公平锁，管理员对打水的人没有要求。即使等待队伍里有排队等待的人，但如果在上一个人刚打完水把锁还给管理员而且管理员还没有允许等待队伍里下一个人去打水时，刚好来了一个插队的人，这个插队的人是可以直接从管理员那里拿到锁去打水，不需要排队，原本排队等待的人只能继续等待。如下图所示： <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-8.png"> 更多请参看<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-ReentrantLock.html">JUC - ReentrantLock详解</a>。 <a href="about:blank#_5-%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81-vs-%E9%9D%9E%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81">#</a> 5. 可重入锁 VS 非可重入锁 ————————————————————————————————————————– 可重入锁又名递归锁，是指在同一个线程在外层方法获取锁的时候，再进入该线程的内层方法会自动获取锁（前提锁对象得是同一个对象或者class），不会因为之前已经获取过还没释放而阻塞。Java中ReentrantLock和synchronized都是可重入锁，可重入锁的一个优点是可一定程度避免死锁。下面用示例代码来进行分析： <code>public class Widget &#123;    public synchronized void doSomething() &#123;        System.out.println(&quot;方法1执行...&quot;);        doOthers();    &#125;     public synchronized void doOthers() &#123;        System.out.println(&quot;方法2执行...&quot;);    &#125; &#125;</code> 在上面的代码中，类中的两个方法都是被内置锁synchronized修饰的，doSomething()方法中调用doOthers()方法。因为内置锁是可重入的，所以同一个线程在调用doOthers()时可以直接获得当前对象的锁，进入doOthers()进行操作。 如果是一个不可重入锁，那么当前线程在调用doOthers()之前需要将执行doSomething()时获取当前对象的锁释放掉，实际上该对象锁已被当前线程所持有，且无法释放。所以此时会出现死锁。 而为什么可重入锁就可以在嵌套调用时可以自动获得锁呢？我们通过图示和源码来分别解析一下。 还是打水的例子，有多个人在排队打水，此时管理员允许锁和同一个人的多个水桶绑定。这个人用多个水桶打水时，第一个水桶和锁绑定并打完水之后，第二个水桶也可以直接和锁绑定并开始打水，所有的水桶都打完水之后打水人才会将锁还给管理员。这个人的所有打水流程都能够成功执行，后续等待的人也能够打到水。这就是可重入锁。 <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-12.png"> 但如果是非可重入锁的话，此时管理员只允许锁和同一个人的一个水桶绑定。第一个水桶和锁绑定打完水之后并不会释放锁，导致第二个水桶不能和锁绑定也无法打水。当前线程出现死锁，整个等待队列中的所有线程都无法被唤醒。 <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-13.png"> 之前我们说过ReentrantLock和synchronized都是重入锁，那么我们通过重入锁ReentrantLock以及非可重入锁NonReentrantLock的源码来对比分析一下为什么非可重入锁在重复调用同步资源时会出现死锁。 首先ReentrantLock和NonReentrantLock都继承父类AQS，其父类AQS中维护了一个同步状态status来计数重入次数，status初始值为0。 当线程尝试获取锁时，可重入锁先尝试获取并更新status值，如果status &#x3D;&#x3D; 0表示没有其他线程在执行同步代码，则把status置为1，当前线程开始执行。如果status !&#x3D; 0，则判断当前线程是否是获取到这个锁的线程，如果是的话执行status+1，且当前线程可以再次获取锁。而非可重入锁是直接去获取并尝试更新当前status的值，如果status !&#x3D; 0的话会导致其获取锁失败，当前线程阻塞。 释放锁时，可重入锁同样先获取当前status的值，在当前线程是持有锁的线程的前提下。如果status-1 &#x3D;&#x3D; 0，则表示当前线程所有重复获取锁的操作都已经执行完毕，然后该线程才会真正释放锁。而非可重入锁则是在确定当前线程是持有锁的线程之后，直接将status置为0，将锁释放。 <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-14.png"> 更多请参看： *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-LockSupport.html">JUC锁: LockSupport详解</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-AbstractQueuedSynchronizer.html">JUC锁: AbstractQueuedSynchronizer详解</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-ReentrantLock.html">JUC锁 - ReentrantLock详解</a>。 *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-synchronized.html">关键字 - synchronized详解</a> <a href="about:blank#_6-%E7%8B%AC%E4%BA%AB%E9%94%81-%E6%8E%92%E4%BB%96%E9%94%81-vs-%E5%85%B1%E4%BA%AB%E9%94%81">#</a> 6. 独享锁(排他锁) VS 共享锁 —————————————————————————————————————————– &gt; 独享锁和共享锁同样是一种概念。我们先介绍一下具体的概念，然后通过ReentrantLock和ReentrantReadWriteLock的源码来介绍独享锁和共享锁。 <strong>独享锁也叫排他锁</strong>，是指该锁一次只能被一个线程所持有。如果线程T对数据A加上排它锁后，则其他线程不能再对A加任何类型的锁。获得排它锁的线程即能读数据又能修改数据。JDK中的synchronized和JUC中Lock的实现类就是互斥锁。 <strong>共享锁</strong>是指该锁可被多个线程所持有。如果线程T对数据A加上共享锁后，则其他线程只能对A再加共享锁，不能加排它锁。获得共享锁的线程只能读数据，不能修改数据。 独享锁与共享锁也是通过AQS来实现的，通过实现不同的方法，来实现独享或者共享。 下图为ReentrantReadWriteLock的部分源码： <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-lock-15.png"> 我们看到ReentrantReadWriteLock有两把锁：ReadLock和WriteLock，由词知意，一个读锁一个写锁，合称“读写锁”。再进一步观察可以发现ReadLock和WriteLock是靠内部类Sync实现的锁。Sync是AQS的一个子类，这种结构在CountDownLatch、ReentrantLock、Semaphore里面也都存在。 在ReentrantReadWriteLock里面，读锁和写锁的锁主体都是Sync，但读锁和写锁的加锁方式不一样。读锁是共享锁，写锁是独享锁。读锁的共享锁可保证并发读非常高效，而读写、写读、写写的过程互斥，因为读锁和写锁是分离的。所以ReentrantReadWriteLock的并发性相比一般的互斥锁有了很大提升。 更多请参看 *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-ReentrantReadWriteLock.html">JUC锁: ReentrantReadWriteLock详解</a> <a href="about:blank#%E7%BB%93%E8%AF%AD">#</a> 结语 ————————————– 本文Java中常用的锁以及常见的锁的概念进行了基本介绍，并从源码以及实际应用的角度进行了对比分析。限于篇幅以及个人水平，没有在本篇文章中对所有内容进行深层次的讲解。 其实Java本身已经对锁本身进行了良好的封装，降低了研发同学在平时工作中的使用难度。但是研发同学也需要熟悉锁的底层原理，不同场景下选择最适合的锁。而且源码中的思路都是非常好的思路，也是值得大家去学习和借鉴的。 <a href="about:blank#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">#</a> 参考资料 ———————————————————- *   《Java并发编程艺术》 *   Java中的锁 *   Java CAS 原理剖析 *   Java并发——关键字synchronized解析 *   Java synchronized原理总结 *   聊聊并发（二）——Java SE1.6中的Synchronized *   深入理解读写锁—ReadWriteLock源码分析 *   【JUC】JDK1.8源码分析之ReentrantReadWriteLock *   Java多线程（十）之ReentrantReadWriteLock深入分析 *   Java–读写锁的实现原理 <a href="about:blank#%E4%BD%9C%E8%80%85%E7%AE%80%E4%BB%8B">#</a> 作者简介 ———————————————————- 家琪，美团点评后端工程师。2017 年加入美团点评，负责美团点评境内度假的业务开发。 <a href="about:blank#%E6%96%87%E7%AB%A0%E6%9D%A5%E6%BA%90">#</a> 文章来源 ———————————————————- 本文主要在美团技术团队家琪的文章基础上进行调整，以满足整体的知识体系。 <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/about/me/blog-question.html">我要纠错</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-thread-basic.html">Java 并发 - 线程基础</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-synchronized.html">关键字: synchronized详解</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/">苏ICP备19053722号</a> | <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/about/me/about-me.html">pdai</a> | copyright © 2017-present Java并发 - Java中所有的锁 * * * *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E5%89%8D%E8%A8%80">前言</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_1-%E4%B9%90%E8%A7%82%E9%94%81-vs-%E6%82%B2%E8%A7%82%E9%94%81">1. 乐观锁 VS 悲观锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_2-%E8%87%AA%E6%97%8B%E9%94%81-vs-%E9%80%82%E5%BA%94%E6%80%A7%E8%87%AA%E6%97%8B%E9%94%81">2. 自旋锁 VS 适应性自旋锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_3-%E6%97%A0%E9%94%81-vs-%E5%81%8F%E5%90%91%E9%94%81-vs-%E8%BD%BB%E9%87%8F%E7%BA%A7%E9%94%81-vs-%E9%87%8D%E9%87%8F%E7%BA%A7%E9%94%81">3. 无锁 VS 偏向锁 VS 轻量级锁 VS 重量级锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_4-%E5%85%AC%E5%B9%B3%E9%94%81-vs-%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81">4. 公平锁 VS 非公平锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_5-%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81-vs-%E9%9D%9E%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81">5. 可重入锁 VS 非可重入锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_6-%E7%8B%AC%E4%BA%AB%E9%94%81-%E6%8E%92%E4%BB%96%E9%94%81-vs-%E5%85%B1%E4%BA%AB%E9%94%81">6. 独享锁(排他锁) VS 共享锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E7%BB%93%E8%AF%AD">结语</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">参考资料</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E4%BD%9C%E8%80%85%E7%AE%80%E4%BB%8B">作者简介</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E6%96%87%E7%AB%A0%E6%9D%A5%E6%BA%90">文章来源</a> * * * 【双11】腾讯云服务器Java全栈读者专享   *   2核2G,4M,40GB, 50元&#x2F;1年 <a target="_blank" rel="noopener" href="https://url.cn/cn5FID7d">查看</a> *   2核4G,6M,60GB, 100元&#x2F;1年 <a target="_blank" rel="noopener" href="https://url.cn/cn5FID7d">查看</a> *   4核8G,10M,100GB, 300元&#x2F;1年 <a target="_blank" rel="noopener" href="https://url.cn/cn5FID7d">查看</a> 目录 Java并发 - Java中所有的锁 * * * *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E5%89%8D%E8%A8%80">前言</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_1-%E4%B9%90%E8%A7%82%E9%94%81-vs-%E6%82%B2%E8%A7%82%E9%94%81">1. 乐观锁 VS 悲观锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_2-%E8%87%AA%E6%97%8B%E9%94%81-vs-%E9%80%82%E5%BA%94%E6%80%A7%E8%87%AA%E6%97%8B%E9%94%81">2. 自旋锁 VS 适应性自旋锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_3-%E6%97%A0%E9%94%81-vs-%E5%81%8F%E5%90%91%E9%94%81-vs-%E8%BD%BB%E9%87%8F%E7%BA%A7%E9%94%81-vs-%E9%87%8D%E9%87%8F%E7%BA%A7%E9%94%81">3. 无锁 VS 偏向锁 VS 轻量级锁 VS 重量级锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_4-%E5%85%AC%E5%B9%B3%E9%94%81-vs-%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81">4. 公平锁 VS 非公平锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_5-%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81-vs-%E9%9D%9E%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81">5. 可重入锁 VS 非可重入锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#_6-%E7%8B%AC%E4%BA%AB%E9%94%81-%E6%8E%92%E4%BB%96%E9%94%81-vs-%E5%85%B1%E4%BA%AB%E9%94%81">6. 独享锁(排他锁) VS 共享锁</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E7%BB%93%E8%AF%AD">结语</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">参考资料</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E4%BD%9C%E8%80%85%E7%AE%80%E4%BB%8B">作者简介</a> *   <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html#%E6%96%87%E7%AB%A0%E6%9D%A5%E6%BA%90">文章来源</a> 手机看 微信扫一扫   <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/java-thread-x-lock-all.png"> 可以<strong>手机看</strong>或分享至<strong>朋友圈</strong> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html" title="点击切换全屏">   全屏看</a> 左栏 交流圈 添加pdai微信进《Java全栈知识体系》学习交流圈「无任何套路」<img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/pdai.jpg"> PS：添加时请备注<strong>Java全栈</strong>，谢谢！ 下资料 扫描公众号，回复“资料”下载10GB+书籍资料「无任何套路」<img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/pdai_gzh.jpg"><strong>公众号:</strong> Java全栈知识体系 <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/about/me/about-donate.html">   支持我</a> 鼓励&#x2F;支持&#x2F;赞赏我   <img src="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%811/pdai-guli.png"> 1. 不靠它生存但仍希望得到你的鼓励；   2. 时刻警醒自己保持技术人的初心，恒心，简单，利他；   （点击右侧❤️可以查看赞赏榜单和用途) <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/interview/x-interview.html">   面试</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-thread-basic.html">   上一篇</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-synchronized.html">   下一篇</a> 站点图 #### <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/about/me/about-me.html">关于我</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/about/blog/blog-build-vuepress.html">关于站点</a> <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/about/me/blog-changelist.html">最近更新记录</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/about/me/blog-question.html">问题反馈</a> <table class="sitemap-table"><tbody><tr><td nowrap><div class="sitemap-col-group">常用搜索</div></td><td><div class="sitemap-col-item"><a href="http://www.baidu.com/" target="_blank" title="百度">百度<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="http://www.google.com/" target="_blank" title="Google">Google<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="http://www.bing.com/" target="_blank" title="Bing">Bing<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="https://github.com/" target="_blank" title="Github">Github<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="https://www.programcreek.com/java-api-examples/index.php" target="_blank" title="搜代码">搜代码<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div></td></tr><tr><td nowrap><div class="sitemap-col-group">技术社区</div></td><td><div class="sitemap-col-item"><a href="http://www.csdn.net/" target="_blank" title="CSDN">CSDN<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="http://www.cnblogs.com/" target="_blank" title="博客园">博客园<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="https://www.oschina.net/" target="_blank" title="OSChina">OSChina<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="https://segmentfault.com/" target="_blank" title="知否">知否<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="https://juejin.im/" target="_blank" title="掘金">掘金<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="https://www.linuxidc.com/" target="_blank" title="Linux公社">Linux公社<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="https://www.ibm.com/developerworks/cn/" target="_blank" title="IBM 开发者">IBM 开发者<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div><div class="sitemap-col-item"><a href="https://stackoverflow.com/" target="_blank" title="StackOverflow">StackOverflow<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewbox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"/><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"/></svg></a></div></td></tr><tr><td nowrap><div class="sitemap-col-group">Java相关</div></td><td><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-oop.html" class="sitemap-col-item">面向对象基础</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/basic/java-basic-lan-basic.html" class="sitemap-col-item">语法基础</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/collection/java-collection-all.html" class="sitemap-col-item">集合框架</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-overview.html" class="sitemap-col-item">并发基础</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-synchronized.html" class="sitemap-col-item">并发关键字</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-overview.html" class="sitemap-col-item">JUC并发框架</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/io/java-io-overview.html" class="sitemap-col-item">IO框架</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8/java8.html" class="sitemap-col-item">Java8 特性</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-x-overview.html" class="sitemap-col-item">JVM基础</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-param.html" class="sitemap-col-item">调试排错</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/others/java-others-awesome-java.html" class="sitemap-col-item">更多资源</a></td></tr><tr><td nowrap><div class="sitemap-col-group">算法相关</div></td><td><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-basic-array.html" class="sitemap-col-item">数组与线性表</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-basic-tree.html" class="sitemap-col-item">树详解</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-basic-graph.html" class="sitemap-col-item">图详解</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-sort-overview.html" class="sitemap-col-item">内部排序</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-core-divide-and-conquer.html" class="sitemap-col-item">算法思想</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-security-degist.html" class="sitemap-col-item">安全算法</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-bigdata-overview.html" class="sitemap-col-item">大数据处理</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-distribute-overview.html" class="sitemap-col-item">分布式算法</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-load-balance.html" class="sitemap-col-item">负载均衡算法</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-domain-suggest.html" class="sitemap-col-item">推荐算法</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/algorithm/alg-other-mind.html" class="sitemap-col-item">头脑风暴</a></td></tr><tr><td nowrap><div class="sitemap-col-group">数据库相关</div></td><td><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/sql/sql-db-howitworks.html" class="sitemap-col-item">数据库原理</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/sql-lan/sql-lan.html" class="sitemap-col-item">SQL语言</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/sql-mysql/sql-mysql-theory.html" class="sitemap-col-item">MySQL相关</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/nosql-mongo/mongo-performance-improve.html" class="sitemap-col-item">MongoDB</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/nosql-es/elasticsearch.html" class="sitemap-col-item">ElasticSearch</a></td></tr><tr><td nowrap><div class="sitemap-col-group">开发基础相关</div></td><td><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/package/dev-package-x-apache-common.html" class="sitemap-col-item">常用类库</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/ut/dev-ut-x-junit.html" class="sitemap-col-item">单元测试</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/regex/dev-regex-all.html" class="sitemap-col-item">正则表达式</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/protocol/dev-protocol-overview.html" class="sitemap-col-item">网络协议</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/security/dev-security-overview.html" class="sitemap-col-item">安全相关</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/develop/refactor/dev-refactor-if-else.html" class="sitemap-col-item">常见重构技巧</a></td></tr><tr><td nowrap><div class="sitemap-col-group">架构相关</div></td><td><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-basic.html" class="sitemap-col-item">架构基础</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-view.html" class="sitemap-col-item">架构视角</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-evolution.html" class="sitemap-col-item">架构演进</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-pattern.html" class="sitemap-col-item">架构模式和要素</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-cache.html" class="sitemap-col-item">高并发之缓存</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-ratelimit.html" class="sitemap-col-item">高并发之限流</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-reduce.html" class="sitemap-col-item">高并发之降级</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-loadbalance.html" class="sitemap-col-item">负载均衡</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-y-backup.html" class="sitemap-col-item">容灾备份</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-x-security.html" class="sitemap-col-item">架构安全</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-seckill.html" class="sitemap-col-item">秒杀系统设计</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/arch/arch-example-goods-detail.html" class="sitemap-col-item">架构案例</a></td></tr><tr><td nowrap><div class="sitemap-col-group">工具和部署</div></td><td><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/tool/tool-list-overview.html" class="sitemap-col-item">工具集合</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/tool/tool-ide.html" class="sitemap-col-item">IDE相关</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/tool/tool-git.html" class="sitemap-col-item">Git</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/tool/tool-maven.html" class="sitemap-col-item">Maven</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/linux/linux.html" class="sitemap-col-item">Linux</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/devops/docker/docker-00-overview.html" class="sitemap-col-item">Docker</a></td></tr><tr><td nowrap><div class="sitemap-col-group">方法论</div></td><td><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-solid.html" class="sitemap-col-item">SOLID</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-cap.html" class="sitemap-col-item">CAP</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-th-base.html" class="sitemap-col-item">BASE</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/spec/dev-opensource.html" class="sitemap-col-item">开源协议</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/code-style/code-style-alibaba.html" class="sitemap-col-item">代码规范</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/pattern/1_overview.html" class="sitemap-col-item">设计模式</a></td></tr><tr><td nowrap><div class="sitemap-col-group">产品和团队</div></td><td><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-wechat.html" class="sitemap-col-item">产品相关</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-task-emergency.html" class="sitemap-col-item">团队相关</a><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/team/team-z-arch-future.html" class="sitemap-col-item">其它分享</a></td></tr></tbody></table>    本文转自 <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html">https://www.pdai.tech/md/java/thread/java-thread-x-lock-all.html</a>，如有侵权，请联系删除。</p>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2017 王云生
+</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
