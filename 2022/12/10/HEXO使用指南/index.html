@@ -6,45 +6,17 @@
   <meta name="keywords" content=" hexo , tool ">
   <meta name="description" content="HEXO使用指南 | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="1.前期准备1.1 注意事项很多命令既可以用Windows的cmd来完成，也可以使用git bash来完成，但是部分命令会有一些问题，为避免不必要的问题，建议全部使用git bash来执行 hexo不同版本差别比较大，网上很多文章的配置信息都是基于2.x的，所以注意不要被误导 hexo有2种_config.yml文件，一个是根目录下的全局的_config.yml，一个是各个theme下的 1.2">
+<meta name="description" content="学习记录博客">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HEXO使用指南">
-<meta property="og:url" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:title" content="xmind">
+<meta property="og:url" content="http://example.com/2022/12/10/xmind/index.html">
 <meta property="og:site_name" content="Mr.Wang Blog">
-<meta property="og:description" content="1.前期准备1.1 注意事项很多命令既可以用Windows的cmd来完成，也可以使用git bash来完成，但是部分命令会有一些问题，为避免不必要的问题，建议全部使用git bash来执行 hexo不同版本差别比较大，网上很多文章的配置信息都是基于2.x的，所以注意不要被误导 hexo有2种_config.yml文件，一个是根目录下的全局的_config.yml，一个是各个theme下的 1.2">
+<meta property="og:description" content="学习记录博客">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/ca3573693ec7d4b8f30b71b7f22a2003a9bac6e8.png@942w_675h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/cbcef276877a15fc1108cedf88d63ba5fd25a81f.png@756w_329h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/f8fb9a4ff9e0410bdbb1e4b89f34208ae2c6ecfd.jpg@942w_407h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/cae65261511e4bf7e4ea0e7838a5bfc5f3560d20.png@942w_509h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/a7f5fc12b8e28b751c024e1d0f760de338e32d81.png@942w_290h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/f8d1a66cf00c3dfabb1bff69c531398ef0a33679.png@942w_56h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/f920d62b355a1a62bb9f6f37571edfb936fc03b2.png@815w_53h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/9055b0cce324c115ecb9128c391d6239cb4ccec0.png@942w_153h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/9cc1855324f9f968aa56d8a94a913475b3bc1d70.png@942w_437h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/dc6cf704d5d468a2f02dcd044fc4a0b4daf78960.png@942w_507h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/075cf0ecdb17fd480e0a705242cf9b6cf28510ee.png@942w_225h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/b122a24f4e848f12e98c105e30e57fdc770d6690.png@942w_251h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/426b2c5a296d531dcae228493e6d63868179f132.png@942w_353h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/312648b8eabe0b58395774e2742277f9690a94c6.png@942w_288h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/9545db7dea8f6d676b15ebe2d5542fec221d22ca.png@942w_191h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/0d70f8f2da7bf1cb8d0bf4f12b3b9fec5e932a73.png@942w_113h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/0af1d0ecbd93998845cc275f669efdb2fa30ee8e.png@942w_1037h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/ad0a41f6a4e3350f6ade4d81c049a8e6974e8d15.png@942w_1184h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/564b63dd8bfd17539a3b0d7f1992e27b6c5ee77d.png@942w_263h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/a07fded57b1cdeceecc21d68c3703b2cb002f088.png@942w_108h_progressive.webp">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">
-<meta property="og:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">
-<meta property="article:published_time" content="2022-12-10T11:02:24.000Z">
-<meta property="article:modified_time" content="2022-12-10T12:00:39.193Z">
+<meta property="article:published_time" content="2022-12-10T12:08:18.000Z">
+<meta property="article:modified_time" content="2022-12-10T12:08:18.594Z">
 <meta property="article:author" content="王云生">
-<meta property="article:tag" content="hexo">
-<meta property="article:tag" content="tool">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/ca3573693ec7d4b8f30b71b7f22a2003a9bac6e8.png@942w_675h_progressive.webp">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -190,7 +162,7 @@
     <li>
         <div class="all active" data-rel="全部文章">全部文章
             
-                <small>(2)</small>
+                <small>(3)</small>
             
         </div>
     </li>
@@ -278,7 +250,7 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="2">
+<input type="hidden" id="yelog_site_posts_number" value="3">
 <input type="hidden" id="yelog_site_word_count" value="4.4k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
@@ -346,6 +318,15 @@
 
     
     <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 "
+           href="/2022/12/10/xmind/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="xmind">xmind</span>
+            <span class="post-date" title="2022-12-10 20:08:18">2022/12/10</span>
+        </a>
         
         
         <a  class="全部文章 工具 HEXO "
@@ -495,12 +476,12 @@
 <p>第四步：打开你的github主页，进入个人设置 -&gt; SSH and GPG keys -&gt; New SSH key，把复制的内容粘贴进去，title随便填，保存即可，我们的公钥就添加成功了，设置好如下图：</p>
 <p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/cae65261511e4bf7e4ea0e7838a5bfc5f3560d20.png@942w_509h_progressive.webp" alt="img"></p>
 <p>第五步：检测是否设置成功：</p>
-<p>输入命令：  $ ssh -T <a href="mailto:&#x67;&#x69;&#x74;&#x40;&#103;&#x69;&#x74;&#104;&#117;&#98;&#46;&#99;&#x6f;&#109;">&#x67;&#x69;&#x74;&#x40;&#103;&#x69;&#x74;&#104;&#117;&#98;&#46;&#99;&#x6f;&#109;</a> # 注意邮箱地址不用改</p>
+<p>输入命令：  $ ssh -T <a href="mailto:&#x67;&#x69;&#x74;&#64;&#103;&#105;&#116;&#104;&#x75;&#98;&#x2e;&#99;&#x6f;&#x6d;">&#x67;&#x69;&#x74;&#64;&#103;&#105;&#116;&#104;&#x75;&#98;&#x2e;&#99;&#x6f;&#x6d;</a> # 注意邮箱地址不用改</p>
 <p>如果提示Are you sure you want to continue connecting (yes&#x2F;no)?，输入yes，然后会看到：</p>
 <p>Hi liuxianan! You’ve successfully authenticated, but GitHub does not provide shell access.</p>
 <p>看到这个信息说明SSH已配置成功！</p>
 <p>第六步：此时你还需要配置：</p>
-<p>$ git config –global user.name “liuxianan”&#x2F;&#x2F; 你的github用户名，非昵称$ git config –global user.email  “<a href="mailto:&#x78;&#120;&#x78;&#x40;&#x71;&#113;&#46;&#99;&#x6f;&#109;">&#x78;&#120;&#x78;&#x40;&#x71;&#113;&#46;&#99;&#x6f;&#109;</a>“&#x2F;&#x2F; 填写你的github注册邮箱</p>
+<p>$ git config –global user.name “liuxianan”&#x2F;&#x2F; 你的github用户名，非昵称$ git config –global user.email  “<a href="mailto:&#120;&#x78;&#120;&#x40;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d;">&#120;&#x78;&#120;&#x40;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d;</a>“&#x2F;&#x2F; 填写你的github注册邮箱</p>
 <h1 id="4-使用-hexo-搭建博客"><a href="#4-使用-hexo-搭建博客" class="headerlink" title="4.使用 hexo 搭建博客"></a>4.使用 hexo 搭建博客</h1><h2 id="4-1-初始化"><a href="#4-1-初始化" class="headerlink" title="4.1 初始化"></a>4.1 初始化</h2><p>第一步：在电脑的某个地方新建一个名为hexo的文件夹（名字可以随便取），比如我的是E:\xpzsData\hexocode，由于这个文件夹将来就作为你存放代码的地方，所以最好不要随便放</p>
 <p>第二步：在E:\xpzsData\hexocode文件夹下右键打开 Git Bash Here，输入hexo init 初始化</p>
 <p>hexo会自动下载一些文件到这个目录，包括node_modules，目录结构如下图： </p>
@@ -645,7 +626,7 @@
         <p class="footer-entry">
     ©2017 王云生
 </p>
-<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+// <p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
 
     </div>
     <div class="full-toc">
