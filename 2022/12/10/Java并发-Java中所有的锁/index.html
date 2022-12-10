@@ -6,30 +6,21 @@
   <meta name="keywords" content=" java , 多线程 ">
   <meta name="description" content="Java并发 - Java中所有的锁 | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="Java并发 - Java中所有的锁 Java提供了种类丰富的锁，每种锁因其特性的不同，在适当的场景下能够展现出非常高的效率。本文旨在对锁相关源码（本文中的源码来自JDK 8和Netty 3.10.6）、使用场景进行举例，为读者介绍主流锁的知识点，以及不同的锁的适用场景。@pdai   Java并发 - Java中所有的锁 前言 1. 乐观锁 VS 悲观锁 2. 自旋锁 VS 适应性自旋锁 3.">
+<meta name="description" content="♥Java并发知识体系详解♥ Java 并发相关知识体系详解，包含理论基础，线程基础，synchronized，volatile，final关键字, JUC框架等内容。@pdai   ♥Java并发知识体系详解♥ 知识体系 相关文章 参考文档    知识体系 相关文章 A. Java进阶 - Java 并发之基础：首先全局的了解并发的知识体系，同时了解并发理论基础和线程基础，并发关键字等，这些是你">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java并发 - Java中所有的锁">
-<meta property="og:url" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/index.html">
+<meta property="og:title" content="♥Java并发知识体系详解♥">
+<meta property="og:url" content="http://example.com/2022/12/10/%E2%99%A5Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3%E2%99%A5/index.html">
 <meta property="og:site_name" content="Mr.Wang Blog">
-<meta property="og:description" content="Java并发 - Java中所有的锁 Java提供了种类丰富的锁，每种锁因其特性的不同，在适当的场景下能够展现出非常高的效率。本文旨在对锁相关源码（本文中的源码来自JDK 8和Netty 3.10.6）、使用场景进行举例，为读者介绍主流锁的知识点，以及不同的锁的适用场景。@pdai   Java并发 - Java中所有的锁 前言 1. 乐观锁 VS 悲观锁 2. 自旋锁 VS 适应性自旋锁 3.">
+<meta property="og:description" content="♥Java并发知识体系详解♥ Java 并发相关知识体系详解，包含理论基础，线程基础，synchronized，volatile，final关键字, JUC框架等内容。@pdai   ♥Java并发知识体系详解♥ 知识体系 相关文章 参考文档    知识体系 相关文章 A. Java进阶 - Java 并发之基础：首先全局的了解并发的知识体系，同时了解并发理论基础和线程基础，并发关键字等，这些是你">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-1.png">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-2.png">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-4.png">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-6.png">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-7.png">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-8.png">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-12.png">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-13.png">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-14.png">
-<meta property="og:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-15.png">
-<meta property="article:published_time" content="2022-12-10T13:25:40.000Z">
-<meta property="article:modified_time" content="2022-12-10T13:39:09.483Z">
+<meta property="og:image" content="http://example.com/2022/12/10/%E2%99%A5Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3%E2%99%A5/java-concurrent-overview-1.png">
+<meta property="article:published_time" content="2022-12-10T13:46:29.000Z">
+<meta property="article:modified_time" content="2022-12-10T13:46:57.262Z">
 <meta property="article:author" content="王云生">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/java-lock-1.png">
+<meta name="twitter:image" content="http://example.com/2022/12/10/%E2%99%A5Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3%E2%99%A5/java-concurrent-overview-1.png">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -175,7 +166,7 @@
     <li>
         <div class="all active" data-rel="全部文章">全部文章
             
-                <small>(2)</small>
+                <small>(3)</small>
             
         </div>
     </li>
@@ -218,7 +209,7 @@
                         <i class="fold iconfont icon-right"></i>
                         
                         JAVA
-                        <small>(1)</small>
+                        <small>(2)</small>
                         
                     </div>
                     
@@ -229,7 +220,7 @@
                                         
                                         JAVA多线程
                                         
-                                            <small>(1
+                                            <small>(2
                                                 )</small>
                                         
                                     </div>
@@ -263,8 +254,8 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="2">
-<input type="hidden" id="yelog_site_word_count" value="8.4k">
+<input type="hidden" id="yelog_site_posts_number" value="3">
+<input type="hidden" id="yelog_site_word_count" value="12.2k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -331,6 +322,15 @@
 
     
     <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E2%99%A5Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3%E2%99%A5/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="♥Java并发知识体系详解♥">♥Java并发知识体系详解♥</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
         
         
         <a  class="全部文章 JAVA JAVA多线程 "
