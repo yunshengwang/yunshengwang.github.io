@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Mr.Wang Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="Mr.Wang Blog">
+  <title>Collection类关系图 | Mr.Wang Blog</title>
+  <meta name="keywords" content=" java , Collection ">
+  <meta name="description" content="Collection类关系图 | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="Collection 类关系图 本文主要介绍JDK中Collection和Map相关知识体系，后续章节将对主要对类进行源码解读。@pdai   Collection 类关系图 知识体系结构 介绍 Collection Set TreeSet HashSet LinkedHashSet   List ArrayList Vector LinkedList   Queue LinkedList Pri">
 <meta property="og:type" content="article">
@@ -60,7 +60,7 @@
 
 
 <body>
-<aside class="nav mobile">
+<aside class="nav">
     <div class="nav-left">
         <a href="/"
    class="avatar_target">
@@ -483,12 +483,64 @@
         </div>
     </div>
 </aside>
-<div id="post" class="index">
+<div id="post">
     <div class="pjax">
-        <article class="index">
-            <div class="toc-ref">
+        <article id="post-Collection类关系图" class="article article-type-post" itemscope itemprop="blogPost">
     
+        <h1 class="article-title">Collection类关系图</h1>
+    
+    <div class="article-meta">
         
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="JAVA">JAVA</a> > 
+            
+            <a  data-rel="JAVA&lt;---&gt;Java集合框架">Java集合框架</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">java</a>
+            
+            <a class="color1">Collection</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-10 22:00:44'>2022-12-10 21:59</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:691</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Collection-%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE"><span class="toc-text">Collection 类关系图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="toc-text">知识体系结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Collection"><span class="toc-text">Collection</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Set"><span class="toc-text">Set</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#TreeSet"><span class="toc-text">TreeSet</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HashSet"><span class="toc-text">HashSet</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LinkedHashSet"><span class="toc-text">LinkedHashSet</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#List"><span class="toc-text">List</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ArrayList"><span class="toc-text">ArrayList</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Vector"><span class="toc-text">Vector</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LinkedList"><span class="toc-text">LinkedList</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Queue"><span class="toc-text">Queue</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#LinkedList-1"><span class="toc-text">LinkedList</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#PriorityQueue"><span class="toc-text">PriorityQueue</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Map"><span class="toc-text">Map</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TreeMap"><span class="toc-text">TreeMap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HashMap"><span class="toc-text">HashMap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HashTable"><span class="toc-text">HashTable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LinkedHashMap"><span class="toc-text">LinkedHashMap</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E5%86%85%E5%AE%B9"><span class="toc-text">参考内容</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -501,10 +553,93 @@
     }
 </style>
 </div>
-            
-        </article>
-        
-        
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Collection-类关系图"><a href="#Collection-类关系图" class="headerlink" title="Collection 类关系图"></a>Collection 类关系图</h2><blockquote>
+<p>本文主要介绍JDK中Collection和Map相关知识体系，后续章节将对主要对类进行源码解读。@pdai</p>
+</blockquote>
+<ul>
+<li><a href="#collection-%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE">Collection 类关系图</a><ul>
+<li><a href="#%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84">知识体系结构</a></li>
+<li><a href="#%E4%BB%8B%E7%BB%8D">介绍</a></li>
+<li><a href="#collection">Collection</a><ul>
+<li><a href="#set">Set</a><ul>
+<li><a href="#treeset">TreeSet</a></li>
+<li><a href="#hashset">HashSet</a></li>
+<li><a href="#linkedhashset">LinkedHashSet</a></li>
+</ul>
+</li>
+<li><a href="#list">List</a><ul>
+<li><a href="#arraylist">ArrayList</a></li>
+<li><a href="#vector">Vector</a></li>
+<li><a href="#linkedlist">LinkedList</a></li>
+</ul>
+</li>
+<li><a href="#queue">Queue</a><ul>
+<li><a href="#linkedlist-1">LinkedList</a></li>
+<li><a href="#priorityqueue">PriorityQueue</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#map">Map</a><ul>
+<li><a href="#treemap">TreeMap</a></li>
+<li><a href="#hashmap">HashMap</a></li>
+<li><a href="#hashtable">HashTable</a></li>
+<li><a href="#linkedhashmap">LinkedHashMap</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83%E5%86%85%E5%AE%B9">参考内容</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="知识体系结构"><a href="#知识体系结构" class="headerlink" title="知识体系结构"></a>知识体系结构</h2><p><img src="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/java_collections_overview.png"></p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>容器，就是可以容纳其他Java对象的对象。*Java Collections Framework(JCF)*为Java开发者提供了通用的容器，其始于JDK 1.2，优点是:</p>
+<ul>
+<li>降低编程难度</li>
+<li>提高程序性能</li>
+<li>提高API间的互操作性</li>
+<li>降低学习难度</li>
+<li>降低设计和实现相关API的难度</li>
+<li>增加程序的重用性</li>
+</ul>
+<p>Java容器里只能放对象，对于基本类型(int, long, float, double等)，需要将其包装成对象类型后(Integer, Long, Float, Double等)才能放到容器里。很多时候拆包装和解包装能够自动完成。这虽然会导致额外的性能和空间开销，但简化了设计和编程。</p>
+<h2 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h2><blockquote>
+<p>容器主要包括 Collection 和 Map 两种，Collection 存储着对象的集合，而 Map 存储着键值对(两个对象)的映射表。</p>
+</blockquote>
+<h3 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h3><h4 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h4><p>基于红黑树实现，支持有序性操作，例如根据一个范围查找元素的操作。但是查找效率不如 HashSet，HashSet 查找的时间复杂度为 O(1)，TreeSet 则为 O(logN)。</p>
+<h4 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h4><p>基于哈希表实现，支持快速查找，但不支持有序性操作。并且失去了元素的插入顺序信息，也就是说使用 Iterator 遍历 HashSet 得到的结果是不确定的。</p>
+<h4 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h4><p>具有 HashSet 的查找效率，且内部使用双向链表维护元素的插入顺序。</p>
+<h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><h4 id="ArrayList"><a href="#ArrayList" class="headerlink" title="ArrayList"></a>ArrayList</h4><p>基于动态数组实现，支持随机访问。</p>
+<h4 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h4><p>和 ArrayList 类似，但它是线程安全的。</p>
+<h4 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h4><p>基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。不仅如此，LinkedList 还可以用作栈、队列和双向队列。</p>
+<h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><h4 id="LinkedList-1"><a href="#LinkedList-1" class="headerlink" title="LinkedList"></a>LinkedList</h4><p>可以用它来实现双向队列。</p>
+<h4 id="PriorityQueue"><a href="#PriorityQueue" class="headerlink" title="PriorityQueue"></a>PriorityQueue</h4><p>基于堆结构实现，可以用它来实现优先队列。</p>
+<h2 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h2><h3 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h3><p>基于红黑树实现。</p>
+<h3 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h3><p>基于哈希表实现。</p>
+<h3 id="HashTable"><a href="#HashTable" class="headerlink" title="HashTable"></a>HashTable</h3><p>和 HashMap 类似，但它是线程安全的，这意味着同一时刻多个线程可以同时写入 HashTable 并且不会导致数据不一致。它是遗留类，不应该去使用它。现在可以使用 ConcurrentHashMap 来支持线程安全，并且 ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。</p>
+<h3 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h3><p>使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用(LRU)顺序。</p>
+<h2 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h2><ul>
+<li>CarpenterLee&#x2F;JCFInternals <a target="_blank" rel="noopener" href="https://github.com/CarpenterLee/JCFInternals">https://github.com/CarpenterLee/JCFInternals</a></li>
+</ul>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
     </div>
     <div class="copyright">
         <p class="footer-entry"><% if (theme.miit && theme.miit.on) {%><span class="miit">
@@ -517,11 +652,11 @@
 // <p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
 
     </div>
-</div>
-<div class="full-toc">
-    <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
 <a class="" id="rocket" ></a>
 
+    </div>
 </div>
 
 </body>

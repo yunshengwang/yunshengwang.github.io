@@ -6,21 +6,21 @@
   <meta name="keywords" content=" java , 多线程 ">
   <meta name="description" content="♥Java并发知识体系详解♥ | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="♥Java并发知识体系详解♥ Java 并发相关知识体系详解，包含理论基础，线程基础，synchronized，volatile，final关键字, JUC框架等内容。@pdai   ♥Java并发知识体系详解♥ 知识体系 相关文章 参考文档    知识体系 相关文章 A. Java进阶 - Java 并发之基础：首先全局的了解并发的知识体系，同时了解并发理论基础和线程基础，并发关键字等，这些是你">
+<meta name="description" content="Collection 类关系图 本文主要介绍JDK中Collection和Map相关知识体系，后续章节将对主要对类进行源码解读。@pdai   Collection 类关系图 知识体系结构 介绍 Collection Set TreeSet HashSet LinkedHashSet   List ArrayList Vector LinkedList   Queue LinkedList Pri">
 <meta property="og:type" content="article">
-<meta property="og:title" content="♥Java并发知识体系详解♥">
-<meta property="og:url" content="http://example.com/2022/12/10/%E2%99%A5Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3%E2%99%A5/index.html">
+<meta property="og:title" content="Collection类关系图">
+<meta property="og:url" content="http://example.com/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/index.html">
 <meta property="og:site_name" content="Mr.Wang Blog">
-<meta property="og:description" content="♥Java并发知识体系详解♥ Java 并发相关知识体系详解，包含理论基础，线程基础，synchronized，volatile，final关键字, JUC框架等内容。@pdai   ♥Java并发知识体系详解♥ 知识体系 相关文章 参考文档    知识体系 相关文章 A. Java进阶 - Java 并发之基础：首先全局的了解并发的知识体系，同时了解并发理论基础和线程基础，并发关键字等，这些是你">
+<meta property="og:description" content="Collection 类关系图 本文主要介绍JDK中Collection和Map相关知识体系，后续章节将对主要对类进行源码解读。@pdai   Collection 类关系图 知识体系结构 介绍 Collection Set TreeSet HashSet LinkedHashSet   List ArrayList Vector LinkedList   Queue LinkedList Pri">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/12/10/%E2%99%A5Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3%E2%99%A5/java-concurrent-overview-1.png">
-<meta property="article:published_time" content="2022-12-10T13:46:29.000Z">
-<meta property="article:modified_time" content="2022-12-10T13:46:57.262Z">
+<meta property="og:image" content="http://example.com/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/java_collections_overview.png">
+<meta property="article:published_time" content="2022-12-10T13:59:49.000Z">
+<meta property="article:modified_time" content="2022-12-10T14:00:44.879Z">
 <meta property="article:author" content="王云生">
 <meta property="article:tag" content="java">
-<meta property="article:tag" content="多线程">
+<meta property="article:tag" content="Collection">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/12/10/%E2%99%A5Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3%E2%99%A5/java-concurrent-overview-1.png">
+<meta name="twitter:image" content="http://example.com/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/java_collections_overview.png">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -166,7 +166,7 @@
     <li>
         <div class="all active" data-rel="全部文章">全部文章
             
-                <small>(3)</small>
+                <small>(12)</small>
             
         </div>
     </li>
@@ -209,7 +209,7 @@
                         <i class="fold iconfont icon-right"></i>
                         
                         JAVA
-                        <small>(2)</small>
+                        <small>(11)</small>
                         
                     </div>
                     
@@ -227,9 +227,41 @@
                                     
                                 </li>
                             
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA基础">
+                                        
+                                        JAVA基础
+                                        
+                                            <small>(8
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java集合框架">
+                                        
+                                        Java集合框架
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
                         </ul>
                     
                 </li>
+            
+        
+    
+        
+            
+        
+    
+        
             
         
     
@@ -254,8 +286,8 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="3">
-<input type="hidden" id="yelog_site_word_count" value="12.2k">
+<input type="hidden" id="yelog_site_posts_number" value="12">
+<input type="hidden" id="yelog_site_word_count" value="72.7k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -305,6 +337,10 @@
             </li>
         
             <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Collection</a>
+            </li>
+        
+            <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>hexo</a>
             </li>
         
@@ -322,6 +358,87 @@
 
     
     <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/"
+           data-tag="java,Collection"
+           data-author="" >
+            <span class="post-title" title="Collection类关系图">Collection类关系图</span>
+            <span class="post-date" title="2022-12-10 21:59:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/SPI%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="SPI机制详解">SPI机制详解</span>
+            <span class="post-date" title="2022-12-10 21:58:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="反射机制详解">反射机制详解</span>
+            <span class="post-date" title="2022-12-10 21:57:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%BC%82%E5%B8%B8%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="异常机制详解">异常机制详解</span>
+            <span class="post-date" title="2022-12-10 21:56:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="注解机制详解">注解机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="泛型机制详解">泛型机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%9B%BE%E8%B0%B1-Q-A/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="图谱&amp;Q/A">图谱&amp;Q/A</span>
+            <span class="post-date" title="2022-12-10 21:53:16">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E7%9F%A5%E8%AF%86%E7%82%B9/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="知识点">知识点</span>
+            <span class="post-date" title="2022-12-10 21:52:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="面向对象">面向对象</span>
+            <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
+        </a>
         
         
         <a  class="全部文章 JAVA JAVA多线程 "
