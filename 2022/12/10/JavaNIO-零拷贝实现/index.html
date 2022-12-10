@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JavaNIO_零拷贝实现 | Mr.Wang Blog</title>
+  <meta name="keywords" content=" java , io , nio ">
+  <meta name="description" content="JavaNIO_零拷贝实现 | Mr.Wang Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="Java NIO - 零拷贝实现 这里转一篇Java NIO 零拷贝的实现文章，在此之前建议先理解什么是Linux中零拷贝，可以先看这篇文章。本文从源码着手分析了 Java NIO 对零拷贝的实现，主要包括基于内存映射（mmap）方式的 MappedByteBuffer 以及基于 sendfile 方式的 FileChannel。最后在篇末简单的阐述了一下 Netty 中的零拷贝机制，以及 Roc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaNIO_零拷贝实现">
+<meta property="og:url" content="http://example.com/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Mr.Wang Blog">
+<meta property="og:description" content="Java NIO - 零拷贝实现 这里转一篇Java NIO 零拷贝的实现文章，在此之前建议先理解什么是Linux中零拷贝，可以先看这篇文章。本文从源码着手分析了 Java NIO 对零拷贝的实现，主要包括基于内存映射（mmap）方式的 MappedByteBuffer 以及基于 sendfile 方式的 FileChannel。最后在篇末简单的阐述了一下 Netty 中的零拷贝机制，以及 Roc">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/java-io-copy-11.jpg">
+<meta property="article:published_time" content="2022-12-10T15:17:49.000Z">
+<meta property="article:modified_time" content="2022-12-10T15:18:15.990Z">
+<meta property="article:author" content="王云生">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="io">
+<meta property="article:tag" content="nio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/java-io-copy-11.jpg">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>王云生</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="cnblogs"
+               href="https://home.cnblogs.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-cnblogs"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/a996358a335f"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/yun-sheng-10-62-26"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="csdn"
+               href="https://blog.csdn.net/u011593571?type=collect"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-csdn"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/u/4978723"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="juejin"
+               href="https://juejin.cn/user/2604099346111086"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-juejin"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:w_huilong@163.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(60)</small>
+            
+        </div>
+    </li>
+    
+        
+            
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(1)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="JAVA">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        JAVA
+                        <small>(57)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA多线程">
+                                        
+                                        JAVA多线程
+                                        
+                                            <small>(27
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA基础">
+                                        
+                                        JAVA基础
+                                        
+                                            <small>(8
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java集合框架">
+                                        
+                                        Java集合框架
+                                        
+                                            <small>(9
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVAIO">
+                                        
+                                        JAVAIO
+                                        
+                                            <small>(13
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="Spring">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        Spring
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringBoot2.5.X系列">
+                                        
+                                        SpringBoot2.5.X系列
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringFrameWork5基础">
+                                        
+                                        SpringFrameWork5基础
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="60">
+<input type="hidden" id="yelog_site_word_count" value="272.4k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>多线程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>aio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ArrayList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>bio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Collection</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>hexo</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>io</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedHashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Map</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>nio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>PriorityQueue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Queue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring boot</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Stack</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tool</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>WeakHashMap</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_零拷贝实现">JavaNIO_零拷贝实现</span>
+            <span class="post-date" title="2022-12-10 23:17:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-Netty/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="JavaIO_Netty">JavaIO_Netty</span>
+            <span class="post-date" title="2022-12-10 23:16:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaAIO-%E5%BC%82%E6%AD%A5IO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,aio"
+           data-author="" >
+            <span class="post-title" title="JavaAIO_异步IO详解">JavaAIO_异步IO详解</span>
+            <span class="post-date" title="2022-12-10 23:15:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_IO多路复用详解">JavaNIO_IO多路复用详解</span>
+            <span class="post-date" title="2022-12-10 23:15:03">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E5%9F%BA%E7%A1%80%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_基础详解">JavaNIO_基础详解</span>
+            <span class="post-date" title="2022-12-10 23:13:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-BIO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,bio"
+           data-author="" >
+            <span class="post-title" title="JavaIO_BIO详解">JavaIO_BIO详解</span>
+            <span class="post-date" title="2022-12-10 23:13:00">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/IO%E6%A8%A1%E5%9E%8B-UnixIO%E6%A8%A1%E5%9E%8B/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="IO模型_UnixIO模型">IO模型_UnixIO模型</span>
+            <span class="post-date" title="2022-12-10 23:11:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%B8%B8%E8%A7%81%E7%B1%BB%E4%BD%BF%E7%94%A8/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="常见类使用">常见类使用</span>
+            <span class="post-date" title="2022-12-10 23:10:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-OutputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_OutputStream">源码_OutputStream</span>
+            <span class="post-date" title="2022-12-10 23:09:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-InputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_InputStream">源码_InputStream</span>
+            <span class="post-date" title="2022-12-10 23:08:23">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="设计模式_装饰者模式">设计模式_装饰者模式</span>
+            <span class="post-date" title="2022-12-10 23:06:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%88%86%E7%B1%BB-%E4%BC%A0%E8%BE%93-%E6%93%8D%E4%BD%9C/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="分类_传输_操作">分类_传输_操作</span>
+            <span class="post-date" title="2022-12-10 23:06:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/Java-IO%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="Java_IO知识体系详解">Java_IO知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:04:43">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="ThreadLocal详解">ThreadLocal详解</span>
+            <span class="post-date" title="2022-12-10 22:58:20">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Exchanger%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Exchanger详解">JUC工具类_Exchanger详解</span>
+            <span class="post-date" title="2022-12-10 22:57:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Phaser%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Phaser详解">JUC工具类_Phaser详解</span>
+            <span class="post-date" title="2022-12-10 22:56:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Semaphore详解">JUC工具类_Semaphore详解</span>
+            <span class="post-date" title="2022-12-10 22:56:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CyclicBarrier%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CyclicBarrier详解">JUC工具类_CyclicBarrier详解</span>
+            <span class="post-date" title="2022-12-10 22:55:21">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CountDownLatch详解">JUC工具类_CountDownLatch详解</span>
+            <span class="post-date" title="2022-12-10 22:54:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-Fork-Join%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_Fork_Join框架详解">JUC线程池_Fork_Join框架详解</span>
+            <span class="post-date" title="2022-12-10 22:53:19">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ScheduledThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ScheduledThreadPoolExecutor详解">JUC线程池_ScheduledThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:52:28">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ThreadPoolExecutor详解">JUC线程池_ThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:51:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-FutureTask%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_FutureTask详解">JUC线程池_FutureTask详解</span>
+            <span class="post-date" title="2022-12-10 22:50:52">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-BlockingQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_BlockingQueue详解">JUC集合_BlockingQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:50:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentLinkedQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentLinkedQueue详解">JUC集合_ConcurrentLinkedQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:49:05">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-CopyOnWriteArrayList%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_CopyOnWriteArrayList详解">JUC集合_CopyOnWriteArrayList详解</span>
+            <span class="post-date" title="2022-12-10 22:48:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentHashMap%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentHashMap详解">JUC集合_ConcurrentHashMap详解</span>
+            <span class="post-date" title="2022-12-10 22:47:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantReadWriteLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantReadWriteLock详解">JUC锁_ReentrantReadWriteLock详解</span>
+            <span class="post-date" title="2022-12-10 22:46:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantLock详解">JUC锁_ReentrantLock详解</span>
+            <span class="post-date" title="2022-12-10 22:45:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-%E9%94%81%E6%A0%B8%E5%BF%83%E7%B1%BBAQS%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_锁核心类AQS详解">JUC锁_锁核心类AQS详解</span>
+            <span class="post-date" title="2022-12-10 22:44:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-LockSupport%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_LockSupport详解">JUC锁_LockSupport详解</span>
+            <span class="post-date" title="2022-12-10 22:43:25">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-CAS-Unsafe%E5%92%8C%E5%8E%9F%E5%AD%90%E7%B1%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC原子类_CAS_Unsafe和原子类详解">JUC原子类_CAS_Unsafe和原子类详解</span>
+            <span class="post-date" title="2022-12-10 22:42:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%B1%BB%E6%B1%87%E6%80%BB%E5%92%8C%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC类汇总和学习指南">JUC类汇总和学习指南</span>
+            <span class="post-date" title="2022-12-10 22:41:01">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/final%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="final详解">final详解</span>
+            <span class="post-date" title="2022-12-10 22:39:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/volatile%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="volatile详解">volatile详解</span>
+            <span class="post-date" title="2022-12-10 22:39:02">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/synchronized%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="synchronized详解">synchronized详解</span>
+            <span class="post-date" title="2022-12-10 22:37:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="线程基础">线程基础</span>
+            <span class="post-date" title="2022-12-10 22:31:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="理论基础">理论基础</span>
+            <span class="post-date" title="2022-12-10 22:30:46">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/WeakHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,WeakHashMap"
+           data-author="" >
+            <span class="post-title" title="WeakHashMap源码解析">WeakHashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:26:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/TreeSet-TreeMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,TreeSet,TreeMap"
+           data-author="" >
+            <span class="post-title" title="TreeSet&amp;TreeMap源码解析">TreeSet&amp;TreeMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:25:45">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedHashSet-Map%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedHashSet,Map"
+           data-author="" >
+            <span class="post-title" title="LinkedHashSet&amp;Map源码解析">LinkedHashSet&amp;Map源码解析</span>
+            <span class="post-date" title="2022-12-10 22:24:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/HashSet-HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,HashSet,HashMap"
+           data-author="" >
+            <span class="post-title" title="HashSet&amp;HashMap源码解析">HashSet&amp;HashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:23:24">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/PriorityQueue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,PriorityQueue"
+           data-author="" >
+            <span class="post-title" title="PriorityQueue源码解析">PriorityQueue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:22:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Stack-Queue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Stack,Queue"
+           data-author="" >
+            <span class="post-title" title="Stack&amp;Queue源码解析">Stack&amp;Queue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:21:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedList"
+           data-author="" >
+            <span class="post-title" title="LinkedList源码解析">LinkedList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:19:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/ArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,ArrayList"
+           data-author="" >
+            <span class="post-title" title="ArrayList源码解析">ArrayList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:18:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringBoot2.5.X系列 "
+           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring,spring boot"
+           data-author="" >
+            <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:14:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringFrameWork5基础 "
+           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring"
+           data-author="" >
+            <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:10:47">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/"
+           data-tag="java,Collection"
+           data-author="" >
+            <span class="post-title" title="Collection类关系图">Collection类关系图</span>
+            <span class="post-date" title="2022-12-10 21:59:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/SPI%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="SPI机制详解">SPI机制详解</span>
+            <span class="post-date" title="2022-12-10 21:58:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="反射机制详解">反射机制详解</span>
+            <span class="post-date" title="2022-12-10 21:57:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%BC%82%E5%B8%B8%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="异常机制详解">异常机制详解</span>
+            <span class="post-date" title="2022-12-10 21:56:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="注解机制详解">注解机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="泛型机制详解">泛型机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%9B%BE%E8%B0%B1-Q-A/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="图谱&amp;Q/A">图谱&amp;Q/A</span>
+            <span class="post-date" title="2022-12-10 21:53:16">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E7%9F%A5%E8%AF%86%E7%82%B9/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="知识点">知识点</span>
+            <span class="post-date" title="2022-12-10 21:52:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="面向对象">面向对象</span>
+            <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁">Java并发 - Java中所有的锁</span>
+            <span class="post-date" title="2022-12-10 21:25:40">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 HEXO "
+           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           data-tag="hexo,tool"
+           data-author="" >
+            <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
+            <span class="post-date" title="2022-12-10 19:02:24">2022/12/10</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-JavaNIO-零拷贝实现" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">JavaNIO_零拷贝实现</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="JAVA">JAVA</a> > 
+            
+            <a  data-rel="JAVA&lt;---&gt;JAVAIO">JAVAIO</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">java</a>
+            
+            <a class="color3">io</a>
+            
+            <a class="color4">nio</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-10 23:18:15'>2022-12-10 23:17</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:5.4k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-NIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0"><span class="toc-text">Java NIO - 零拷贝实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-NIO%E9%9B%B6%E6%8B%B7%E8%B4%9D"><span class="toc-text">Java NIO零拷贝</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MappedByteBuffer"><span class="toc-text">MappedByteBuffer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DirectByteBuffer"><span class="toc-text">DirectByteBuffer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FileChannel"><span class="toc-text">FileChannel</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E7%9A%84%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0"><span class="toc-text">其它的零拷贝实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Netty%E9%9B%B6%E6%8B%B7%E8%B4%9D"><span class="toc-text">Netty零拷贝</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RocketMQ%E5%92%8CKafka%E5%AF%B9%E6%AF%94"><span class="toc-text">RocketMQ和Kafka对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Java-NIO-零拷贝实现"><a href="#Java-NIO-零拷贝实现" class="headerlink" title="Java NIO - 零拷贝实现"></a>Java NIO - 零拷贝实现</h2><blockquote>
+<p>这里转一篇Java NIO 零拷贝的实现文章，在此之前建议先理解什么是Linux中零拷贝，可以先看这篇文章。本文从源码着手分析了 Java NIO 对零拷贝的实现，主要包括基于内存映射（mmap）方式的 MappedByteBuffer 以及基于 sendfile 方式的 FileChannel。最后在篇末简单的阐述了一下 Netty 中的零拷贝机制，以及 RocketMQ 和 Kafka 两种消息队列在零拷贝实现方式上的区别。@pdai</p>
+</blockquote>
+<ul>
+<li><a href="#java-nio---%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0">Java NIO - 零拷贝实现</a><ul>
+<li><a href="#java-nio%E9%9B%B6%E6%8B%B7%E8%B4%9D">Java NIO零拷贝</a><ul>
+<li><a href="#mappedbytebuffer">MappedByteBuffer</a></li>
+<li><a href="#directbytebuffer">DirectByteBuffer</a></li>
+<li><a href="#filechannel">FileChannel</a></li>
+</ul>
+</li>
+<li><a href="#%E5%85%B6%E5%AE%83%E7%9A%84%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0">其它的零拷贝实现</a><ul>
+<li><a href="#netty%E9%9B%B6%E6%8B%B7%E8%B4%9D">Netty零拷贝</a></li>
+<li><a href="#rocketmq%E5%92%8Ckafka%E5%AF%B9%E6%AF%94">RocketMQ和Kafka对比</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0">参考文章</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="Java-NIO零拷贝"><a href="#Java-NIO零拷贝" class="headerlink" title="Java NIO零拷贝"></a>Java NIO零拷贝</h2><p>在 Java NIO 中的<strong>通道（Channel）</strong>就相当于操作系统的<strong>内核空间</strong>（kernel space）的缓冲区，而<strong>缓冲区</strong>（Buffer）对应的相当于操作系统的<strong>用户空间</strong>（user space）中的<strong>用户缓冲区</strong>（user buffer）。</p>
+<ul>
+<li><strong>通道</strong>（Channel）是全双工的（双向传输），它既可能是读缓冲区（read buffer），也可能是网络缓冲区（socket buffer）。</li>
+<li><strong>缓冲区</strong>（Buffer）分为堆内存（HeapBuffer）和堆外内存（DirectBuffer），这是通过 malloc() 分配出来的用户态内存。</li>
+</ul>
+<p>堆外内存（DirectBuffer）在使用后需要应用程序手动回收，而堆内存（HeapBuffer）的数据在 GC 时可能会被自动回收。因此，在使用 HeapBuffer 读写数据时，为了避免缓冲区数据因为 GC 而丢失，NIO 会先把 HeapBuffer 内部的数据拷贝到一个临时的 DirectBuffer 中的本地内存（native memory），这个拷贝涉及到 <code>sun.misc.Unsafe.copyMemory()</code> 的调用，背后的实现原理与 <code>memcpy()</code> 类似。 最后，将临时生成的 DirectBuffer 内部的数据的内存地址传给 I&#x2F;O 调用函数，这样就避免了再去访问 Java 对象处理 I&#x2F;O 读写。</p>
+<h3 id="MappedByteBuffer"><a href="#MappedByteBuffer" class="headerlink" title="MappedByteBuffer"></a>MappedByteBuffer</h3><p>MappedByteBuffer 是 NIO 基于**内存映射（mmap）**这种零拷贝方式的提供的一种实现，它继承自 ByteBuffer。FileChannel 定义了一个 map() 方法，它可以把一个文件从 position 位置开始的 size 大小的区域映射为内存映像文件。抽象方法 map() 方法在 FileChannel 中的定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> MappedByteBuffer <span class="title function_">map</span><span class="params">(MapMode mode, <span class="type">long</span> position, <span class="type">long</span> size)</span></span><br><span class="line">        <span class="keyword">throws</span> IOException;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>mode</strong>：限定内存映射区域（MappedByteBuffer）对内存映像文件的访问模式，包括只可读（READ_ONLY）、可读可写（READ_WRITE）和写时拷贝（PRIVATE）三种模式。</li>
+<li><strong>position</strong>：文件映射的起始地址，对应内存映射区域（MappedByteBuffer）的首地址。</li>
+<li><strong>size</strong>：文件映射的字节长度，从 position 往后的字节数，对应内存映射区域（MappedByteBuffer）的大小。</li>
+</ul>
+<p>MappedByteBuffer 相比 ByteBuffer 新增了 fore()、load() 和 isLoad() 三个重要的方法：</p>
+<ul>
+<li>**fore()**：对于处于 READ_WRITE 模式下的缓冲区，把对缓冲区内容的修改强制刷新到本地文件。</li>
+<li>**load()**：将缓冲区的内容载入物理内存中，并返回这个缓冲区的引用。</li>
+<li>**isLoaded()**：如果缓冲区的内容在物理内存中，则返回 true，否则返回 false。</li>
+</ul>
+<p>下面给出一个利用 MappedByteBuffer 对文件进行读写的使用示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">CONTENT</span> <span class="operator">=</span> <span class="string">&quot;Zero copy implemented by MappedByteBuffer&quot;</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">FILE_NAME</span> <span class="operator">=</span> <span class="string">&quot;/mmap.txt&quot;</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">CHARSET</span> <span class="operator">=</span> <span class="string">&quot;UTF-8&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>写文件数据</strong>：打开文件通道 fileChannel 并提供读权限、写权限和数据清空权限，通过 fileChannel 映射到一个可写的内存缓冲区 mappedByteBuffer，将目标数据写入 mappedByteBuffer，通过 <code>force()</code> 方法把缓冲区更改的内容强制写入本地文件。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">writeToFileByMappedByteBuffer</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">Path</span> <span class="variable">path</span> <span class="operator">=</span> Paths.get(getClass().getResource(FILE_NAME).getPath());</span><br><span class="line">    <span class="type">byte</span>[] bytes = CONTENT.getBytes(Charset.forName(CHARSET));</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">FileChannel</span> <span class="variable">fileChannel</span> <span class="operator">=</span> FileChannel.open(path, StandardOpenOption.READ,</span><br><span class="line">            StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) &#123;</span><br><span class="line">        <span class="type">MappedByteBuffer</span> <span class="variable">mappedByteBuffer</span> <span class="operator">=</span> fileChannel.map(READ_WRITE, <span class="number">0</span>, bytes.length);</span><br><span class="line">        <span class="keyword">if</span> (mappedByteBuffer != <span class="literal">null</span>) &#123;</span><br><span class="line">            mappedByteBuffer.put(bytes);</span><br><span class="line">            mappedByteBuffer.force();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>读文件数据</strong>：打开文件通道 fileChannel 并提供只读权限，通过 fileChannel 映射到一个只可读的内存缓冲区 mappedByteBuffer，读取 mappedByteBuffer 中的字节数组即可得到文件数据。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">readFromFileByMappedByteBuffer</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">Path</span> <span class="variable">path</span> <span class="operator">=</span> Paths.get(getClass().getResource(FILE_NAME).getPath());</span><br><span class="line">    <span class="type">int</span> <span class="variable">length</span> <span class="operator">=</span> CONTENT.getBytes(Charset.forName(CHARSET)).length;</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">FileChannel</span> <span class="variable">fileChannel</span> <span class="operator">=</span> FileChannel.open(path, StandardOpenOption.READ)) &#123;</span><br><span class="line">        <span class="type">MappedByteBuffer</span> <span class="variable">mappedByteBuffer</span> <span class="operator">=</span> fileChannel.map(READ_ONLY, <span class="number">0</span>, length);</span><br><span class="line">        <span class="keyword">if</span> (mappedByteBuffer != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="type">byte</span>[] bytes = <span class="keyword">new</span> <span class="title class_">byte</span>[length];</span><br><span class="line">            mappedByteBuffer.get(bytes);</span><br><span class="line">            <span class="type">String</span> <span class="variable">content</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(bytes, StandardCharsets.UTF_8);</span><br><span class="line">            assertEquals(content, <span class="string">&quot;Zero copy implemented by MappedByteBuffer&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍 <code>map()</code> 方法的<strong>底层实现原理</strong>。<code>map()</code> 方法是 <code>java.nio.channels.FileChannel</code> 的抽象方法，由子类 <code>sun.nio.ch.FileChannelImpl.java</code> 实现，下面是和内存映射相关的核心代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> MappedByteBuffer <span class="title function_">map</span><span class="params">(MapMode mode, <span class="type">long</span> position, <span class="type">long</span> size)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">pagePosition</span> <span class="operator">=</span> (<span class="type">int</span>)(position % allocationGranularity);</span><br><span class="line">    <span class="type">long</span> <span class="variable">mapPosition</span> <span class="operator">=</span> position - pagePosition;</span><br><span class="line">    <span class="type">long</span> <span class="variable">mapSize</span> <span class="operator">=</span> size + pagePosition;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        addr = map0(imode, mapPosition, mapSize);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (OutOfMemoryError x) &#123;</span><br><span class="line">        System.gc();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">100</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException y) &#123;</span><br><span class="line">            Thread.currentThread().interrupt();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            addr = map0(imode, mapPosition, mapSize);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (OutOfMemoryError y) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IOException</span>(<span class="string">&quot;Map failed&quot;</span>, y);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> <span class="variable">isize</span> <span class="operator">=</span> (<span class="type">int</span>)size;</span><br><span class="line">    <span class="type">Unmapper</span> <span class="variable">um</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Unmapper</span>(addr, mapSize, isize, mfd);</span><br><span class="line">    <span class="keyword">if</span> ((!writable) || (imode == MAP_RO)) &#123;</span><br><span class="line">        <span class="keyword">return</span> Util.newMappedByteBufferR(isize, addr + pagePosition, mfd, um);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Util.newMappedByteBuffer(isize, addr + pagePosition, mfd, um);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>map() 方法通过本地方法 map0() 为文件分配一块虚拟内存，作为它的内存映射区域，然后返回这块内存映射区域的起始地址。</p>
+<ul>
+<li>文件映射需要在 Java 堆中创建一个 MappedByteBuffer 的实例。如果第一次文件映射导致 OOM，则手动触发垃圾回收，休眠 100ms 后再尝试映射，如果失败则抛出异常。</li>
+<li>通过 Util 的 newMappedByteBuffer （可读可写）方法或者 newMappedByteBufferR（仅读） 方法方法反射创建一个 DirectByteBuffer 实例，其中 DirectByteBuffer 是 MappedByteBuffer 的子类。</li>
+</ul>
+<p><code>map()</code> 方法返回的是内存映射区域的起始地址，通过（<strong>起始地址 + 偏移量</strong>）就可以获取指定内存的数据。这样一定程度上替代了 <code>read()</code> 或 <code>write()</code> 方法，底层直接采用 <code>sun.misc.Unsafe</code>类的 <code>getByte()</code> 和 <code>putByte()</code> 方法对数据进行读写。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">native</span> <span class="type">long</span> <span class="title function_">map0</span><span class="params">(<span class="type">int</span> prot, <span class="type">long</span> position, <span class="type">long</span> mapSize)</span> <span class="keyword">throws</span> IOException;</span><br></pre></td></tr></table></figure>
+
+<p>上面是本地方法（native method）map0 的定义，它通过 JNI（Java Native Interface）调用底层 C 的实现，这个 native 函数（Java_sun_nio_ch_FileChannelImpl_map0）的实现位于 JDK 源码包下的 <code>native/sun/nio/ch/FileChannelImpl.c</code>这个源文件里面。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT jlong JNICALL</span><br><span class="line"><span class="title function_">Java_sun_nio_ch_FileChannelImpl_map0</span><span class="params">(JNIEnv *env, jobject this,</span></span><br><span class="line"><span class="params">                                     jint prot, jlong off, jlong len)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">void</span> *mapAddress = <span class="number">0</span>;</span><br><span class="line">    jobject fdo = (*env)-&gt;GetObjectField(env, this, chan_fd);</span><br><span class="line">    jint fd = fdval(env, fdo);</span><br><span class="line">    <span class="type">int</span> protections = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> flags = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (prot == sun_nio_ch_FileChannelImpl_MAP_RO) &#123;</span><br><span class="line">        protections = PROT_READ;</span><br><span class="line">        flags = MAP_SHARED;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (prot == sun_nio_ch_FileChannelImpl_MAP_RW) &#123;</span><br><span class="line">        protections = PROT_WRITE | PROT_READ;</span><br><span class="line">        flags = MAP_SHARED;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (prot == sun_nio_ch_FileChannelImpl_MAP_PV) &#123;</span><br><span class="line">        protections =  PROT_WRITE | PROT_READ;</span><br><span class="line">        flags = MAP_PRIVATE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mapAddress = mmap64(</span><br><span class="line">        <span class="number">0</span>,                    <span class="comment">/* Let OS decide location */</span></span><br><span class="line">        len,                  <span class="comment">/* Number of bytes to map */</span></span><br><span class="line">        protections,          <span class="comment">/* File permissions */</span></span><br><span class="line">        flags,                <span class="comment">/* Changes are shared */</span></span><br><span class="line">        fd,                   <span class="comment">/* File descriptor of mapped file */</span></span><br><span class="line">        off);                 <span class="comment">/* Offset into file */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (mapAddress == MAP_FAILED) &#123;</span><br><span class="line">        <span class="keyword">if</span> (errno == ENOMEM) &#123;</span><br><span class="line">            JNU_ThrowOutOfMemoryError(env, <span class="string">&quot;Map failed&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> IOS_THROWN;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> handle(env, <span class="number">-1</span>, <span class="string">&quot;Map failed&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ((jlong) (<span class="type">unsigned</span> <span class="type">long</span>) mapAddress);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出 map0() 函数最终是通过 <code>mmap64()</code> 这个函数对 Linux 底层内核发出内存映射的调用， <code>mmap64()</code> 函数的原型如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> *<span class="title function_">mmap64</span><span class="params">(<span class="type">void</span> *addr, <span class="type">size_t</span> len, <span class="type">int</span> prot, <span class="type">int</span> flags, <span class="type">int</span> fd, <span class="type">off64_t</span> offset)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>下面详细介绍一下 <code>mmap64()</code> 函数各个参数的含义以及参数可选值：</p>
+<ul>
+<li><code>addr</code>：文件在用户进程空间的内存映射区中的起始地址，是一个建议的参数，通常可设置为 0 或 NULL，此时由内核去决定真实的起始地址。当 + flags 为 MAP_FIXED 时，addr 就是一个必选的参数，即需要提供一个存在的地址。</li>
+<li><code>len</code>：文件需要进行内存映射的字节长度</li>
+<li><code>prot</code>：控制用户进程对内存映射区的访问权限<ul>
+<li><code>PROT_READ</code>：读权限</li>
+<li><code>PROT_WRITE</code>：写权限</li>
+<li><code>PROT_EXEC</code>：执行权限</li>
+<li><code>PROT_NONE</code>：无权限</li>
+</ul>
+</li>
+<li><code>flags</code>：控制内存映射区的修改是否被多个进程共享<ul>
+<li><code>MAP_PRIVATE</code>：对内存映射区数据的修改不会反映到真正的文件，数据修改发生时采用写时复制机制</li>
+<li><code>MAP_SHARED</code>：对内存映射区的修改会同步到真正的文件，修改对共享此内存映射区的进程是可见的</li>
+<li><code>MAP_FIXED</code>：不建议使用，这种模式下 addr 参数指定的必须的提供一个存在的 addr 参数</li>
+</ul>
+</li>
+<li><code>fd</code>：文件描述符。每次 map 操作会导致文件的引用计数加 1，每次 unmap 操作或者结束进程会导致引用计数减 1</li>
+<li><code>offset</code>：文件偏移量。进行映射的文件位置，从文件起始地址向后的位移量</li>
+</ul>
+<p>下面总结一下 MappedByteBuffer 的特点和不足之处：</p>
+<ul>
+<li><strong>MappedByteBuffer 使用是堆外的虚拟内存</strong>，因此分配（map）的内存大小不受 JVM 的 -Xmx 参数限制，但是也是有大小限制的。 如果当文件超出 Integer.MAX_VALUE 字节限制时，可以通过 position 参数重新 map 文件后面的内容。</li>
+<li><strong>MappedByteBuffer 在处理大文件时性能的确很高，但也存内存占用、文件关闭不确定等问题</strong>，被其打开的文件只有在垃圾回收的才会被关闭，而且这个时间点是不确定的。</li>
+<li>MappedByteBuffer 提供了文件映射内存的 mmap() 方法，也提供了释放映射内存的 unmap() 方法。然而 unmap() 是 FileChannelImpl 中的私有方法，无法直接显示调用。因此，<strong>用户程序需要通过 Java 反射的调用 sun.misc.Cleaner 类的 clean() 方法手动释放映射占用的内存区域</strong>。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">clean</span><span class="params">(<span class="keyword">final</span> Object buffer)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    AccessController.doPrivileged((PrivilegedAction&lt;Void&gt;) () -&gt; &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Method</span> <span class="variable">getCleanerMethod</span> <span class="operator">=</span> buffer.getClass().getMethod(<span class="string">&quot;cleaner&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[<span class="number">0</span>]);</span><br><span class="line">            getCleanerMethod.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            <span class="type">Cleaner</span> <span class="variable">cleaner</span> <span class="operator">=</span> (Cleaner) getCleanerMethod.invoke(buffer, <span class="keyword">new</span> <span class="title class_">Object</span>[<span class="number">0</span>]);</span><br><span class="line">            cleaner.clean();</span><br><span class="line">        &#125; <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="DirectByteBuffer"><a href="#DirectByteBuffer" class="headerlink" title="DirectByteBuffer"></a>DirectByteBuffer</h3><p>DirectByteBuffer 的对象引用位于 Java 内存模型的堆里面，JVM 可以对 DirectByteBuffer 的对象进行内存分配和回收管理，一般使用 DirectByteBuffer 的静态方法 allocateDirect() 创建 DirectByteBuffer 实例并分配内存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> ByteBuffer <span class="title function_">allocateDirect</span><span class="params">(<span class="type">int</span> capacity)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">DirectByteBuffer</span>(capacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>DirectByteBuffer 内部的字节缓冲区位在于堆外的（用户态）直接内存，它是通过 Unsafe 的本地方法 allocateMemory() 进行内存分配，底层调用的是操作系统的 malloc() 函数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">DirectByteBuffer(<span class="type">int</span> cap) &#123;</span><br><span class="line">    <span class="built_in">super</span>(-<span class="number">1</span>, <span class="number">0</span>, cap, cap);</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">pa</span> <span class="operator">=</span> VM.isDirectMemoryPageAligned();</span><br><span class="line">    <span class="type">int</span> <span class="variable">ps</span> <span class="operator">=</span> Bits.pageSize();</span><br><span class="line">    <span class="type">long</span> <span class="variable">size</span> <span class="operator">=</span> Math.max(<span class="number">1L</span>, (<span class="type">long</span>)cap + (pa ? ps : <span class="number">0</span>));</span><br><span class="line">    Bits.reserveMemory(size, cap);</span><br><span class="line"></span><br><span class="line">    <span class="type">long</span> <span class="variable">base</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        base = unsafe.allocateMemory(size);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (OutOfMemoryError x) &#123;</span><br><span class="line">        Bits.unreserveMemory(size, cap);</span><br><span class="line">        <span class="keyword">throw</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    unsafe.setMemory(base, size, (<span class="type">byte</span>) <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (pa &amp;&amp; (base % ps != <span class="number">0</span>)) &#123;</span><br><span class="line">        address = base + ps - (base &amp; (ps - <span class="number">1</span>));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        address = base;</span><br><span class="line">    &#125;</span><br><span class="line">    cleaner = Cleaner.create(<span class="built_in">this</span>, <span class="keyword">new</span> <span class="title class_">Deallocator</span>(base, size, cap));</span><br><span class="line">    att = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，初始化 DirectByteBuffer 时还会创建一个 Deallocator 线程，并通过 Cleaner 的 freeMemory() 方法来对直接内存进行回收操作，freeMemory() 底层调用的是操作系统的 free() 函数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Deallocator</span> <span class="keyword">implements</span> <span class="title class_">Runnable</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">Unsafe</span> <span class="variable">unsafe</span> <span class="operator">=</span> Unsafe.getUnsafe();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> address;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> size;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> capacity;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Deallocator</span><span class="params">(<span class="type">long</span> address, <span class="type">long</span> size, <span class="type">int</span> capacity)</span> &#123;</span><br><span class="line">        <span class="keyword">assert</span> (address != <span class="number">0</span>);</span><br><span class="line">        <span class="built_in">this</span>.address = address;</span><br><span class="line">        <span class="built_in">this</span>.size = size;</span><br><span class="line">        <span class="built_in">this</span>.capacity = capacity;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (address == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        unsafe.freeMemory(address);</span><br><span class="line">        address = <span class="number">0</span>;</span><br><span class="line">        Bits.unreserveMemory(size, capacity);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于使用 DirectByteBuffer 分配的是系统本地的内存，不在 JVM 的管控范围之内，因此直接内存的回收和堆内存的回收不同，直接内存如果使用不当，很容易造成 OutOfMemoryError。</p>
+<p>说了这么多，那么 DirectByteBuffer 和零拷贝有什么关系？前面有提到在 MappedByteBuffer 进行内存映射时，它的 map() 方法会通过 Util.newMappedByteBuffer() 来创建一个缓冲区实例，初始化的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> MappedByteBuffer <span class="title function_">newMappedByteBuffer</span><span class="params">(<span class="type">int</span> size, <span class="type">long</span> addr, FileDescriptor fd,</span></span><br><span class="line"><span class="params">                                            Runnable unmapper)</span> &#123;</span><br><span class="line">    MappedByteBuffer dbb;</span><br><span class="line">    <span class="keyword">if</span> (directByteBufferConstructor == <span class="literal">null</span>)</span><br><span class="line">        initDBBConstructor();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        dbb = (MappedByteBuffer)directByteBufferConstructor.newInstance(</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">Object</span>[] &#123; <span class="keyword">new</span> <span class="title class_">Integer</span>(size), <span class="keyword">new</span> <span class="title class_">Long</span>(addr), fd, unmapper &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InstantiationException | IllegalAccessException | InvocationTargetException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InternalError</span>(e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> dbb;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">initDBBRConstructor</span><span class="params">()</span> &#123;</span><br><span class="line">    AccessController.doPrivileged(<span class="keyword">new</span> <span class="title class_">PrivilegedAction</span>&lt;Void&gt;() &#123;</span><br><span class="line">        <span class="keyword">public</span> Void <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Class&lt;?&gt; cl = Class.forName(<span class="string">&quot;java.nio.DirectByteBufferR&quot;</span>);</span><br><span class="line">                Constructor&lt;?&gt; ctor = cl.getDeclaredConstructor(</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">Class</span>&lt;?&gt;[] &#123; <span class="type">int</span>.class, <span class="type">long</span>.class, FileDescriptor.class,</span><br><span class="line">                                    Runnable.class &#125;);</span><br><span class="line">                ctor.setAccessible(<span class="literal">true</span>);</span><br><span class="line">                directByteBufferRConstructor = ctor;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (ClassNotFoundException | NoSuchMethodException |</span><br><span class="line">                     IllegalArgumentException | ClassCastException x) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InternalError</span>(x);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;&#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>DirectByteBuffer 是 MappedByteBuffer 的具体实现类。实际上，Util.newMappedByteBuffer() 方法通过反射机制获取 DirectByteBuffer 的构造器，然后创建一个 DirectByteBuffer 的实例，对应的是一个单独用于内存映射的构造方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="title function_">DirectByteBuffer</span><span class="params">(<span class="type">int</span> cap, <span class="type">long</span> addr, FileDescriptor fd, Runnable unmapper)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>(-<span class="number">1</span>, <span class="number">0</span>, cap, cap, fd);</span><br><span class="line">    address = addr;</span><br><span class="line">    cleaner = Cleaner.create(<span class="built_in">this</span>, unmapper);</span><br><span class="line">    att = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此，除了允许分配操作系统的直接内存以外，DirectByteBuffer 本身也具有文件内存映射的功能，这里不做过多说明。我们需要关注的是，DirectByteBuffer 在 MappedByteBuffer 的基础上提供了内存映像文件的随机读取 get() 和写入 write() 的操作。</p>
+<ul>
+<li>内存映像文件的随机读操作</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">byte</span> <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> ((unsafe.getByte(ix(nextGetIndex()))));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="type">byte</span> <span class="title function_">get</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> ((unsafe.getByte(ix(checkIndex(i)))));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>内存映像文件的随机写操作</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> ByteBuffer <span class="title function_">put</span><span class="params">(<span class="type">byte</span> x)</span> &#123;</span><br><span class="line">    unsafe.putByte(ix(nextPutIndex()), ((x)));</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> ByteBuffer <span class="title function_">put</span><span class="params">(<span class="type">int</span> i, <span class="type">byte</span> x)</span> &#123;</span><br><span class="line">    unsafe.putByte(ix(checkIndex(i)), ((x)));</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>内存映像文件的随机读写都是借助 ix() 方法实现定位的， ix() 方法通过内存映射空间的内存首地址（address）和给定偏移量 i 计算出指针地址，然后由 unsafe 类的 get() 和 put() 方法和对指针指向的数据进行读取或写入。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">long</span> <span class="title function_">ix</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> address + ((<span class="type">long</span>)i &lt;&lt; <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="FileChannel"><a href="#FileChannel" class="headerlink" title="FileChannel"></a>FileChannel</h3><p>FileChannel 是一个用于文件读写、映射和操作的通道，同时它在并发环境下是线程安全的，基于 FileInputStream、FileOutputStream 或者 RandomAccessFile 的 getChannel() 方法可以创建并打开一个文件通道。FileChannel 定义了 transferFrom() 和 transferTo() 两个抽象方法，它通过在通道和通道之间建立连接实现数据传输的。</p>
+<ul>
+<li><code>transferTo()</code>：通过 FileChannel 把文件里面的源数据写入一个 WritableByteChannel 的目的通道。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="type">long</span> <span class="title function_">transferTo</span><span class="params">(<span class="type">long</span> position, <span class="type">long</span> count, WritableByteChannel target)</span></span><br><span class="line">        <span class="keyword">throws</span> IOException;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>transferFrom()</code>：把一个源通道 ReadableByteChannel 中的数据读取到当前 FileChannel 的文件里面。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="type">long</span> <span class="title function_">transferFrom</span><span class="params">(ReadableByteChannel src, <span class="type">long</span> position, <span class="type">long</span> count)</span></span><br><span class="line">        <span class="keyword">throws</span> IOException;</span><br></pre></td></tr></table></figure>
+
+<p>下面给出 FileChannel 利用 transferTo() 和 transferFrom() 方法进行数据传输的使用示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">CONTENT</span> <span class="operator">=</span> <span class="string">&quot;Zero copy implemented by FileChannel&quot;</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">SOURCE_FILE</span> <span class="operator">=</span> <span class="string">&quot;/source.txt&quot;</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">TARGET_FILE</span> <span class="operator">=</span> <span class="string">&quot;/target.txt&quot;</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">CHARSET</span> <span class="operator">=</span> <span class="string">&quot;UTF-8&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>首先在类加载根路径下创建 source.txt 和 target.txt 两个文件，对源文件 source.txt 文件写入初始化数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Before</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setup</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">Path</span> <span class="variable">source</span> <span class="operator">=</span> Paths.get(getClassPath(SOURCE_FILE));</span><br><span class="line">    <span class="type">byte</span>[] bytes = CONTENT.getBytes(Charset.forName(CHARSET));</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">FileChannel</span> <span class="variable">fromChannel</span> <span class="operator">=</span> FileChannel.open(source, StandardOpenOption.READ,</span><br><span class="line">            StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) &#123;</span><br><span class="line">        fromChannel.write(ByteBuffer.wrap(bytes));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于 transferTo() 方法而言，目的通道 toChannel 可以是任意的单向字节写通道 WritableByteChannel；而对于 transferFrom() 方法而言，源通道 fromChannel 可以是任意的单向字节读通道 ReadableByteChannel。其中，FileChannel、SocketChannel 和 DatagramChannel 等通道实现了 WritableByteChannel 和 ReadableByteChannel 接口，都是同时支持读写的双向通道。为了方便测试，下面给出基于 FileChannel 完成 channel-to-channel 的数据传输示例。</p>
+<p>通过 transferTo() 将 fromChannel 中的数据拷贝到 toChannel</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">transferTo</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">FileChannel</span> <span class="variable">fromChannel</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RandomAccessFile</span>(</span><br><span class="line">             getClassPath(SOURCE_FILE), <span class="string">&quot;rw&quot;</span>).getChannel();</span><br><span class="line">         <span class="type">FileChannel</span> <span class="variable">toChannel</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RandomAccessFile</span>(</span><br><span class="line">             getClassPath(TARGET_FILE), <span class="string">&quot;rw&quot;</span>).getChannel()) &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">position</span> <span class="operator">=</span> <span class="number">0L</span>;</span><br><span class="line">        <span class="type">long</span> <span class="variable">offset</span> <span class="operator">=</span> fromChannel.size();</span><br><span class="line">        fromChannel.transferTo(position, offset, toChannel);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过 transferFrom() 将 fromChannel 中的数据拷贝到 toChannel</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">transferFrom</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">FileChannel</span> <span class="variable">fromChannel</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RandomAccessFile</span>(</span><br><span class="line">             getClassPath(SOURCE_FILE), <span class="string">&quot;rw&quot;</span>).getChannel();</span><br><span class="line">         <span class="type">FileChannel</span> <span class="variable">toChannel</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RandomAccessFile</span>(</span><br><span class="line">             getClassPath(TARGET_FILE), <span class="string">&quot;rw&quot;</span>).getChannel()) &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">position</span> <span class="operator">=</span> <span class="number">0L</span>;</span><br><span class="line">        <span class="type">long</span> <span class="variable">offset</span> <span class="operator">=</span> fromChannel.size();</span><br><span class="line">        toChannel.transferFrom(fromChannel, position, offset);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍 transferTo() 和 transferFrom() 方法的底层实现原理，这两个方法也是 java.nio.channels.FileChannel 的抽象方法，由子类 sun.nio.ch.FileChannelImpl.java 实现。transferTo() 和 transferFrom() 底层都是基于 sendfile 实现数据传输的，其中 FileChannelImpl.java 定义了 3 个常量，用于标示当前操作系统的内核是否支持 sendfile 以及 sendfile 的相关特性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="type">boolean</span> <span class="variable">transferSupported</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="type">boolean</span> <span class="variable">pipeSupported</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="type">boolean</span> <span class="variable">fileSupported</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>transferSupported</code>：用于标记当前的系统内核是否支持 sendfile() 调用，默认为 true。</li>
+<li><code>pipeSupported</code>：用于标记当前的系统内核是否支持文件描述符（fd）基于管道（pipe）的 sendfile() 调用，默认为 true。</li>
+<li><code>fileSupported</code>：用于标记当前的系统内核是否支持文件描述符（fd）基于文件（file）的 sendfile() 调用，默认为 true。</li>
+</ul>
+<p>下面以 transferTo() 的源码实现为例。FileChannelImpl 首先执行 transferToDirectly() 方法，以 sendfile 的零拷贝方式尝试数据拷贝。如果系统内核不支持 sendfile，进一步执行 transferToTrustedChannel() 方法，以 mmap 的零拷贝方式进行内存映射，这种情况下目的通道必须是 FileChannelImpl 或者 SelChImpl 类型。如果以上两步都失败了，则执行 transferToArbitraryChannel() 方法，基于传统的 I&#x2F;O 方式完成读写，具体步骤是初始化一个临时的 DirectBuffer，将源通道 FileChannel 的数据读取到 DirectBuffer，再写入目的通道 WritableByteChannel 里面。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">long</span> <span class="title function_">transferTo</span><span class="params">(<span class="type">long</span> position, <span class="type">long</span> count, WritableByteChannel target)</span></span><br><span class="line">        <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="comment">// 计算文件的大小</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">sz</span> <span class="operator">=</span> size();</span><br><span class="line">    <span class="comment">// 校验起始位置</span></span><br><span class="line">    <span class="keyword">if</span> (position &gt; sz)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">icount</span> <span class="operator">=</span> (<span class="type">int</span>)Math.min(count, Integer.MAX_VALUE);</span><br><span class="line">    <span class="comment">// 校验偏移量</span></span><br><span class="line">    <span class="keyword">if</span> ((sz - position) &lt; icount)</span><br><span class="line">        icount = (<span class="type">int</span>)(sz - position);</span><br><span class="line"></span><br><span class="line">    <span class="type">long</span> n;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((n = transferToDirectly(position, icount, target)) &gt;= <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> n;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((n = transferToTrustedChannel(position, icount, target)) &gt;= <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> n;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> transferToArbitraryChannel(position, icount, target);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来重点分析一下 transferToDirectly() 方法的实现，也就是 transferTo() 通过 sendfile 实现零拷贝的精髓所在。可以看到，transferToDirectlyInternal() 方法先获取到目的通道 WritableByteChannel 的文件描述符 targetFD，获取同步锁然后执行 transferToDirectlyInternal() 方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">long</span> <span class="title function_">transferToDirectly</span><span class="params">(<span class="type">long</span> position, <span class="type">int</span> icount, WritableByteChannel target)</span></span><br><span class="line">        <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="comment">// 省略从target获取targetFD的过程</span></span><br><span class="line">    <span class="keyword">if</span> (nd.transferToDirectlyNeedsPositionLock()) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (positionLock) &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">pos</span> <span class="operator">=</span> position();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> transferToDirectlyInternal(position, icount,</span><br><span class="line">                        target, targetFD);</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                position(pos);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> transferToDirectlyInternal(position, icount, target, targetFD);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最终由 transferToDirectlyInternal() 调用本地方法 transferTo0() ，尝试以 sendfile 的方式进行数据传输。如果系统内核完全不支持 sendfile，比如 Windows 操作系统，则返回 UNSUPPORTED 并把 transferSupported 标识为 false。如果系统内核不支持 sendfile 的一些特性，比如说低版本的 Linux 内核不支持 DMA gather copy 操作，则返回 UNSUPPORTED_CASE 并把 pipeSupported 或者 fileSupported 标识为 false。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">long</span> <span class="title function_">transferToDirectlyInternal</span><span class="params">(<span class="type">long</span> position, <span class="type">int</span> icount,</span></span><br><span class="line"><span class="params">                                        WritableByteChannel target,</span></span><br><span class="line"><span class="params">                                        FileDescriptor targetFD)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="keyword">assert</span> !nd.transferToDirectlyNeedsPositionLock() ||</span><br><span class="line">            Thread.holdsLock(positionLock);</span><br><span class="line"></span><br><span class="line">    <span class="type">long</span> <span class="variable">n</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">ti</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        begin();</span><br><span class="line">        ti = threads.add();</span><br><span class="line">        <span class="keyword">if</span> (!isOpen())</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            n = transferTo0(fd, position, icount, targetFD);</span><br><span class="line">        &#125; <span class="keyword">while</span> ((n == IOStatus.INTERRUPTED) &amp;&amp; isOpen());</span><br><span class="line">        <span class="keyword">if</span> (n == IOStatus.UNSUPPORTED_CASE) &#123;</span><br><span class="line">            <span class="keyword">if</span> (target <span class="keyword">instanceof</span> SinkChannelImpl)</span><br><span class="line">                pipeSupported = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">if</span> (target <span class="keyword">instanceof</span> FileChannelImpl)</span><br><span class="line">                fileSupported = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">return</span> IOStatus.UNSUPPORTED_CASE;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (n == IOStatus.UNSUPPORTED) &#123;</span><br><span class="line">            transferSupported = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">return</span> IOStatus.UNSUPPORTED;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> IOStatus.normalize(n);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        threads.remove(ti);</span><br><span class="line">        end (n &gt; -<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>本地方法（native method）transferTo0() 通过 JNI（Java Native Interface）调用底层 C 的函数，这个 native 函数（Java_sun_nio_ch_FileChannelImpl_transferTo0）同样位于 JDK 源码包下的 native&#x2F;sun&#x2F;nio&#x2F;ch&#x2F;FileChannelImpl.c 源文件里面。JNI 函数 Java_sun_nio_ch_FileChannelImpl_transferTo0() 基于条件编译对不同的系统进行预编译，下面是 JDK 基于 Linux 系统内核对 transferTo() 提供的调用封装。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> defined(__linux__) || defined(__solaris__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sendfile.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">elif</span> defined(_AIX)</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">elif</span> defined(_ALLBSD_SOURCE)</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/uio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> lseek64 lseek</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> mmap64 mmap</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">JNIEXPORT jlong JNICALL</span><br><span class="line"><span class="title function_">Java_sun_nio_ch_FileChannelImpl_transferTo0</span><span class="params">(JNIEnv *env, jobject this,</span></span><br><span class="line"><span class="params">                                            jobject srcFDO,</span></span><br><span class="line"><span class="params">                                            jlong position, jlong count,</span></span><br><span class="line"><span class="params">                                            jobject dstFDO)</span></span><br><span class="line">&#123;</span><br><span class="line">    jint srcFD = fdval(env, srcFDO);</span><br><span class="line">    jint dstFD = fdval(env, dstFDO);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(__linux__)</span></span><br><span class="line">    <span class="type">off64_t</span> offset = (<span class="type">off64_t</span>)position;</span><br><span class="line">    jlong n = sendfile64(dstFD, srcFD, &amp;offset, (<span class="type">size_t</span>)count);</span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line"><span class="meta">#<span class="keyword">elif</span> defined(__solaris__)</span></span><br><span class="line">    result = sendfilev64(dstFD, &amp;sfv, <span class="number">1</span>, &amp;numBytes);    </span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line"><span class="meta">#<span class="keyword">elif</span> defined(__APPLE__)</span></span><br><span class="line">    result = sendfile(srcFD, dstFD, position, &amp;numBytes, <span class="literal">NULL</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对 Linux、Solaris 以及 Apple 系统而言，transferTo0() 函数底层会执行 sendfile64 这个系统调用完成零拷贝操作，sendfile64() 函数的原型如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sendfile.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">sendfile64</span><span class="params">(<span class="type">int</span> out_fd, <span class="type">int</span> in_fd, <span class="type">off_t</span> *offset, <span class="type">size_t</span> count)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>下面简单介绍一下 sendfile64() 函数各个参数的含义：</p>
+<ul>
+<li><code>out_fd</code>：待写入的文件描述符</li>
+<li><code>in_fd</code>：待读取的文件描述符</li>
+<li><code>offset</code>：指定 in_fd 对应文件流的读取位置，如果为空，则默认从起始位置开始</li>
+<li><code>count</code>：指定在文件描述符 in_fd 和 out_fd 之间传输的字节数</li>
+</ul>
+<p>在 Linux 2.6.3 之前，out_fd 必须是一个 socket，而从 Linux 2.6.3 以后，out_fd 可以是任何文件。也就是说，sendfile64() 函数不仅可以进行网络文件传输，还可以对本地文件实现零拷贝操作。</p>
+<h2 id="其它的零拷贝实现"><a href="#其它的零拷贝实现" class="headerlink" title="其它的零拷贝实现"></a>其它的零拷贝实现</h2><h3 id="Netty零拷贝"><a href="#Netty零拷贝" class="headerlink" title="Netty零拷贝"></a>Netty零拷贝</h3><p>Netty 中的零拷贝和上面提到的操作系统层面上的零拷贝不太一样, 我们所说的 Netty 零拷贝完全是基于（Java 层面）用户态的，它的更多的是偏向于数据操作优化这样的概念，具体表现在以下几个方面：</p>
+<p>Netty 通过 DefaultFileRegion 类对 java.nio.channels.FileChannel 的 tranferTo() 方法进行包装，在文件传输时可以将文件缓冲区的数据直接发送到目的通道（Channel）</p>
+<p>ByteBuf 可以通过 wrap 操作把字节数组、ByteBuf、ByteBuffer 包装成一个 ByteBuf 对象, 进而避免了拷贝操作 ByteBuf 支持 slice 操作, 因此可以将 ByteBuf 分解为多个共享同一个存储区域的 ByteBuf，避免了内存的拷贝 Netty 提供了 CompositeByteBuf 类，它可以将多个 ByteBuf 合并为一个逻辑上的 ByteBuf，避免了各个 ByteBuf 之间的拷贝 其中第 1 条属于操作系统层面的零拷贝操作，后面 3 条只能算用户层面的数据操作优化。</p>
+<h3 id="RocketMQ和Kafka对比"><a href="#RocketMQ和Kafka对比" class="headerlink" title="RocketMQ和Kafka对比"></a>RocketMQ和Kafka对比</h3><p>RocketMQ 选择了 mmap + write 这种零拷贝方式，适用于业务级消息这种小块文件的数据持久化和传输；而 Kafka 采用的是 sendfile 这种零拷贝方式，适用于系统日志消息这种高吞吐量的大块文件的数据持久化和传输。但是值得注意的一点是，Kafka 的索引文件使用的是 mmap + write 方式，数据文件使用的是 sendfile 方式。</p>
+<p><img src="/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/java-io-copy-11.jpg"></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li>本文主要整理自 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/83398714">https://zhuanlan.zhihu.com/p/83398714</a></li>
+<li>作者：零壹技术栈</li>
+</ul>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2017 王云生
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

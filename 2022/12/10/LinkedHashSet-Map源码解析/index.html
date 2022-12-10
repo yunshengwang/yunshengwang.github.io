@@ -6,19 +6,22 @@
   <meta name="keywords" content=" java , Collection , LinkedHashSet , Map ">
   <meta name="description" content="LinkedHashSet&amp;Map源码解析 | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="Java 并发 - ThreadLocal详解 ThreadLocal是通过线程隔离的方式防止任务在共享资源上产生冲突, 线程本地存储是一种自动化机制，可以为使用相同变量的每个不同线程都创建不同的存储。 @pdai   Java 并发 - ThreadLocal详解 带着BAT大厂的面试问题去理解 ThreadLocal简介 ThreadLocal理解 ThreadLocal原理 如何实现线程隔离">
+<meta name="description" content="Java NIO - 零拷贝实现 这里转一篇Java NIO 零拷贝的实现文章，在此之前建议先理解什么是Linux中零拷贝，可以先看这篇文章。本文从源码着手分析了 Java NIO 对零拷贝的实现，主要包括基于内存映射（mmap）方式的 MappedByteBuffer 以及基于 sendfile 方式的 FileChannel。最后在篇末简单的阐述了一下 Netty 中的零拷贝机制，以及 Roc">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ThreadLocal详解">
-<meta property="og:url" content="http://example.com/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:title" content="JavaNIO_零拷贝实现">
+<meta property="og:url" content="http://example.com/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="Mr.Wang Blog">
-<meta property="og:description" content="Java 并发 - ThreadLocal详解 ThreadLocal是通过线程隔离的方式防止任务在共享资源上产生冲突, 线程本地存储是一种自动化机制，可以为使用相同变量的每个不同线程都创建不同的存储。 @pdai   Java 并发 - ThreadLocal详解 带着BAT大厂的面试问题去理解 ThreadLocal简介 ThreadLocal理解 ThreadLocal原理 如何实现线程隔离">
+<meta property="og:description" content="Java NIO - 零拷贝实现 这里转一篇Java NIO 零拷贝的实现文章，在此之前建议先理解什么是Linux中零拷贝，可以先看这篇文章。本文从源码着手分析了 Java NIO 对零拷贝的实现，主要包括基于内存映射（mmap）方式的 MappedByteBuffer 以及基于 sendfile 方式的 FileChannel。最后在篇末简单的阐述了一下 Netty 中的零拷贝机制，以及 Roc">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-12-10T14:58:20.000Z">
-<meta property="article:modified_time" content="2022-12-10T14:58:46.275Z">
+<meta property="og:image" content="http://example.com/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/java-io-copy-11.jpg">
+<meta property="article:published_time" content="2022-12-10T15:17:49.000Z">
+<meta property="article:modified_time" content="2022-12-10T15:18:15.990Z">
 <meta property="article:author" content="王云生">
 <meta property="article:tag" content="java">
-<meta property="article:tag" content="多线程">
+<meta property="article:tag" content="io">
+<meta property="article:tag" content="nio">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/java-io-copy-11.jpg">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -164,7 +167,7 @@
     <li>
         <div class="all active" data-rel="全部文章">全部文章
             
-                <small>(47)</small>
+                <small>(60)</small>
             
         </div>
     </li>
@@ -207,7 +210,7 @@
                         <i class="fold iconfont icon-right"></i>
                         
                         JAVA
-                        <small>(42)</small>
+                        <small>(57)</small>
                         
                     </div>
                     
@@ -242,7 +245,19 @@
                                         
                                         Java集合框架
                                         
-                                            <small>(7
+                                            <small>(9
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVAIO">
+                                        
+                                        JAVAIO
+                                        
+                                            <small>(13
                                                 )</small>
                                         
                                     </div>
@@ -252,6 +267,10 @@
                         </ul>
                     
                 </li>
+            
+        
+    
+        
             
         
     
@@ -335,8 +354,8 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="47">
-<input type="hidden" id="yelog_site_word_count" value="235.4k">
+<input type="hidden" id="yelog_site_posts_number" value="60">
+<input type="hidden" id="yelog_site_word_count" value="272.4k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -386,7 +405,15 @@
             </li>
         
             <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>aio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>ArrayList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>bio</a>
             </li>
         
             <li class="article-tag-list-item">
@@ -406,6 +433,10 @@
             </li>
         
             <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>io</a>
+            </li>
+        
+            <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>java</a>
             </li>
         
@@ -419,6 +450,10 @@
         
             <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>Map</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>nio</a>
             </li>
         
             <li class="article-tag-list-item">
@@ -463,6 +498,123 @@
 
     
     <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_零拷贝实现">JavaNIO_零拷贝实现</span>
+            <span class="post-date" title="2022-12-10 23:17:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-Netty/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="JavaIO_Netty">JavaIO_Netty</span>
+            <span class="post-date" title="2022-12-10 23:16:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaAIO-%E5%BC%82%E6%AD%A5IO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,aio"
+           data-author="" >
+            <span class="post-title" title="JavaAIO_异步IO详解">JavaAIO_异步IO详解</span>
+            <span class="post-date" title="2022-12-10 23:15:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_IO多路复用详解">JavaNIO_IO多路复用详解</span>
+            <span class="post-date" title="2022-12-10 23:15:03">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E5%9F%BA%E7%A1%80%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_基础详解">JavaNIO_基础详解</span>
+            <span class="post-date" title="2022-12-10 23:13:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-BIO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,bio"
+           data-author="" >
+            <span class="post-title" title="JavaIO_BIO详解">JavaIO_BIO详解</span>
+            <span class="post-date" title="2022-12-10 23:13:00">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/IO%E6%A8%A1%E5%9E%8B-UnixIO%E6%A8%A1%E5%9E%8B/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="IO模型_UnixIO模型">IO模型_UnixIO模型</span>
+            <span class="post-date" title="2022-12-10 23:11:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%B8%B8%E8%A7%81%E7%B1%BB%E4%BD%BF%E7%94%A8/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="常见类使用">常见类使用</span>
+            <span class="post-date" title="2022-12-10 23:10:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-OutputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_OutputStream">源码_OutputStream</span>
+            <span class="post-date" title="2022-12-10 23:09:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-InputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_InputStream">源码_InputStream</span>
+            <span class="post-date" title="2022-12-10 23:08:23">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="设计模式_装饰者模式">设计模式_装饰者模式</span>
+            <span class="post-date" title="2022-12-10 23:06:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%88%86%E7%B1%BB-%E4%BC%A0%E8%BE%93-%E6%93%8D%E4%BD%9C/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="分类_传输_操作">分类_传输_操作</span>
+            <span class="post-date" title="2022-12-10 23:06:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/Java-IO%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="Java_IO知识体系详解">Java_IO知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:04:43">2022/12/10</span>
+        </a>
         
         
         <a  class="全部文章 JAVA JAVA多线程 "
@@ -690,7 +842,7 @@
         </a>
         
         
-        <a  class="全部文章 "
+        <a  class="全部文章 JAVA Java集合框架 "
            href="/2022/12/10/WeakHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
            data-tag="java,Collection,Map,WeakHashMap"
            data-author="" >
@@ -699,7 +851,7 @@
         </a>
         
         
-        <a  class="全部文章 "
+        <a  class="全部文章 JAVA Java集合框架 "
            href="/2022/12/10/TreeSet-TreeMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
            data-tag="java,Collection,Map,TreeSet,TreeMap"
            data-author="" >

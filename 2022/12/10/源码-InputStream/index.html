@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>源码_InputStream | Mr.Wang Blog</title>
+  <meta name="keywords" content=" java , io ">
+  <meta name="description" content="源码_InputStream | Mr.Wang Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="Java NIO - 零拷贝实现 这里转一篇Java NIO 零拷贝的实现文章，在此之前建议先理解什么是Linux中零拷贝，可以先看这篇文章。本文从源码着手分析了 Java NIO 对零拷贝的实现，主要包括基于内存映射（mmap）方式的 MappedByteBuffer 以及基于 sendfile 方式的 FileChannel。最后在篇末简单的阐述了一下 Netty 中的零拷贝机制，以及 Roc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaNIO_零拷贝实现">
+<meta property="og:url" content="http://example.com/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Mr.Wang Blog">
+<meta property="og:description" content="Java NIO - 零拷贝实现 这里转一篇Java NIO 零拷贝的实现文章，在此之前建议先理解什么是Linux中零拷贝，可以先看这篇文章。本文从源码着手分析了 Java NIO 对零拷贝的实现，主要包括基于内存映射（mmap）方式的 MappedByteBuffer 以及基于 sendfile 方式的 FileChannel。最后在篇末简单的阐述了一下 Netty 中的零拷贝机制，以及 Roc">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/java-io-copy-11.jpg">
+<meta property="article:published_time" content="2022-12-10T15:17:49.000Z">
+<meta property="article:modified_time" content="2022-12-10T15:18:15.990Z">
+<meta property="article:author" content="王云生">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="io">
+<meta property="article:tag" content="nio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/java-io-copy-11.jpg">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>王云生</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="cnblogs"
+               href="https://home.cnblogs.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-cnblogs"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/a996358a335f"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/yun-sheng-10-62-26"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="csdn"
+               href="https://blog.csdn.net/u011593571?type=collect"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-csdn"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/u/4978723"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="juejin"
+               href="https://juejin.cn/user/2604099346111086"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-juejin"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:w_huilong@163.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(60)</small>
+            
+        </div>
+    </li>
+    
+        
+            
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(1)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="JAVA">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        JAVA
+                        <small>(57)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA多线程">
+                                        
+                                        JAVA多线程
+                                        
+                                            <small>(27
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA基础">
+                                        
+                                        JAVA基础
+                                        
+                                            <small>(8
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java集合框架">
+                                        
+                                        Java集合框架
+                                        
+                                            <small>(9
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVAIO">
+                                        
+                                        JAVAIO
+                                        
+                                            <small>(13
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="Spring">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        Spring
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringBoot2.5.X系列">
+                                        
+                                        SpringBoot2.5.X系列
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringFrameWork5基础">
+                                        
+                                        SpringFrameWork5基础
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="60">
+<input type="hidden" id="yelog_site_word_count" value="272.4k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>多线程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>aio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ArrayList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>bio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Collection</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>hexo</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>io</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedHashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Map</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>nio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>PriorityQueue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Queue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring boot</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Stack</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tool</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>WeakHashMap</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_零拷贝实现">JavaNIO_零拷贝实现</span>
+            <span class="post-date" title="2022-12-10 23:17:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-Netty/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="JavaIO_Netty">JavaIO_Netty</span>
+            <span class="post-date" title="2022-12-10 23:16:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaAIO-%E5%BC%82%E6%AD%A5IO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,aio"
+           data-author="" >
+            <span class="post-title" title="JavaAIO_异步IO详解">JavaAIO_异步IO详解</span>
+            <span class="post-date" title="2022-12-10 23:15:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_IO多路复用详解">JavaNIO_IO多路复用详解</span>
+            <span class="post-date" title="2022-12-10 23:15:03">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E5%9F%BA%E7%A1%80%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_基础详解">JavaNIO_基础详解</span>
+            <span class="post-date" title="2022-12-10 23:13:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-BIO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,bio"
+           data-author="" >
+            <span class="post-title" title="JavaIO_BIO详解">JavaIO_BIO详解</span>
+            <span class="post-date" title="2022-12-10 23:13:00">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/IO%E6%A8%A1%E5%9E%8B-UnixIO%E6%A8%A1%E5%9E%8B/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="IO模型_UnixIO模型">IO模型_UnixIO模型</span>
+            <span class="post-date" title="2022-12-10 23:11:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%B8%B8%E8%A7%81%E7%B1%BB%E4%BD%BF%E7%94%A8/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="常见类使用">常见类使用</span>
+            <span class="post-date" title="2022-12-10 23:10:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-OutputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_OutputStream">源码_OutputStream</span>
+            <span class="post-date" title="2022-12-10 23:09:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-InputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_InputStream">源码_InputStream</span>
+            <span class="post-date" title="2022-12-10 23:08:23">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="设计模式_装饰者模式">设计模式_装饰者模式</span>
+            <span class="post-date" title="2022-12-10 23:06:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%88%86%E7%B1%BB-%E4%BC%A0%E8%BE%93-%E6%93%8D%E4%BD%9C/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="分类_传输_操作">分类_传输_操作</span>
+            <span class="post-date" title="2022-12-10 23:06:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/Java-IO%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="Java_IO知识体系详解">Java_IO知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:04:43">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="ThreadLocal详解">ThreadLocal详解</span>
+            <span class="post-date" title="2022-12-10 22:58:20">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Exchanger%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Exchanger详解">JUC工具类_Exchanger详解</span>
+            <span class="post-date" title="2022-12-10 22:57:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Phaser%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Phaser详解">JUC工具类_Phaser详解</span>
+            <span class="post-date" title="2022-12-10 22:56:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Semaphore详解">JUC工具类_Semaphore详解</span>
+            <span class="post-date" title="2022-12-10 22:56:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CyclicBarrier%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CyclicBarrier详解">JUC工具类_CyclicBarrier详解</span>
+            <span class="post-date" title="2022-12-10 22:55:21">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CountDownLatch详解">JUC工具类_CountDownLatch详解</span>
+            <span class="post-date" title="2022-12-10 22:54:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-Fork-Join%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_Fork_Join框架详解">JUC线程池_Fork_Join框架详解</span>
+            <span class="post-date" title="2022-12-10 22:53:19">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ScheduledThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ScheduledThreadPoolExecutor详解">JUC线程池_ScheduledThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:52:28">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ThreadPoolExecutor详解">JUC线程池_ThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:51:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-FutureTask%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_FutureTask详解">JUC线程池_FutureTask详解</span>
+            <span class="post-date" title="2022-12-10 22:50:52">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-BlockingQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_BlockingQueue详解">JUC集合_BlockingQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:50:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentLinkedQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentLinkedQueue详解">JUC集合_ConcurrentLinkedQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:49:05">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-CopyOnWriteArrayList%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_CopyOnWriteArrayList详解">JUC集合_CopyOnWriteArrayList详解</span>
+            <span class="post-date" title="2022-12-10 22:48:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentHashMap%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentHashMap详解">JUC集合_ConcurrentHashMap详解</span>
+            <span class="post-date" title="2022-12-10 22:47:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantReadWriteLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantReadWriteLock详解">JUC锁_ReentrantReadWriteLock详解</span>
+            <span class="post-date" title="2022-12-10 22:46:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantLock详解">JUC锁_ReentrantLock详解</span>
+            <span class="post-date" title="2022-12-10 22:45:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-%E9%94%81%E6%A0%B8%E5%BF%83%E7%B1%BBAQS%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_锁核心类AQS详解">JUC锁_锁核心类AQS详解</span>
+            <span class="post-date" title="2022-12-10 22:44:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-LockSupport%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_LockSupport详解">JUC锁_LockSupport详解</span>
+            <span class="post-date" title="2022-12-10 22:43:25">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-CAS-Unsafe%E5%92%8C%E5%8E%9F%E5%AD%90%E7%B1%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC原子类_CAS_Unsafe和原子类详解">JUC原子类_CAS_Unsafe和原子类详解</span>
+            <span class="post-date" title="2022-12-10 22:42:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%B1%BB%E6%B1%87%E6%80%BB%E5%92%8C%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC类汇总和学习指南">JUC类汇总和学习指南</span>
+            <span class="post-date" title="2022-12-10 22:41:01">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/final%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="final详解">final详解</span>
+            <span class="post-date" title="2022-12-10 22:39:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/volatile%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="volatile详解">volatile详解</span>
+            <span class="post-date" title="2022-12-10 22:39:02">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/synchronized%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="synchronized详解">synchronized详解</span>
+            <span class="post-date" title="2022-12-10 22:37:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="线程基础">线程基础</span>
+            <span class="post-date" title="2022-12-10 22:31:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="理论基础">理论基础</span>
+            <span class="post-date" title="2022-12-10 22:30:46">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/WeakHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,WeakHashMap"
+           data-author="" >
+            <span class="post-title" title="WeakHashMap源码解析">WeakHashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:26:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/TreeSet-TreeMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,TreeSet,TreeMap"
+           data-author="" >
+            <span class="post-title" title="TreeSet&amp;TreeMap源码解析">TreeSet&amp;TreeMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:25:45">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedHashSet-Map%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedHashSet,Map"
+           data-author="" >
+            <span class="post-title" title="LinkedHashSet&amp;Map源码解析">LinkedHashSet&amp;Map源码解析</span>
+            <span class="post-date" title="2022-12-10 22:24:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/HashSet-HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,HashSet,HashMap"
+           data-author="" >
+            <span class="post-title" title="HashSet&amp;HashMap源码解析">HashSet&amp;HashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:23:24">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/PriorityQueue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,PriorityQueue"
+           data-author="" >
+            <span class="post-title" title="PriorityQueue源码解析">PriorityQueue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:22:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Stack-Queue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Stack,Queue"
+           data-author="" >
+            <span class="post-title" title="Stack&amp;Queue源码解析">Stack&amp;Queue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:21:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedList"
+           data-author="" >
+            <span class="post-title" title="LinkedList源码解析">LinkedList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:19:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/ArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,ArrayList"
+           data-author="" >
+            <span class="post-title" title="ArrayList源码解析">ArrayList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:18:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringBoot2.5.X系列 "
+           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring,spring boot"
+           data-author="" >
+            <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:14:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringFrameWork5基础 "
+           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring"
+           data-author="" >
+            <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:10:47">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/"
+           data-tag="java,Collection"
+           data-author="" >
+            <span class="post-title" title="Collection类关系图">Collection类关系图</span>
+            <span class="post-date" title="2022-12-10 21:59:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/SPI%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="SPI机制详解">SPI机制详解</span>
+            <span class="post-date" title="2022-12-10 21:58:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="反射机制详解">反射机制详解</span>
+            <span class="post-date" title="2022-12-10 21:57:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%BC%82%E5%B8%B8%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="异常机制详解">异常机制详解</span>
+            <span class="post-date" title="2022-12-10 21:56:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="注解机制详解">注解机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="泛型机制详解">泛型机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%9B%BE%E8%B0%B1-Q-A/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="图谱&amp;Q/A">图谱&amp;Q/A</span>
+            <span class="post-date" title="2022-12-10 21:53:16">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E7%9F%A5%E8%AF%86%E7%82%B9/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="知识点">知识点</span>
+            <span class="post-date" title="2022-12-10 21:52:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="面向对象">面向对象</span>
+            <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁">Java并发 - Java中所有的锁</span>
+            <span class="post-date" title="2022-12-10 21:25:40">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 HEXO "
+           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           data-tag="hexo,tool"
+           data-author="" >
+            <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
+            <span class="post-date" title="2022-12-10 19:02:24">2022/12/10</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-源码-InputStream" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">源码_InputStream</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="JAVA">JAVA</a> > 
+            
+            <a  data-rel="JAVA&lt;---&gt;JAVAIO">JAVAIO</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">java</a>
+            
+            <a class="color3">io</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-10 23:09:47'>2022-12-10 23:08</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:4.5k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-IO-%E6%BA%90%E7%A0%81-InputStream"><span class="toc-text">Java IO - 源码: InputStream</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InputStream-%E7%B1%BB%E5%AE%9E%E7%8E%B0%E5%85%B3%E7%B3%BB"><span class="toc-text">InputStream 类实现关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InputStream-%E6%8A%BD%E8%B1%A1%E7%B1%BB"><span class="toc-text">InputStream 抽象类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-text">源码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#InputStream"><span class="toc-text">InputStream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FilterInputStream"><span class="toc-text">FilterInputStream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ByteArrayInputStream"><span class="toc-text">ByteArrayInputStream</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BufferedInputStream"><span class="toc-text">BufferedInputStream</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Java-IO-源码-InputStream"><a href="#Java-IO-源码-InputStream" class="headerlink" title="Java IO - 源码: InputStream"></a>Java IO - 源码: InputStream</h2><blockquote>
+<p>本文主要从<strong>JDK 11 源码</strong>角度分析InputStream。 @pdai</p>
+</blockquote>
+<ul>
+<li><a href="#java-io---%E6%BA%90%E7%A0%81-inputstream">Java IO - 源码: InputStream</a><ul>
+<li><a href="#inputstream-%E7%B1%BB%E5%AE%9E%E7%8E%B0%E5%85%B3%E7%B3%BB">InputStream 类实现关系</a></li>
+<li><a href="#inputstream-%E6%8A%BD%E8%B1%A1%E7%B1%BB">InputStream 抽象类</a></li>
+<li><a href="#%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0">源码实现</a><ul>
+<li><a href="#inputstream">InputStream</a></li>
+<li><a href="#filterinputstream">FilterInputStream</a></li>
+<li><a href="#bytearrayinputstream">ByteArrayInputStream</a></li>
+<li><a href="#bufferedinputstream">BufferedInputStream</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0">参考文章</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="InputStream-类实现关系"><a href="#InputStream-类实现关系" class="headerlink" title="InputStream 类实现关系"></a>InputStream 类实现关系</h2><blockquote>
+<p>InputStream是输入字节流，具体的实现类层次结构如下：</p>
+</blockquote>
+<p><img src="/2022/12/10/%E6%BA%90%E7%A0%81-InputStream/io-inputstream-1.png"></p>
+<h2 id="InputStream-抽象类"><a href="#InputStream-抽象类" class="headerlink" title="InputStream 抽象类"></a>InputStream 抽象类</h2><p>InputStream 类重要方法设计如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 读取下一个字节，如果没有则返回-1</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">()</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">// 将读取到的数据放在 byte 数组中，该方法实际上调用read(byte b[], int off, int len)方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span> b[])</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">// 从第 off 位置读取&lt;b&gt;最多(实际可能小于)&lt;/b&gt; len 长度字节的数据放到 byte 数组中，流是以 -1 来判断是否读取结束的; 此方法会一直阻止，直到输入数据可用、检测到stream结尾或引发异常为止。</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span> b[], <span class="type">int</span> off, <span class="type">int</span> len)</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">// JDK9新增：读取 InputStream 中的所有剩余字节，调用readNBytes(Integer.MAX_VALUE)方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">byte</span>[] readAllBytes()</span><br><span class="line"></span><br><span class="line"><span class="comment">// JDK11更新：读取 InputStream 中的剩余字节的指定上限大小的字节内容；此方法会一直阻塞，直到读取了请求的字节数、检测到流结束或引发异常为止。此方法不会关闭输入流。</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">byte</span>[] readNBytes(<span class="type">int</span> len)</span><br><span class="line"></span><br><span class="line"><span class="comment">// JDK9新增：从输入流读取请求的字节数并保存在byte数组中； 此方法会一直阻塞，直到读取了请求的字节数、检测到流结束或引发异常为止。此方法不会关闭输入流。</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">readNBytes</span><span class="params">(<span class="type">byte</span>[] b, <span class="type">int</span> off, <span class="type">int</span> len)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 跳过指定个数的字节不读取</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">long</span> <span class="title function_">skip</span><span class="params">(<span class="type">long</span> n)</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">// 返回可读的字节数量</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">available</span><span class="params">()</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取完，关闭流，释放资源</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">// 标记读取位置，下次还可以从这里开始读取，使用前要看当前流是否支持，可以使用 markSupport() 方法判断</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">mark</span><span class="params">(<span class="type">int</span> readlimit)</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">// 重置读取位置为上次 mark 标记的位置</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">reset</span><span class="params">()</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断当前流是否支持标记流，和上面两个方法配套使用</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">markSupported</span><span class="params">()</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">// JDK9新增：读取 InputStream 中的全部字节并写入到指定的 OutputStream 中</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">long</span> <span class="title function_">transferTo</span><span class="params">(OutputStream out)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="源码实现"><a href="#源码实现" class="headerlink" title="源码实现"></a>源码实现</h2><blockquote>
+<p>梳理部分InputStream及其实现类的源码分析。</p>
+</blockquote>
+<h3 id="InputStream"><a href="#InputStream" class="headerlink" title="InputStream"></a>InputStream</h3><p>InputStream抽象类源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">InputStream</span> <span class="keyword">implements</span> <span class="title class_">Closeable</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 当使用skip方法时，最大的buffer size大小</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_SKIP_BUFFER_SIZE</span> <span class="operator">=</span> <span class="number">2048</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 默认的buffer size</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">DEFAULT_BUFFER_SIZE</span> <span class="operator">=</span> <span class="number">8192</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// JDK11中增加了一个nullInputStream，即空模式实现，以便可以直接调用而不用判空（可以看如下的补充说明）</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> InputStream <span class="title function_">nullInputStream</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">InputStream</span>() &#123;</span><br><span class="line">            <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="type">boolean</span> closed;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">ensureOpen</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                <span class="keyword">if</span> (closed) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IOException</span>(<span class="string">&quot;Stream closed&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">available</span> <span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                ensureOpen();</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                ensureOpen();</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span>[] b, <span class="type">int</span> off, <span class="type">int</span> len)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                Objects.checkFromIndexSize(off, len, b.length);</span><br><span class="line">                <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                ensureOpen();</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="type">byte</span>[] readAllBytes() <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                ensureOpen();</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">0</span>];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">readNBytes</span><span class="params">(<span class="type">byte</span>[] b, <span class="type">int</span> off, <span class="type">int</span> len)</span></span><br><span class="line">                <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                Objects.checkFromIndexSize(off, len, b.length);</span><br><span class="line">                ensureOpen();</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="type">byte</span>[] readNBytes(<span class="type">int</span> len) <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                <span class="keyword">if</span> (len &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;len &lt; 0&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                ensureOpen();</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">0</span>];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">skip</span><span class="params">(<span class="type">long</span> n)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                ensureOpen();</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0L</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">transferTo</span><span class="params">(OutputStream out)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                Objects.requireNonNull(out);</span><br><span class="line">                ensureOpen();</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0L</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">                closed = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 读取下一个字节的数据，如果没有则返回-1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将读取到的数据放在 byte 数组中，该方法实际上调用read(byte b[], int off, int len)方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span> b[])</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">return</span> read(b, <span class="number">0</span>, b.length);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从第 off 位置读取&lt;b&gt;最多(实际可能小于)&lt;/b&gt; len 长度字节的数据放到 byte 数组中，流是以 -1 来判断是否读取结束的; 此方法会一直阻止，直到输入数据可用、检测到stream结尾或引发异常为止。</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span> b[], <span class="type">int</span> off, <span class="type">int</span> len)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 检查边界</span></span><br><span class="line">        Objects.checkFromIndexSize(off, len, b.length);</span><br><span class="line">        <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 读取下一个字节</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> read();</span><br><span class="line">        <span class="keyword">if</span> (c == -<span class="number">1</span>) &#123; <span class="comment">// 读到stream末尾，则返回读取的字节数量为-1</span></span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        b[off] = (<span class="type">byte</span>)c;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// i用来记录取了多少个字节</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 循环读取</span></span><br><span class="line">            <span class="keyword">for</span> (; i &lt; len ; i++) &#123;</span><br><span class="line">                c = read();</span><br><span class="line">                <span class="keyword">if</span> (c == -<span class="number">1</span>) &#123;<span class="comment">// 读到stream末尾，则break</span></span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                b[off + i] = (<span class="type">byte</span>)c;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException ee) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 返回读取到的字节个数</span></span><br><span class="line">        <span class="keyword">return</span> i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分配的最大数组大小。</span></span><br><span class="line">    <span class="comment">// 由于一些VM在数组中保留一些头字，所以尝试分配较大的阵列可能会导致OutOfMemoryError（请求的阵列大小超过VM限制）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_BUFFER_SIZE</span> <span class="operator">=</span> Integer.MAX_VALUE - <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// JDK9新增：读取 InputStream 中的所有剩余字节，调用readNBytes(Integer.MAX_VALUE)方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] readAllBytes() <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">return</span> readNBytes(Integer.MAX_VALUE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// JDK11更新：读取 InputStream 中的剩余字节的指定上限大小的字节内容；此方法会一直阻塞，直到读取了请求的字节数、检测到流结束或引发异常为止。此方法不会关闭输入流。</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] readNBytes(<span class="type">int</span> len) <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 边界检查</span></span><br><span class="line">        <span class="keyword">if</span> (len &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;len &lt; 0&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        List&lt;<span class="type">byte</span>[]&gt; bufs = <span class="literal">null</span>; <span class="comment">// 缓存每次读取到的内容放到bufs，最后组装成result</span></span><br><span class="line">        <span class="type">byte</span>[] result = <span class="literal">null</span>; <span class="comment">// 最后读取到的内容</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">total</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">remaining</span> <span class="operator">=</span> len; <span class="comment">// 剩余字节长度</span></span><br><span class="line">        <span class="type">int</span> n;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            <span class="type">byte</span>[] buf = <span class="keyword">new</span> <span class="title class_">byte</span>[Math.min(remaining, DEFAULT_BUFFER_SIZE)];</span><br><span class="line">            <span class="type">int</span> <span class="variable">nread</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 读取到结束为止，读取大小n可能大于或小于缓冲区大小</span></span><br><span class="line">            <span class="keyword">while</span> ((n = read(buf, nread,</span><br><span class="line">                    Math.min(buf.length - nread, remaining))) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                nread += n; </span><br><span class="line">                remaining -= n;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (nread &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (MAX_BUFFER_SIZE - total &lt; nread) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">OutOfMemoryError</span>(<span class="string">&quot;Required array size too large&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                total += nread;</span><br><span class="line">                <span class="keyword">if</span> (result == <span class="literal">null</span>) &#123;</span><br><span class="line">                    result = buf;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (bufs == <span class="literal">null</span>) &#123;</span><br><span class="line">                        bufs = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">                        bufs.add(result);</span><br><span class="line">                    &#125;</span><br><span class="line">                    bufs.add(buf);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果读不到内容（返回-1）或者没有剩余的字节，则跳出循环</span></span><br><span class="line">        &#125; <span class="keyword">while</span> (n &gt;= <span class="number">0</span> &amp;&amp; remaining &gt; <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (bufs == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (result == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">0</span>];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> result.length == total ?</span><br><span class="line">                result : Arrays.copyOf(result, total);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 组装最后的result</span></span><br><span class="line">        result = <span class="keyword">new</span> <span class="title class_">byte</span>[total];</span><br><span class="line">        <span class="type">int</span> <span class="variable">offset</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        remaining = total;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">byte</span>[] b : bufs) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> Math.min(b.length, remaining);</span><br><span class="line">            System.arraycopy(b, <span class="number">0</span>, result, offset, count);</span><br><span class="line">            offset += count;</span><br><span class="line">            remaining -= count;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// JDK9新增：从输入流读取请求的字节数并保存在byte数组中； 此方法会一直阻塞，直到读取了请求的字节数、检测到流结束或引发异常为止。此方法不会关闭输入流。</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">readNBytes</span><span class="params">(<span class="type">byte</span>[] b, <span class="type">int</span> off, <span class="type">int</span> len)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        Objects.checkFromIndexSize(off, len, b.length);</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (n &lt; len) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> read(b, off + n, len - n);</span><br><span class="line">            <span class="keyword">if</span> (count &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            n += count;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> n;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 跳过指定个数的字节不读取</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">skip</span><span class="params">(<span class="type">long</span> n)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">remaining</span> <span class="operator">=</span> n;</span><br><span class="line">        <span class="type">int</span> nr;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (n &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">size</span> <span class="operator">=</span> (<span class="type">int</span>)Math.min(MAX_SKIP_BUFFER_SIZE, remaining);</span><br><span class="line">        <span class="type">byte</span>[] skipBuffer = <span class="keyword">new</span> <span class="title class_">byte</span>[size];</span><br><span class="line">        <span class="keyword">while</span> (remaining &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            nr = read(skipBuffer, <span class="number">0</span>, (<span class="type">int</span>)Math.min(size, remaining));</span><br><span class="line">            <span class="keyword">if</span> (nr &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            remaining -= nr;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> n - remaining;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回可读的字节数量</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">available</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取完，关闭流，释放资源</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 标记读取位置，下次还可以从这里开始读取，使用前要看当前流是否支持，可以使用 markSupport() 方法判断</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">mark</span><span class="params">(<span class="type">int</span> readlimit)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重置读取位置为上次 mark 标记的位置</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">reset</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IOException</span>(<span class="string">&quot;mark/reset not supported&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断当前流是否支持标记流，和上面两个方法配套使用。默认是false，由子类方法重写</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">markSupported</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// JDK9新增：读取 InputStream 中的全部字节并写入到指定的 OutputStream 中</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">transferTo</span><span class="params">(OutputStream out)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        Objects.requireNonNull(out, <span class="string">&quot;out&quot;</span>);</span><br><span class="line">        <span class="type">long</span> <span class="variable">transferred</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">byte</span>[] buffer = <span class="keyword">new</span> <span class="title class_">byte</span>[DEFAULT_BUFFER_SIZE];</span><br><span class="line">        <span class="type">int</span> read;</span><br><span class="line">        <span class="keyword">while</span> ((read = <span class="built_in">this</span>.read(buffer, <span class="number">0</span>, DEFAULT_BUFFER_SIZE)) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            out.write(buffer, <span class="number">0</span>, read);</span><br><span class="line">            transferred += read;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> transferred;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>总结下JDK9的更新点</p>
+</blockquote>
+<p>类 java.io.InputStream 中增加了新的方法来读取和复制 InputStream 中包含的数据。</p>
+<ul>
+<li><code>readAllBytes</code>：读取 InputStream 中的所有剩余字节。</li>
+<li><code>readNBytes</code>： 从 InputStream 中读取指定数量的字节到数组中。</li>
+<li><code>transferTo</code>：读取 InputStream 中的全部字节并写入到指定的 OutputStream 中 。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestInputStream</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> InputStream inputStream;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">CONTENT</span> <span class="operator">=</span> <span class="string">&quot;Hello World&quot;</span>;</span><br><span class="line">    <span class="meta">@Before</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUp</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="built_in">this</span>.inputStream =</span><br><span class="line">            TestInputStream.class.getResourceAsStream(<span class="string">&quot;/input.txt&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testReadAllBytes</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="type">String</span> <span class="variable">content</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(<span class="built_in">this</span>.inputStream.readAllBytes());</span><br><span class="line">        assertEquals(CONTENT, content);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testReadNBytes</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="type">byte</span>[] data = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">5</span>];</span><br><span class="line">        <span class="built_in">this</span>.inputStream.readNBytes(data, <span class="number">0</span>, <span class="number">5</span>);</span><br><span class="line">        assertEquals(<span class="string">&quot;Hello&quot;</span>, <span class="keyword">new</span> <span class="title class_">String</span>(data));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testTransferTo</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="type">ByteArrayOutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayOutputStream</span>();</span><br><span class="line">        <span class="built_in">this</span>.inputStream.transferTo(outputStream);</span><br><span class="line">        assertEquals(CONTENT, outputStream.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>read(byte[], int, int)</code> 和 <code>readNBytes(byte[], int, int)</code>看似是实现的相同功能，为何会设计readNBytes方法呢</strong>？</li>
+</ul>
+<p>这个问题可以参看<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/53754387/java-read-vs-readnbytes-of-the-inputstream-instance">这里在新窗口打开</a></p>
+<ol>
+<li>read(byte[], int, int)是尝试读到最多len个bytes，但是<strong>读取到的内容长度可能是小于len</strong>的。</li>
+<li>readNBytes(byte[], int, int) 会一直（while循环）查找直到stream尾为止</li>
+</ol>
+<p>举个例子：如果文本内容是<code>12345&lt;end&gt;</code>, read(s,0,10)是允许返回<code>123</code>的, 而readNbytes(s,0,10)会一直（while循环）查找直到stream尾为止，并返回<code>12345</code>.</p>
+<blockquote>
+<p>补充下JDK11为什么会增加nullInputStream方法的设计？即空对象模式</p>
+</blockquote>
+<ul>
+<li><strong>空对象模式</strong></li>
+</ul>
+<p>举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyParser</span> <span class="keyword">implements</span> <span class="title class_">Parser</span> &#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">Action</span> <span class="variable">NO_ACTION</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Action</span>() &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doSomething</span><span class="params">()</span> &#123; <span class="comment">/* do nothing */</span> &#125;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> Action <span class="title function_">findAction</span><span class="params">(String userInput)</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> ( <span class="comment">/* we can&#x27;t find any actions */</span> ) &#123;</span><br><span class="line">      <span class="keyword">return</span> NO_ACTION;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后便<strong>可以始终可以这么调用，而不用再判断空了</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ParserFactory.getParser().findAction(someInput).doSomething();</span><br></pre></td></tr></table></figure>
+
+<h3 id="FilterInputStream"><a href="#FilterInputStream" class="headerlink" title="FilterInputStream"></a>FilterInputStream</h3><p>FilterInputStream 源码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FilterInputStream</span> <span class="keyword">extends</span> <span class="title class_">InputStream</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 被装饰的inputStream</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">volatile</span> InputStream in;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 构造函数，注入被装饰的inputStream</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="title function_">FilterInputStream</span><span class="params">(InputStream in)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.in = in;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 本质是调用被装饰的inputStream的方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">return</span> in.read();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span> b[])</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">return</span> read(b, <span class="number">0</span>, b.length);</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span> b[], <span class="type">int</span> off, <span class="type">int</span> len)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">return</span> in.read(b, off, len);</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">skip</span><span class="params">(<span class="type">long</span> n)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">return</span> in.skip(n);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">available</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">return</span> in.available();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        in.close();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">mark</span><span class="params">(<span class="type">int</span> readlimit)</span> &#123;</span><br><span class="line">        in.mark(readlimit);</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">reset</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        in.reset();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">markSupported</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> in.markSupported();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>为什么被装饰的inputStream是volatile类型的</strong>？</p>
+<p>请参看： <a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-key-volatile.html">关键字: volatile详解</a></p>
+<h3 id="ByteArrayInputStream"><a href="#ByteArrayInputStream" class="headerlink" title="ByteArrayInputStream"></a>ByteArrayInputStream</h3><p>ByteArrayInputStream源码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ByteArrayInputStream</span> <span class="keyword">extends</span> <span class="title class_">InputStream</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 内部保存的byte 数组</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">byte</span> buf[];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 读取下一个字节的数组下标，byte[pos]就是read获取的下个字节</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">int</span> pos;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// mark的数组下标位置</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">int</span> <span class="variable">mark</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 保存的有效byte的个数</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">int</span> count;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ByteArrayInputStream</span><span class="params">(<span class="type">byte</span> buf[])</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.buf = buf;              </span><br><span class="line">        <span class="built_in">this</span>.pos = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">this</span>.count = buf.length;</span><br><span class="line">     &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 构造方法，带offset的</span></span><br><span class="line">     <span class="keyword">public</span> <span class="title function_">ByteArrayInputStream</span><span class="params">(<span class="type">byte</span> buf[], <span class="type">int</span> offset, <span class="type">int</span> length)</span> &#123;                </span><br><span class="line">        <span class="built_in">this</span>.buf = buf;</span><br><span class="line">        <span class="built_in">this</span>.pos = offset;</span><br><span class="line">        <span class="built_in">this</span>.count = Math.min(offset + length, buf.length);</span><br><span class="line">        <span class="built_in">this</span>.mark = offset;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 从流中读取下一个字节，没有读取到返回 -1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (pos &lt; count) ? (buf[pos++] &amp; <span class="number">0xff</span>) : -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 从第 off 位置读取&lt;b&gt;最多(实际可能小于)&lt;/b&gt; len 长度字节的数据放到 byte 数组中，流是以 -1 来判断是否读取结束的</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span> b[], <span class="type">int</span> off, <span class="type">int</span> len)</span> &#123;</span><br><span class="line">        <span class="comment">// 边界检查</span></span><br><span class="line">        <span class="keyword">if</span> (b == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NullPointerException</span>();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (off &lt; <span class="number">0</span> || len &lt; <span class="number">0</span> || len &gt; b.length - off) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IndexOutOfBoundsException</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (pos &gt;= count) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">avail</span> <span class="operator">=</span> count - pos;</span><br><span class="line">        <span class="keyword">if</span> (len &gt; avail) &#123;</span><br><span class="line">            len = avail;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (len &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从buf拷贝到byte 数组b中</span></span><br><span class="line">        System.arraycopy(buf, pos, b, off, len);</span><br><span class="line">        pos += len;</span><br><span class="line">        <span class="keyword">return</span> len;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 跳过指定个数的字节不读取</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">long</span> <span class="title function_">skip</span><span class="params">(<span class="type">long</span> n)</span> &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">k</span> <span class="operator">=</span> count - pos;</span><br><span class="line">        <span class="keyword">if</span> (n &lt; k) &#123;</span><br><span class="line">            k = n &lt; <span class="number">0</span> ? <span class="number">0</span> : n;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        pos += k;</span><br><span class="line">        <span class="keyword">return</span> k;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 还有稍稍byte在buffer中未读取，即总的count 减去 当前byte位置</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">available</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> count - pos;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 支持mark所以返回true</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">markSupported</span><span class="params">()</span> &#123; </span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 在流中当前位置mark, readAheadLimit参数未使用    </span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">mark</span><span class="params">(<span class="type">int</span> readAheadLimit)</span> &#123;            </span><br><span class="line">        mark = pos;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重置流，即回到mark的位置</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">reset</span><span class="params">()</span> &#123;</span><br><span class="line">        pos = mark;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭ByteArrayInputStream不会产生任何动作</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123; </span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="BufferedInputStream"><a href="#BufferedInputStream" class="headerlink" title="BufferedInputStream"></a>BufferedInputStream</h3><p>BufferedInputStream源码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BufferedInputStream</span> <span class="keyword">extends</span> <span class="title class_">FilterInputStream</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 默认的buffer大小</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">DEFAULT_BUFFER_SIZE</span> <span class="operator">=</span> <span class="number">8192</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分配的最大数组大小。</span></span><br><span class="line">    <span class="comment">// 由于一些VM在数组中保留一些头字，所以尝试分配较大的阵列可能会导致OutOfMemoryError（请求的阵列大小超过VM限制）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">MAX_BUFFER_SIZE</span> <span class="operator">=</span> Integer.MAX_VALUE - <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 内部保存在byte 数组中</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">volatile</span> <span class="type">byte</span> buf[];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭流的方法可能是异步的，所以使用原子AtomicReferenceFieldUpdater提供CAS无锁方式（可以解决CAS的ABA问题）来保证</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicReferenceFieldUpdater&lt;BufferedInputStream, <span class="type">byte</span>[]&gt; bufUpdater =</span><br><span class="line">        AtomicReferenceFieldUpdater.newUpdater(BufferedInputStream.class,  <span class="type">byte</span>[].class, <span class="string">&quot;buf&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 有效byte的大小</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">int</span> count;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当前位置</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">int</span> pos;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 最后一次，调用mark方法，标记的位置</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">int</span> <span class="variable">markpos</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 该变量惟一入口就是mark(int readLimit)，好比调用方法mark(1024)，那么后面读取的数据若是</span></span><br><span class="line"><span class="comment">     * 超过了1024字节，那么这次mark就为无效标记，子类能够选择抛弃该mark标记，从头开始。不过具体实现</span></span><br><span class="line"><span class="comment">     * 跟具体的子类有关，在BufferedInputStream中，会抛弃mark标记，从新将markpos赋值为-1</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">int</span> marklimit;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取被装饰的stream</span></span><br><span class="line">    <span class="keyword">private</span> InputStream <span class="title function_">getInIfOpen</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">InputStream</span> <span class="variable">input</span> <span class="operator">=</span> in;</span><br><span class="line">        <span class="keyword">if</span> (input == <span class="literal">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IOException</span>(<span class="string">&quot;Stream closed&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> input;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取实际内部的buffer数组</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">byte</span>[] getBufIfOpen() <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">byte</span>[] buffer = buf;</span><br><span class="line">        <span class="keyword">if</span> (buffer == <span class="literal">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IOException</span>(<span class="string">&quot;Stream closed&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> buffer;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造函数，buffer是8kb</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BufferedInputStream</span><span class="params">(InputStream in)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>(in, DEFAULT_BUFFER_SIZE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造函数，指定buffer大小</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BufferedInputStream</span><span class="params">(InputStream in, <span class="type">int</span> size)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(in);</span><br><span class="line">        <span class="keyword">if</span> (size &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Buffer size &lt;= 0&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        buf = <span class="keyword">new</span> <span class="title class_">byte</span>[size];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用更多的数据填充缓冲区,考虑到shuffling和其他处理标记的技巧，</span></span><br><span class="line"><span class="comment">     * 假设它是由同步方法调用的。该方法还假设所有数据已经被读入，因此pos &gt;count。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">fill</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    	<span class="comment">// 得到内部缓冲区buffer</span></span><br><span class="line">        <span class="type">byte</span>[] buffer = getBufIfOpen();</span><br><span class="line">        <span class="comment">// 没有mark的情况下， pos为0</span></span><br><span class="line">        <span class="keyword">if</span> (markpos &lt; <span class="number">0</span>)</span><br><span class="line">            pos = <span class="number">0</span>;            <span class="comment">/* no mark: throw away the buffer */</span></span><br><span class="line">        <span class="comment">// pos &gt;= buffer.length  buffer已经被读取完了 </span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (pos &gt;= buffer.length)  <span class="comment">/* no room left in buffer */</span></span><br><span class="line">        	<span class="comment">// markpos &gt; 0  有标记，标记处在缓存中间</span></span><br><span class="line">            <span class="keyword">if</span> (markpos &gt; <span class="number">0</span>) &#123;  <span class="comment">/* can throw away early part of the buffer */</span></span><br><span class="line">            	<span class="comment">// 把buffer中，markpos到pos的部分移动到0-sz处，pos设置为sz，markpos为0</span></span><br><span class="line">                <span class="type">int</span> <span class="variable">sz</span> <span class="operator">=</span> pos - markpos;</span><br><span class="line">                System.arraycopy(buffer, markpos, buffer, <span class="number">0</span>, sz);</span><br><span class="line">                pos = sz;</span><br><span class="line">                markpos = <span class="number">0</span>;</span><br><span class="line">                <span class="comment">// markpos已经为0了，marklimit比buffer.length小，再读取buffer已经没有地方了</span></span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer.length &gt;= marklimit) &#123;</span><br><span class="line">            	<span class="comment">// 清空缓存，清空标记，markpos为-1，pos为0</span></span><br><span class="line">                markpos = -<span class="number">1</span>;   <span class="comment">/* buffer got too big, invalidate mark */</span></span><br><span class="line">                pos = <span class="number">0</span>;        <span class="comment">/* drop buffer contents */</span></span><br><span class="line">                <span class="comment">// markpos已经为0了，marklimit比buffer.length大，而buffer.length已经最大了，不能扩容</span></span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer.length &gt;= MAX_BUFFER_SIZE) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">OutOfMemoryError</span>(<span class="string">&quot;Required array size too large&quot;</span>);</span><br><span class="line">               <span class="comment">// markpos已经为0了，marklimit比buffer.length大</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;            <span class="comment">/* grow buffer */</span></span><br><span class="line">            	<span class="comment">// 建立一个长度为min(2*pos,marklimit,MAX_BUFFER_SIZE),的缓存数组，然后把原来0-pos移动到新数组的0-pos处</span></span><br><span class="line">                <span class="type">int</span> <span class="variable">nsz</span> <span class="operator">=</span> (pos &lt;= MAX_BUFFER_SIZE - pos) ?</span><br><span class="line">                        pos * <span class="number">2</span> : MAX_BUFFER_SIZE;</span><br><span class="line">                <span class="keyword">if</span> (nsz &gt; marklimit)</span><br><span class="line">                    nsz = marklimit;</span><br><span class="line">                <span class="type">byte</span> nbuf[] = <span class="keyword">new</span> <span class="title class_">byte</span>[nsz];</span><br><span class="line">                System.arraycopy(buffer, <span class="number">0</span>, nbuf, <span class="number">0</span>, pos);</span><br><span class="line">                <span class="comment">// 用bufUpdater替换buffer</span></span><br><span class="line">                <span class="keyword">if</span> (!bufUpdater.compareAndSet(<span class="built_in">this</span>, buffer, nbuf)) &#123;</span><br><span class="line">                    <span class="comment">// Can&#x27;t replace buf if there was an async close.</span></span><br><span class="line">                    <span class="comment">// Note: This would need to be changed if fill()</span></span><br><span class="line">                    <span class="comment">// is ever made accessible to multiple threads.</span></span><br><span class="line">                    <span class="comment">// But for now, the only way CAS can fail is via close.</span></span><br><span class="line">                    <span class="comment">// assert buf == null;</span></span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IOException</span>(<span class="string">&quot;Stream closed&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                buffer = nbuf;</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="comment">// 当前读取上限count为pos</span></span><br><span class="line">        count = pos;</span><br><span class="line">        <span class="comment">// 从内部的输入流，读取pos到buffer.length部分，读取的字节数加到count</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> getInIfOpen().read(buffer, pos, buffer.length - pos);</span><br><span class="line">        <span class="keyword">if</span> (n &gt; <span class="number">0</span>)</span><br><span class="line">            count = n + pos;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取byte</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 说明当前buf[]数组大小不够了，须要fill()</span></span><br><span class="line">        <span class="keyword">if</span> (pos &gt;= count) &#123;</span><br><span class="line">            fill();</span><br><span class="line">            <span class="comment">// 说明没有读取到任何数据</span></span><br><span class="line">            <span class="keyword">if</span> (pos &gt;= count)</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> getBufIfOpen()[pos++] &amp; <span class="number">0xff</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Read characters into a portion of an array, reading from the underlying</span></span><br><span class="line"><span class="comment">     * stream at most once if necessary.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="title function_">read1</span><span class="params">(<span class="type">byte</span>[] b, <span class="type">int</span> off, <span class="type">int</span> len)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">avail</span> <span class="operator">=</span> count - pos;</span><br><span class="line">        <span class="keyword">if</span> (avail &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 当写入指定数组b的长度大小超过BufferedInputStream中核心缓存数组buf[]的大小而且 markpos &lt; 0，那么就直接从数据流中读取数据给b数组，而不经过buf[]缓存数组，避免buf[]数组急剧增大</span></span><br><span class="line">            <span class="keyword">if</span> (len &gt;= getBufIfOpen().length &amp;&amp; markpos &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> getInIfOpen().read(b, off, len);</span><br><span class="line">            &#125;</span><br><span class="line">            fill();</span><br><span class="line">            avail = count - pos;</span><br><span class="line">            <span class="keyword">if</span> (avail &lt;= <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">cnt</span> <span class="operator">=</span> (avail &lt; len) ? avail : len;</span><br><span class="line">        System.arraycopy(getBufIfOpen(), pos, b, off, cnt);</span><br><span class="line">        pos += cnt;</span><br><span class="line">        <span class="keyword">return</span> cnt;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取到byte数组b中</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span> b[], <span class="type">int</span> off, <span class="type">int</span> len)</span></span><br><span class="line">        <span class="keyword">throws</span> IOException</span><br><span class="line">    &#123;</span><br><span class="line">        getBufIfOpen(); <span class="comment">// Check for closed stream</span></span><br><span class="line">        <span class="keyword">if</span> ((off | len | (off + len) | (b.length - (off + len))) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IndexOutOfBoundsException</span>();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">nread</span> <span class="operator">=</span> read1(b, off + n, len - n);</span><br><span class="line">            <span class="keyword">if</span> (nread &lt;= <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">return</span> (n == <span class="number">0</span>) ? nread : n;</span><br><span class="line">            n += nread;</span><br><span class="line">            <span class="keyword">if</span> (n &gt;= len)</span><br><span class="line">                <span class="keyword">return</span> n;</span><br><span class="line">            <span class="comment">// if not closed but no bytes available, return</span></span><br><span class="line">            <span class="type">InputStream</span> <span class="variable">input</span> <span class="operator">=</span> in;</span><br><span class="line">            <span class="keyword">if</span> (input != <span class="literal">null</span> &amp;&amp; input.available() &lt;= <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">return</span> n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 跳过n个</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">long</span> <span class="title function_">skip</span><span class="params">(<span class="type">long</span> n)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        getBufIfOpen(); <span class="comment">// Check for closed stream</span></span><br><span class="line">        <span class="keyword">if</span> (n &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">long</span> <span class="variable">avail</span> <span class="operator">=</span> count - pos;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (avail &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// If no mark position set then don&#x27;t keep in buffer</span></span><br><span class="line">            <span class="keyword">if</span> (markpos &lt;<span class="number">0</span>)</span><br><span class="line">                <span class="keyword">return</span> getInIfOpen().skip(n);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Fill in buffer to save bytes for reset</span></span><br><span class="line">            fill();</span><br><span class="line">            avail = count - pos;</span><br><span class="line">            <span class="keyword">if</span> (avail &lt;= <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">skipped</span> <span class="operator">=</span> (avail &lt; n) ? avail : n;</span><br><span class="line">        pos += skipped;</span><br><span class="line">        <span class="keyword">return</span> skipped;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// buf[]数组剩余字节数+输入流中剩余字节数</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">available</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> count - pos;</span><br><span class="line">        <span class="type">int</span> <span class="variable">avail</span> <span class="operator">=</span> getInIfOpen().available();</span><br><span class="line">        <span class="keyword">return</span> n &gt; (Integer.MAX_VALUE - avail)</span><br><span class="line">                    ? Integer.MAX_VALUE</span><br><span class="line">                    : n + avail;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 标记位置，marklimit只有在这里才可以被赋值，readlimit表示mark()方法执行后，最多可以从流中读取的数据</span></span><br><span class="line">    <span class="comment">// 若是超过该字节大小，那么在fill()的时候，就会认为此mark()标记无效，从新将 markpos = -1，pos = 0</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">mark</span><span class="params">(<span class="type">int</span> readlimit)</span> &#123;</span><br><span class="line">        marklimit = readlimit;</span><br><span class="line">        markpos = pos;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重置位置</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">reset</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        getBufIfOpen(); <span class="comment">// 如果已经close, 则直接报错</span></span><br><span class="line">        <span class="keyword">if</span> (markpos &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IOException</span>(<span class="string">&quot;Resetting to invalid mark&quot;</span>);</span><br><span class="line">        pos = markpos;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 支持mark, 所以返回true</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">markSupported</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通过AtomicReferenceFieldUpdater的CAS无锁方式close</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">byte</span>[] buffer;</span><br><span class="line">        <span class="keyword">while</span> ( (buffer = buf) != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (bufUpdater.compareAndSet(<span class="built_in">this</span>, buffer, <span class="literal">null</span>)) &#123;</span><br><span class="line">                <span class="type">InputStream</span> <span class="variable">input</span> <span class="operator">=</span> in;</span><br><span class="line">                in = <span class="literal">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (input != <span class="literal">null</span>)</span><br><span class="line">                    input.close();</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Else retry in case a new buf was CASed in fill()</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>AtomicReferenceFieldUpdater具体可以参考：<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/thread/java-thread-x-juc-AtomicInteger.html">JUC原子类: CAS, Unsafe和原子类详解</a></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li>JDK 11 源码</li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/winterfells/p/8745297.html">https://www.cnblogs.com/winterfells/p/8745297.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/AdaiCoffee/p/11369699.html">https://www.cnblogs.com/AdaiCoffee/p/11369699.html</a></li>
+</ul>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2017 王云生
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
