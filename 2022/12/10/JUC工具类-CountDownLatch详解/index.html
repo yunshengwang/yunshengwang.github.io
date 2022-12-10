@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JUC工具类_CountDownLatch详解 | Mr.Wang Blog</title>
+  <meta name="keywords" content=" java , 多线程 ">
+  <meta name="description" content="JUC工具类_CountDownLatch详解 | Mr.Wang Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="Java 并发 - ThreadLocal详解 ThreadLocal是通过线程隔离的方式防止任务在共享资源上产生冲突, 线程本地存储是一种自动化机制，可以为使用相同变量的每个不同线程都创建不同的存储。 @pdai   Java 并发 - ThreadLocal详解 带着BAT大厂的面试问题去理解 ThreadLocal简介 ThreadLocal理解 ThreadLocal原理 如何实现线程隔离">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThreadLocal详解">
+<meta property="og:url" content="http://example.com/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Mr.Wang Blog">
+<meta property="og:description" content="Java 并发 - ThreadLocal详解 ThreadLocal是通过线程隔离的方式防止任务在共享资源上产生冲突, 线程本地存储是一种自动化机制，可以为使用相同变量的每个不同线程都创建不同的存储。 @pdai   Java 并发 - ThreadLocal详解 带着BAT大厂的面试问题去理解 ThreadLocal简介 ThreadLocal理解 ThreadLocal原理 如何实现线程隔离">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-12-10T14:58:20.000Z">
+<meta property="article:modified_time" content="2022-12-10T14:58:46.275Z">
+<meta property="article:author" content="王云生">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>王云生</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="cnblogs"
+               href="https://home.cnblogs.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-cnblogs"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/a996358a335f"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/yun-sheng-10-62-26"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="csdn"
+               href="https://blog.csdn.net/u011593571?type=collect"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-csdn"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/u/4978723"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="juejin"
+               href="https://juejin.cn/user/2604099346111086"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-juejin"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:w_huilong@163.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(47)</small>
+            
+        </div>
+    </li>
+    
+        
+            
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(1)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="JAVA">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        JAVA
+                        <small>(42)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA多线程">
+                                        
+                                        JAVA多线程
+                                        
+                                            <small>(27
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA基础">
+                                        
+                                        JAVA基础
+                                        
+                                            <small>(8
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java集合框架">
+                                        
+                                        Java集合框架
+                                        
+                                            <small>(7
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="Spring">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        Spring
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringBoot2.5.X系列">
+                                        
+                                        SpringBoot2.5.X系列
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringFrameWork5基础">
+                                        
+                                        SpringFrameWork5基础
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="47">
+<input type="hidden" id="yelog_site_word_count" value="235.4k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>多线程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ArrayList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Collection</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>hexo</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedHashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Map</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>PriorityQueue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Queue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring boot</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Stack</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tool</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>WeakHashMap</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="ThreadLocal详解">ThreadLocal详解</span>
+            <span class="post-date" title="2022-12-10 22:58:20">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Exchanger%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Exchanger详解">JUC工具类_Exchanger详解</span>
+            <span class="post-date" title="2022-12-10 22:57:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Phaser%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Phaser详解">JUC工具类_Phaser详解</span>
+            <span class="post-date" title="2022-12-10 22:56:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Semaphore详解">JUC工具类_Semaphore详解</span>
+            <span class="post-date" title="2022-12-10 22:56:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CyclicBarrier%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CyclicBarrier详解">JUC工具类_CyclicBarrier详解</span>
+            <span class="post-date" title="2022-12-10 22:55:21">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CountDownLatch详解">JUC工具类_CountDownLatch详解</span>
+            <span class="post-date" title="2022-12-10 22:54:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-Fork-Join%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_Fork_Join框架详解">JUC线程池_Fork_Join框架详解</span>
+            <span class="post-date" title="2022-12-10 22:53:19">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ScheduledThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ScheduledThreadPoolExecutor详解">JUC线程池_ScheduledThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:52:28">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ThreadPoolExecutor详解">JUC线程池_ThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:51:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-FutureTask%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_FutureTask详解">JUC线程池_FutureTask详解</span>
+            <span class="post-date" title="2022-12-10 22:50:52">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-BlockingQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_BlockingQueue详解">JUC集合_BlockingQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:50:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentLinkedQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentLinkedQueue详解">JUC集合_ConcurrentLinkedQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:49:05">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-CopyOnWriteArrayList%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_CopyOnWriteArrayList详解">JUC集合_CopyOnWriteArrayList详解</span>
+            <span class="post-date" title="2022-12-10 22:48:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentHashMap%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentHashMap详解">JUC集合_ConcurrentHashMap详解</span>
+            <span class="post-date" title="2022-12-10 22:47:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantReadWriteLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantReadWriteLock详解">JUC锁_ReentrantReadWriteLock详解</span>
+            <span class="post-date" title="2022-12-10 22:46:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantLock详解">JUC锁_ReentrantLock详解</span>
+            <span class="post-date" title="2022-12-10 22:45:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-%E9%94%81%E6%A0%B8%E5%BF%83%E7%B1%BBAQS%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_锁核心类AQS详解">JUC锁_锁核心类AQS详解</span>
+            <span class="post-date" title="2022-12-10 22:44:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-LockSupport%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_LockSupport详解">JUC锁_LockSupport详解</span>
+            <span class="post-date" title="2022-12-10 22:43:25">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-CAS-Unsafe%E5%92%8C%E5%8E%9F%E5%AD%90%E7%B1%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC原子类_CAS_Unsafe和原子类详解">JUC原子类_CAS_Unsafe和原子类详解</span>
+            <span class="post-date" title="2022-12-10 22:42:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%B1%BB%E6%B1%87%E6%80%BB%E5%92%8C%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC类汇总和学习指南">JUC类汇总和学习指南</span>
+            <span class="post-date" title="2022-12-10 22:41:01">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/final%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="final详解">final详解</span>
+            <span class="post-date" title="2022-12-10 22:39:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/volatile%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="volatile详解">volatile详解</span>
+            <span class="post-date" title="2022-12-10 22:39:02">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/synchronized%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="synchronized详解">synchronized详解</span>
+            <span class="post-date" title="2022-12-10 22:37:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="线程基础">线程基础</span>
+            <span class="post-date" title="2022-12-10 22:31:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="理论基础">理论基础</span>
+            <span class="post-date" title="2022-12-10 22:30:46">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 "
+           href="/2022/12/10/WeakHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,WeakHashMap"
+           data-author="" >
+            <span class="post-title" title="WeakHashMap源码解析">WeakHashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:26:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 "
+           href="/2022/12/10/TreeSet-TreeMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,TreeSet,TreeMap"
+           data-author="" >
+            <span class="post-title" title="TreeSet&amp;TreeMap源码解析">TreeSet&amp;TreeMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:25:45">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedHashSet-Map%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedHashSet,Map"
+           data-author="" >
+            <span class="post-title" title="LinkedHashSet&amp;Map源码解析">LinkedHashSet&amp;Map源码解析</span>
+            <span class="post-date" title="2022-12-10 22:24:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/HashSet-HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,HashSet,HashMap"
+           data-author="" >
+            <span class="post-title" title="HashSet&amp;HashMap源码解析">HashSet&amp;HashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:23:24">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/PriorityQueue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,PriorityQueue"
+           data-author="" >
+            <span class="post-title" title="PriorityQueue源码解析">PriorityQueue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:22:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Stack-Queue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Stack,Queue"
+           data-author="" >
+            <span class="post-title" title="Stack&amp;Queue源码解析">Stack&amp;Queue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:21:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedList"
+           data-author="" >
+            <span class="post-title" title="LinkedList源码解析">LinkedList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:19:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/ArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,ArrayList"
+           data-author="" >
+            <span class="post-title" title="ArrayList源码解析">ArrayList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:18:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringBoot2.5.X系列 "
+           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring,spring boot"
+           data-author="" >
+            <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:14:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringFrameWork5基础 "
+           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring"
+           data-author="" >
+            <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:10:47">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/"
+           data-tag="java,Collection"
+           data-author="" >
+            <span class="post-title" title="Collection类关系图">Collection类关系图</span>
+            <span class="post-date" title="2022-12-10 21:59:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/SPI%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="SPI机制详解">SPI机制详解</span>
+            <span class="post-date" title="2022-12-10 21:58:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="反射机制详解">反射机制详解</span>
+            <span class="post-date" title="2022-12-10 21:57:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%BC%82%E5%B8%B8%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="异常机制详解">异常机制详解</span>
+            <span class="post-date" title="2022-12-10 21:56:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="注解机制详解">注解机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="泛型机制详解">泛型机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%9B%BE%E8%B0%B1-Q-A/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="图谱&amp;Q/A">图谱&amp;Q/A</span>
+            <span class="post-date" title="2022-12-10 21:53:16">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E7%9F%A5%E8%AF%86%E7%82%B9/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="知识点">知识点</span>
+            <span class="post-date" title="2022-12-10 21:52:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="面向对象">面向对象</span>
+            <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁">Java并发 - Java中所有的锁</span>
+            <span class="post-date" title="2022-12-10 21:25:40">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 HEXO "
+           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           data-tag="hexo,tool"
+           data-author="" >
+            <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
+            <span class="post-date" title="2022-12-10 19:02:24">2022/12/10</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-JUC工具类-CountDownLatch详解" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">JUC工具类_CountDownLatch详解</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="JAVA">JAVA</a> > 
+            
+            <a  data-rel="JAVA&lt;---&gt;JAVA多线程">JAVA多线程</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">java</a>
+            
+            <a class="color4">多线程</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-10 22:54:54'>2022-12-10 22:54</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:3.4k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3"><span class="toc-text">JUC工具类: CountDownLatch详解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%A6%E7%9D%80BAT%E5%A4%A7%E5%8E%82%E7%9A%84%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98%E5%8E%BB%E7%90%86%E8%A7%A3"><span class="toc-text">带着BAT大厂的面试问题去理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CountDownLatch%E4%BB%8B%E7%BB%8D"><span class="toc-text">CountDownLatch介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CountDownLatch%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-text">CountDownLatch源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB"><span class="toc-text">类的继承关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-text">类的内部类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="toc-text">类的属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="toc-text">类的构造函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%87%BD%E6%95%B0-await%E5%87%BD%E6%95%B0"><span class="toc-text">核心函数 - await函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%87%BD%E6%95%B0-countDown%E5%87%BD%E6%95%B0"><span class="toc-text">核心函数 - countDown函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CountDownLatch%E7%A4%BA%E4%BE%8B"><span class="toc-text">CountDownLatch示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3"><span class="toc-text">更深入理解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E9%81%93%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-text">写道面试题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8wait%E5%92%8Cnotify%E5%AE%9E%E7%8E%B0"><span class="toc-text">使用wait和notify实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CountDownLatch%E5%AE%9E%E7%8E%B0"><span class="toc-text">CountDownLatch实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="JUC工具类-CountDownLatch详解"><a href="#JUC工具类-CountDownLatch详解" class="headerlink" title="JUC工具类: CountDownLatch详解"></a>JUC工具类: CountDownLatch详解</h2><blockquote>
+<p>CountDownLatch底层也是由AQS，用来同步一个或多个任务的常用并发工具类，强制它们等待由其他任务执行的一组操作完成。@pdai</p>
+</blockquote>
+<ul>
+<li><a href="#juc%E5%B7%A5%E5%85%B7%E7%B1%BB-countdownlatch%E8%AF%A6%E8%A7%A3">JUC工具类: CountDownLatch详解</a><ul>
+<li><a href="#%E5%B8%A6%E7%9D%80bat%E5%A4%A7%E5%8E%82%E7%9A%84%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98%E5%8E%BB%E7%90%86%E8%A7%A3">带着BAT大厂的面试问题去理解</a></li>
+<li><a href="#countdownlatch%E4%BB%8B%E7%BB%8D">CountDownLatch介绍</a></li>
+<li><a href="#countdownlatch%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90">CountDownLatch源码分析</a><ul>
+<li><a href="#%E7%B1%BB%E7%9A%84%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB">类的继承关系</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB">类的内部类</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E5%B1%9E%E6%80%A7">类的属性</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">类的构造函数</a></li>
+<li><a href="#%E6%A0%B8%E5%BF%83%E5%87%BD%E6%95%B0---await%E5%87%BD%E6%95%B0">核心函数 - await函数</a></li>
+<li><a href="#%E6%A0%B8%E5%BF%83%E5%87%BD%E6%95%B0---countdown%E5%87%BD%E6%95%B0">核心函数 - countDown函数</a></li>
+</ul>
+</li>
+<li><a href="#countdownlatch%E7%A4%BA%E4%BE%8B">CountDownLatch示例</a></li>
+<li><a href="#%E6%9B%B4%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3">更深入理解</a><ul>
+<li><a href="#%E5%86%99%E9%81%93%E9%9D%A2%E8%AF%95%E9%A2%98">写道面试题</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8wait%E5%92%8Cnotify%E5%AE%9E%E7%8E%B0">使用wait和notify实现</a></li>
+<li><a href="#countdownlatch%E5%AE%9E%E7%8E%B0">CountDownLatch实现</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0">参考文章</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="带着BAT大厂的面试问题去理解"><a href="#带着BAT大厂的面试问题去理解" class="headerlink" title="带着BAT大厂的面试问题去理解"></a>带着BAT大厂的面试问题去理解</h2><p>提示</p>
+<p>请带着这些问题继续后文，会很大程度上帮助你更好的理解相关知识点。@pdai</p>
+<ul>
+<li>什么是CountDownLatch?</li>
+<li>CountDownLatch底层实现原理?</li>
+<li>CountDownLatch一次可以唤醒几个任务? 多个</li>
+<li>CountDownLatch有哪些主要方法? await(),countDown()</li>
+<li>CountDownLatch适用于什么场景?</li>
+<li>写道题：实现一个容器，提供两个方法，add，size 写两个线程，线程1添加10个元素到容器中，线程2实现监控元素的个数，当个数到5个时，线程2给出提示并结束? 使用CountDownLatch 代替wait notify 好处。</li>
+</ul>
+<h2 id="CountDownLatch介绍"><a href="#CountDownLatch介绍" class="headerlink" title="CountDownLatch介绍"></a>CountDownLatch介绍</h2><p>从源码可知，其底层是由AQS提供支持，所以其数据结构可以参考AQS的数据结构，而AQS的数据结构核心就是两个虚拟队列: 同步队列sync queue 和条件队列condition queue，不同的条件会有不同的条件队列。CountDownLatch典型的用法是将一个程序分为n个互相独立的可解决任务，并创建值为n的CountDownLatch。当每一个任务完成时，都会在这个锁存器上调用countDown，等待问题被解决的任务调用这个锁存器的await，将他们自己拦住，直至锁存器计数结束。</p>
+<h2 id="CountDownLatch源码分析"><a href="#CountDownLatch源码分析" class="headerlink" title="CountDownLatch源码分析"></a>CountDownLatch源码分析</h2><h3 id="类的继承关系"><a href="#类的继承关系" class="headerlink" title="类的继承关系"></a>类的继承关系</h3><p>CountDownLatch没有显示继承哪个父类或者实现哪个父接口, 它底层是AQS是通过内部类Sync来实现的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CountDownLatch</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="类的内部类"><a href="#类的内部类" class="headerlink" title="类的内部类"></a>类的内部类</h3><p>CountDownLatch类存在一个内部类Sync，继承自AbstractQueuedSynchronizer，其源代码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">Sync</span> <span class="keyword">extends</span> <span class="title class_">AbstractQueuedSynchronizer</span> &#123;</span><br><span class="line">    <span class="comment">// 版本号</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">4982264981922014374L</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 构造器</span></span><br><span class="line">    Sync(<span class="type">int</span> count) &#123;</span><br><span class="line">        setState(count);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 返回当前计数</span></span><br><span class="line">    <span class="type">int</span> <span class="title function_">getCount</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> getState();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 试图在共享模式下获取对象状态</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">int</span> <span class="title function_">tryAcquireShared</span><span class="params">(<span class="type">int</span> acquires)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (getState() == <span class="number">0</span>) ? <span class="number">1</span> : -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 试图设置状态来反映共享模式下的一个释放</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">boolean</span> <span class="title function_">tryReleaseShared</span><span class="params">(<span class="type">int</span> releases)</span> &#123;</span><br><span class="line">        <span class="comment">// Decrement count; signal when transition to zero</span></span><br><span class="line">        <span class="comment">// 无限循环</span></span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="comment">// 获取状态</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> getState();</span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) <span class="comment">// 没有被线程占有</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            <span class="comment">// 下一个状态</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">nextc</span> <span class="operator">=</span> c-<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (compareAndSetState(c, nextc)) <span class="comment">// 比较并且设置成功</span></span><br><span class="line">                <span class="keyword">return</span> nextc == <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 对CountDownLatch方法的调用会转发到对Sync或AQS的方法的调用，所以，AQS对CountDownLatch提供支持。</p>
+<h3 id="类的属性"><a href="#类的属性" class="headerlink" title="类的属性"></a>类的属性</h3><p>可以看到CountDownLatch类的内部只有一个Sync类型的属性:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CountDownLatch</span> &#123;</span><br><span class="line">    <span class="comment">// 同步队列</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Sync sync;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="类的构造函数"><a href="#类的构造函数" class="headerlink" title="类的构造函数"></a>类的构造函数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">CountDownLatch</span><span class="params">(<span class="type">int</span> count)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (count &lt; <span class="number">0</span>) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;count &lt; 0&quot;</span>);</span><br><span class="line">    <span class="comment">// 初始化状态数</span></span><br><span class="line">    <span class="built_in">this</span>.sync = <span class="keyword">new</span> <span class="title class_">Sync</span>(count);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 该构造函数可以构造一个用给定计数初始化的CountDownLatch，并且构造函数内完成了sync的初始化，并设置了状态数。</p>
+<h3 id="核心函数-await函数"><a href="#核心函数-await函数" class="headerlink" title="核心函数 - await函数"></a>核心函数 - await函数</h3><p>此函数将会使当前线程在锁存器倒计数至零之前一直等待，除非线程被中断。其源码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">await</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">    <span class="comment">// 转发到sync对象上</span></span><br><span class="line">    sync.acquireSharedInterruptibly(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 由源码可知，对CountDownLatch对象的await的调用会转发为对Sync的acquireSharedInterruptibly(从AQS继承的方法)方法的调用。</p>
+<ul>
+<li>acquireSharedInterruptibly源码如下:</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">acquireSharedInterruptibly</span><span class="params">(<span class="type">int</span> arg)</span></span><br><span class="line">        <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">    <span class="keyword">if</span> (Thread.interrupted())</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InterruptedException</span>();</span><br><span class="line">    <span class="keyword">if</span> (tryAcquireShared(arg) &lt; <span class="number">0</span>)</span><br><span class="line">        doAcquireSharedInterruptibly(arg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 从源码中可知，acquireSharedInterruptibly又调用了CountDownLatch的内部类Sync的tryAcquireShared和AQS的doAcquireSharedInterruptibly函数。</p>
+<ul>
+<li>tryAcquireShared函数的源码如下:</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="type">int</span> <span class="title function_">tryAcquireShared</span><span class="params">(<span class="type">int</span> acquires)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (getState() == <span class="number">0</span>) ? <span class="number">1</span> : -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 该函数只是简单的判断AQS的state是否为0，为0则返回1，不为0则返回-1。</p>
+<ul>
+<li>doAcquireSharedInterruptibly函数的源码如下:</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">doAcquireSharedInterruptibly</span><span class="params">(<span class="type">int</span> arg)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">    <span class="comment">// 添加节点至等待队列</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> addWaiter(Node.SHARED);</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">failed</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123; <span class="comment">// 无限循环</span></span><br><span class="line">            <span class="comment">// 获取node的前驱节点</span></span><br><span class="line">            <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">p</span> <span class="operator">=</span> node.predecessor();</span><br><span class="line">            <span class="keyword">if</span> (p == head) &#123; <span class="comment">// 前驱节点为头节点</span></span><br><span class="line">                <span class="comment">// 试图在共享模式下获取对象状态</span></span><br><span class="line">                <span class="type">int</span> <span class="variable">r</span> <span class="operator">=</span> tryAcquireShared(arg);</span><br><span class="line">                <span class="keyword">if</span> (r &gt;= <span class="number">0</span>) &#123; <span class="comment">// 获取成功</span></span><br><span class="line">                    <span class="comment">// 设置头节点并进行繁殖</span></span><br><span class="line">                    setHeadAndPropagate(node, r);</span><br><span class="line">                    <span class="comment">// 设置节点next域</span></span><br><span class="line">                    p.next = <span class="literal">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    failed = <span class="literal">false</span>;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt()) <span class="comment">// 在获取失败后是否需要禁止线程并且进行中断检查</span></span><br><span class="line">                <span class="comment">// 抛出异常</span></span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InterruptedException</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 在AQS的doAcquireSharedInterruptibly中可能会再次调用CountDownLatch的内部类Sync的tryAcquireShared方法和AQS的setHeadAndPropagate方法。</p>
+<ul>
+<li>setHeadAndPropagate方法源码如下。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">setHeadAndPropagate</span><span class="params">(Node node, <span class="type">int</span> propagate)</span> &#123;</span><br><span class="line">    <span class="comment">// 获取头节点</span></span><br><span class="line">    <span class="type">Node</span> <span class="variable">h</span> <span class="operator">=</span> head; <span class="comment">// Record old head for check below</span></span><br><span class="line">    <span class="comment">// 设置头节点</span></span><br><span class="line">    setHead(node);</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">        * Try to signal next queued node if:</span></span><br><span class="line"><span class="comment">        *   Propagation was indicated by caller,</span></span><br><span class="line"><span class="comment">        *     or was recorded (as h.waitStatus either before</span></span><br><span class="line"><span class="comment">        *     or after setHead) by a previous operation</span></span><br><span class="line"><span class="comment">        *     (note: this uses sign-check of waitStatus because</span></span><br><span class="line"><span class="comment">        *      PROPAGATE status may transition to SIGNAL.)</span></span><br><span class="line"><span class="comment">        * and</span></span><br><span class="line"><span class="comment">        *   The next node is waiting in shared mode,</span></span><br><span class="line"><span class="comment">        *     or we don&#x27;t know, because it appears null</span></span><br><span class="line"><span class="comment">        *</span></span><br><span class="line"><span class="comment">        * The conservatism in both of these checks may cause</span></span><br><span class="line"><span class="comment">        * unnecessary wake-ups, but only when there are multiple</span></span><br><span class="line"><span class="comment">        * racing acquires/releases, so most need signals now or soon</span></span><br><span class="line"><span class="comment">        * anyway.</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    <span class="comment">// 进行判断</span></span><br><span class="line">    <span class="keyword">if</span> (propagate &gt; <span class="number">0</span> || h == <span class="literal">null</span> || h.waitStatus &lt; <span class="number">0</span> ||</span><br><span class="line">        (h = head) == <span class="literal">null</span> || h.waitStatus &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 获取节点的后继</span></span><br><span class="line">        <span class="type">Node</span> <span class="variable">s</span> <span class="operator">=</span> node.next;</span><br><span class="line">        <span class="keyword">if</span> (s == <span class="literal">null</span> || s.isShared()) <span class="comment">// 后继为空或者为共享模式</span></span><br><span class="line">            <span class="comment">// 以共享模式进行释放</span></span><br><span class="line">            doReleaseShared();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 该方法设置头节点并且释放头节点后面的满足条件的结点，该方法中可能会调用到AQS的doReleaseShared方法，其源码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">doReleaseShared</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">        * Ensure that a release propagates, even if there are other</span></span><br><span class="line"><span class="comment">        * in-progress acquires/releases.  This proceeds in the usual</span></span><br><span class="line"><span class="comment">        * way of trying to unparkSuccessor of head if it needs</span></span><br><span class="line"><span class="comment">        * signal. But if it does not, status is set to PROPAGATE to</span></span><br><span class="line"><span class="comment">        * ensure that upon release, propagation continues.</span></span><br><span class="line"><span class="comment">        * Additionally, we must loop in case a new node is added</span></span><br><span class="line"><span class="comment">        * while we are doing this. Also, unlike other uses of</span></span><br><span class="line"><span class="comment">        * unparkSuccessor, we need to know if CAS to reset status</span></span><br><span class="line"><span class="comment">        * fails, if so rechecking.</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    <span class="comment">// 无限循环</span></span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="comment">// 保存头节点</span></span><br><span class="line">        <span class="type">Node</span> <span class="variable">h</span> <span class="operator">=</span> head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="literal">null</span> &amp;&amp; h != tail) &#123; <span class="comment">// 头节点不为空并且头节点不为尾结点</span></span><br><span class="line">            <span class="comment">// 获取头节点的等待状态</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">ws</span> <span class="operator">=</span> h.waitStatus; </span><br><span class="line">            <span class="keyword">if</span> (ws == Node.SIGNAL) &#123; <span class="comment">// 状态为SIGNAL</span></span><br><span class="line">                <span class="keyword">if</span> (!compareAndSetWaitStatus(h, Node.SIGNAL, <span class="number">0</span>)) <span class="comment">// 不成功就继续</span></span><br><span class="line">                    <span class="keyword">continue</span>;            <span class="comment">// loop to recheck cases</span></span><br><span class="line">                <span class="comment">// 释放后继结点</span></span><br><span class="line">                unparkSuccessor(h);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (ws == <span class="number">0</span> &amp;&amp;</span><br><span class="line">                        !compareAndSetWaitStatus(h, <span class="number">0</span>, Node.PROPAGATE)) <span class="comment">// 状态为0并且不成功，继续</span></span><br><span class="line">                <span class="keyword">continue</span>;                <span class="comment">// loop on failed CAS</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (h == head) <span class="comment">// 若头节点改变，继续循环  </span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 该方法在共享模式下释放，具体的流程再之后会通过一个示例给出。</p>
+<p>所以，对CountDownLatch的await调用大致会有如下的调用链。</p>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/java-thread-x-countdownlatch-1.png"></p>
+<p>说明: 上图给出了可能会调用到的主要方法，并非一定会调用到，之后，会通过一个示例给出详细的分析。</p>
+<h3 id="核心函数-countDown函数"><a href="#核心函数-countDown函数" class="headerlink" title="核心函数 - countDown函数"></a>核心函数 - countDown函数</h3><p>此函数将递减锁存器的计数，如果计数到达零，则释放所有等待的线程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">countDown</span><span class="params">()</span> &#123;</span><br><span class="line">    sync.releaseShared(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 对countDown的调用转换为对Sync对象的releaseShared(从AQS继承而来)方法的调用。</p>
+<ul>
+<li>releaseShared源码如下</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">releaseShared</span><span class="params">(<span class="type">int</span> arg)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (tryReleaseShared(arg)) &#123;</span><br><span class="line">        doReleaseShared();</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 此函数会以共享模式释放对象，并且在函数中会调用到CountDownLatch的tryReleaseShared函数，并且可能会调用AQS的doReleaseShared函数。</p>
+<ul>
+<li>tryReleaseShared源码如下</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="type">boolean</span> <span class="title function_">tryReleaseShared</span><span class="params">(<span class="type">int</span> releases)</span> &#123;</span><br><span class="line">    <span class="comment">// Decrement count; signal when transition to zero</span></span><br><span class="line">    <span class="comment">// 无限循环</span></span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="comment">// 获取状态</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> getState();</span><br><span class="line">        <span class="keyword">if</span> (c == <span class="number">0</span>) <span class="comment">// 没有被线程占有</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="comment">// 下一个状态</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">nextc</span> <span class="operator">=</span> c-<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(c, nextc)) <span class="comment">// 比较并且设置成功</span></span><br><span class="line">            <span class="keyword">return</span> nextc == <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 此函数会试图设置状态来反映共享模式下的一个释放。具体的流程在下面的示例中会进行分析。</p>
+<ul>
+<li>AQS的doReleaseShared的源码如下</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">doReleaseShared</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">        * Ensure that a release propagates, even if there are other</span></span><br><span class="line"><span class="comment">        * in-progress acquires/releases.  This proceeds in the usual</span></span><br><span class="line"><span class="comment">        * way of trying to unparkSuccessor of head if it needs</span></span><br><span class="line"><span class="comment">        * signal. But if it does not, status is set to PROPAGATE to</span></span><br><span class="line"><span class="comment">        * ensure that upon release, propagation continues.</span></span><br><span class="line"><span class="comment">        * Additionally, we must loop in case a new node is added</span></span><br><span class="line"><span class="comment">        * while we are doing this. Also, unlike other uses of</span></span><br><span class="line"><span class="comment">        * unparkSuccessor, we need to know if CAS to reset status</span></span><br><span class="line"><span class="comment">        * fails, if so rechecking.</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    <span class="comment">// 无限循环</span></span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="comment">// 保存头节点</span></span><br><span class="line">        <span class="type">Node</span> <span class="variable">h</span> <span class="operator">=</span> head;</span><br><span class="line">        <span class="keyword">if</span> (h != <span class="literal">null</span> &amp;&amp; h != tail) &#123; <span class="comment">// 头节点不为空并且头节点不为尾结点</span></span><br><span class="line">            <span class="comment">// 获取头节点的等待状态</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">ws</span> <span class="operator">=</span> h.waitStatus; </span><br><span class="line">            <span class="keyword">if</span> (ws == Node.SIGNAL) &#123; <span class="comment">// 状态为SIGNAL</span></span><br><span class="line">                <span class="keyword">if</span> (!compareAndSetWaitStatus(h, Node.SIGNAL, <span class="number">0</span>)) <span class="comment">// 不成功就继续</span></span><br><span class="line">                    <span class="keyword">continue</span>;            <span class="comment">// loop to recheck cases</span></span><br><span class="line">                <span class="comment">// 释放后继结点</span></span><br><span class="line">                unparkSuccessor(h);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (ws == <span class="number">0</span> &amp;&amp;</span><br><span class="line">                        !compareAndSetWaitStatus(h, <span class="number">0</span>, Node.PROPAGATE)) <span class="comment">// 状态为0并且不成功，继续</span></span><br><span class="line">                <span class="keyword">continue</span>;                <span class="comment">// loop on failed CAS</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (h == head) <span class="comment">// 若头节点改变，继续循环  </span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 此函数在共享模式下释放资源。</p>
+<p>所以，对CountDownLatch的countDown调用大致会有如下的调用链。</p>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/java-thread-x-countdownlatch-2.png"></p>
+<p>说明: 上图给出了可能会调用到的主要方法，并非一定会调用到，之后，会通过一个示例给出详细的分析。</p>
+<h2 id="CountDownLatch示例"><a href="#CountDownLatch示例" class="headerlink" title="CountDownLatch示例"></a>CountDownLatch示例</h2><p>下面给出了一个使用CountDownLatch的示例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.CountDownLatch;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyThread</span> <span class="keyword">extends</span> <span class="title class_">Thread</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> CountDownLatch countDownLatch;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyThread</span><span class="params">(String name, CountDownLatch countDownLatch)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(name);</span><br><span class="line">        <span class="built_in">this</span>.countDownLatch = countDownLatch;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName() + <span class="string">&quot; doing something&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(Thread.currentThread().getName() + <span class="string">&quot; finish&quot;</span>);</span><br><span class="line">        countDownLatch.countDown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CountDownLatchDemo</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">CountDownLatch</span> <span class="variable">countDownLatch</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(<span class="number">2</span>);</span><br><span class="line">        <span class="type">MyThread</span> <span class="variable">t1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyThread</span>(<span class="string">&quot;t1&quot;</span>, countDownLatch);</span><br><span class="line">        <span class="type">MyThread</span> <span class="variable">t2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyThread</span>(<span class="string">&quot;t2&quot;</span>, countDownLatch);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        System.out.println(<span class="string">&quot;Waiting for t1 thread and t2 thread to finish&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            countDownLatch.await();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;            </span><br><span class="line">        System.out.println(Thread.currentThread().getName() + <span class="string">&quot; continue&quot;</span>);        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果(某一次):</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Waiting for t1 thread and t2 thread to finish</span><br><span class="line">t1 doing something</span><br><span class="line">t2 doing something</span><br><span class="line">t1 finish</span><br><span class="line">t2 finish</span><br><span class="line">main continue</span><br></pre></td></tr></table></figure>
+
+<p>说明: 本程序首先计数器初始化为2。根据结果，可能会存在如下的一种时序图。</p>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/java-thread-x-countdownlatch-3.png"></p>
+<p>说明: 首先main线程会调用await操作，此时main线程会被阻塞，等待被唤醒，之后t1线程执行了countDown操作，最后，t2线程执行了countDown操作，此时main线程就被唤醒了，可以继续运行。下面，进行详细分析。</p>
+<ul>
+<li>main线程执行countDownLatch.await操作，主要调用的函数如下。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/java-thread-x-countdownlatch-4.png"></p>
+<p>说明: 在最后，main线程就被park了，即禁止运行了。此时Sync queue(同步队列)中有两个节点，AQS的state为2，包含main线程的结点的nextWaiter指向SHARED结点。</p>
+<ul>
+<li>t1线程执行countDownLatch.countDown操作，主要调用的函数如下。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/java-thread-x-countdownlatch-5.png"></p>
+<p>说明: 此时，Sync queue队列里的结点个数未发生变化，但是此时，AQS的state已经变为1了。</p>
+<ul>
+<li>t2线程执行countDownLatch.countDown操作，主要调用的函数如下。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/java-thread-x-countdownlatch-6.png"></p>
+<p>说明: 经过调用后，AQS的state为0，并且此时，main线程会被unpark，可以继续运行。当main线程获取cpu资源后，继续运行。</p>
+<ul>
+<li>main线程获取cpu资源，继续运行，由于main线程是在parkAndCheckInterrupt函数中被禁止的，所以此时，继续在parkAndCheckInterrupt函数运行。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/java-thread-x-countdownlatch-7.png"></p>
+<p>说明: main线程恢复，继续在parkAndCheckInterrupt函数中运行，之后又会回到最终达到的状态为AQS的state为0，并且head与tail指向同一个结点，该节点的额nextWaiter域还是指向SHARED结点。</p>
+<h2 id="更深入理解"><a href="#更深入理解" class="headerlink" title="更深入理解"></a>更深入理解</h2><h3 id="写道面试题"><a href="#写道面试题" class="headerlink" title="写道面试题"></a>写道面试题</h3><blockquote>
+<p>实现一个容器，提供两个方法，add，size 写两个线程，线程1添加10个元素到容器中，线程2实现监控元素的个数，当个数到5个时，线程2给出提示并结束.</p>
+</blockquote>
+<h3 id="使用wait和notify实现"><a href="#使用wait和notify实现" class="headerlink" title="使用wait和notify实现"></a>使用wait和notify实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *  必须先让t2先进行启动 使用wait 和 notify 进行相互通讯，wait会释放锁，notify不会释放锁</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">T2</span> &#123;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">volatile</span>   <span class="type">List</span> <span class="variable">list</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ArrayList</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span> <span class="params">(<span class="type">int</span> i)</span>&#123;</span><br><span class="line">        list.add(i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getSize</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> list.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">T2</span> <span class="variable">t2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">T2</span>();</span><br><span class="line"></span><br><span class="line">        <span class="type">Object</span> <span class="variable">lock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Object</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">synchronized</span>(lock)&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;t2 启动&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span>(t2.getSize() != <span class="number">5</span>)&#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="comment">/**会释放锁*/</span></span><br><span class="line">                        lock.wait();</span><br><span class="line">                        System.out.println(<span class="string">&quot;t2 结束&quot;</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                lock.notify();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,<span class="string">&quot;t2&quot;</span>).start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">           <span class="keyword">synchronized</span> (lock)&#123;</span><br><span class="line">               System.out.println(<span class="string">&quot;t1 启动&quot;</span>);</span><br><span class="line">               <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>;i&lt;<span class="number">9</span>;i++)&#123;</span><br><span class="line">                   t2.add(i);</span><br><span class="line">                   System.out.println(<span class="string">&quot;add&quot;</span>+i);</span><br><span class="line">                   <span class="keyword">if</span>(t2.getSize() == <span class="number">5</span>)&#123;</span><br><span class="line">                       <span class="comment">/**不会释放锁*/</span></span><br><span class="line">                       lock.notify();</span><br><span class="line">                       <span class="keyword">try</span> &#123;</span><br><span class="line">                           lock.wait();</span><br><span class="line">                       &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                           e.printStackTrace();</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">t2 启动</span><br><span class="line">t1 启动</span><br><span class="line">add0</span><br><span class="line">add1</span><br><span class="line">add2</span><br><span class="line">add3</span><br><span class="line">add4</span><br><span class="line">t2 结束</span><br><span class="line">add5</span><br><span class="line">add6</span><br><span class="line">add7</span><br><span class="line">add8</span><br></pre></td></tr></table></figure>
+
+<h3 id="CountDownLatch实现"><a href="#CountDownLatch实现" class="headerlink" title="CountDownLatch实现"></a>CountDownLatch实现</h3><p>说出使用CountDownLatch 代替wait notify 好处?</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.CountDownLatch;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 使用CountDownLatch 代替wait notify 好处是通讯方式简单，不涉及锁定  Count 值为0时当前线程继续执行，</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">T3</span> &#123;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">volatile</span> <span class="type">List</span> <span class="variable">list</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ArrayList</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> i)</span>&#123;</span><br><span class="line">        list.add(i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getSize</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> list.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">T3</span> <span class="variable">t</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">T3</span>();</span><br><span class="line">        <span class="type">CountDownLatch</span> <span class="variable">countDownLatch</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;t2 start&quot;</span>);</span><br><span class="line">           <span class="keyword">if</span>(t.getSize() != <span class="number">5</span>)&#123;</span><br><span class="line">               <span class="keyword">try</span> &#123;</span><br><span class="line">                   countDownLatch.await();</span><br><span class="line">                   System.out.println(<span class="string">&quot;t2 end&quot;</span>);</span><br><span class="line">               &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                   e.printStackTrace();</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">        &#125;,<span class="string">&quot;t2&quot;</span>).start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(()-&gt;&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;t1 start&quot;</span>);</span><br><span class="line">           <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;i&lt;<span class="number">9</span>;i++)&#123;</span><br><span class="line">               t.add(i);</span><br><span class="line">               System.out.println(<span class="string">&quot;add&quot;</span>+ i);</span><br><span class="line">               <span class="keyword">if</span>(t.getSize() == <span class="number">5</span>)&#123;</span><br><span class="line">                   System.out.println(<span class="string">&quot;countdown is open&quot;</span>);</span><br><span class="line">                   countDownLatch.countDown();</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;t1 end&quot;</span>);</span><br><span class="line">        &#125;,<span class="string">&quot;t1&quot;</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li>文章主要参考自leesf的<a target="_blank" rel="noopener" href="https://www.cnblogs.com/leesf456/p/5406191.html%EF%BC%8C%E5%9C%A8%E6%AD%A4%E5%9F%BA%E7%A1%80%E4%B8%8A%E5%81%9A%E4%BA%86%E5%A2%9E%E6%94%B9%E3%80%82">https://www.cnblogs.com/leesf456/p/5406191.html，在此基础上做了增改。</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/40336ef1f5fe">https://www.jianshu.com/p/40336ef1f5fe</a></li>
+</ul>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2017 王云生
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

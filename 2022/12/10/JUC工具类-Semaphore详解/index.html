@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JUC工具类_Semaphore详解 | Mr.Wang Blog</title>
+  <meta name="keywords" content=" java , 多线程 ">
+  <meta name="description" content="JUC工具类_Semaphore详解 | Mr.Wang Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="Java 并发 - ThreadLocal详解 ThreadLocal是通过线程隔离的方式防止任务在共享资源上产生冲突, 线程本地存储是一种自动化机制，可以为使用相同变量的每个不同线程都创建不同的存储。 @pdai   Java 并发 - ThreadLocal详解 带着BAT大厂的面试问题去理解 ThreadLocal简介 ThreadLocal理解 ThreadLocal原理 如何实现线程隔离">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThreadLocal详解">
+<meta property="og:url" content="http://example.com/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Mr.Wang Blog">
+<meta property="og:description" content="Java 并发 - ThreadLocal详解 ThreadLocal是通过线程隔离的方式防止任务在共享资源上产生冲突, 线程本地存储是一种自动化机制，可以为使用相同变量的每个不同线程都创建不同的存储。 @pdai   Java 并发 - ThreadLocal详解 带着BAT大厂的面试问题去理解 ThreadLocal简介 ThreadLocal理解 ThreadLocal原理 如何实现线程隔离">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-12-10T14:58:20.000Z">
+<meta property="article:modified_time" content="2022-12-10T14:58:46.275Z">
+<meta property="article:author" content="王云生">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>王云生</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="cnblogs"
+               href="https://home.cnblogs.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-cnblogs"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/a996358a335f"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/yun-sheng-10-62-26"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="csdn"
+               href="https://blog.csdn.net/u011593571?type=collect"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-csdn"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/u/4978723"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="juejin"
+               href="https://juejin.cn/user/2604099346111086"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-juejin"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:w_huilong@163.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(47)</small>
+            
+        </div>
+    </li>
+    
+        
+            
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(1)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="JAVA">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        JAVA
+                        <small>(42)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA多线程">
+                                        
+                                        JAVA多线程
+                                        
+                                            <small>(27
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA基础">
+                                        
+                                        JAVA基础
+                                        
+                                            <small>(8
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java集合框架">
+                                        
+                                        Java集合框架
+                                        
+                                            <small>(7
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="Spring">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        Spring
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringBoot2.5.X系列">
+                                        
+                                        SpringBoot2.5.X系列
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringFrameWork5基础">
+                                        
+                                        SpringFrameWork5基础
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="47">
+<input type="hidden" id="yelog_site_word_count" value="235.4k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>多线程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ArrayList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Collection</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>hexo</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedHashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Map</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>PriorityQueue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Queue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring boot</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Stack</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tool</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>WeakHashMap</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="ThreadLocal详解">ThreadLocal详解</span>
+            <span class="post-date" title="2022-12-10 22:58:20">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Exchanger%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Exchanger详解">JUC工具类_Exchanger详解</span>
+            <span class="post-date" title="2022-12-10 22:57:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Phaser%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Phaser详解">JUC工具类_Phaser详解</span>
+            <span class="post-date" title="2022-12-10 22:56:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Semaphore详解">JUC工具类_Semaphore详解</span>
+            <span class="post-date" title="2022-12-10 22:56:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CyclicBarrier%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CyclicBarrier详解">JUC工具类_CyclicBarrier详解</span>
+            <span class="post-date" title="2022-12-10 22:55:21">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CountDownLatch详解">JUC工具类_CountDownLatch详解</span>
+            <span class="post-date" title="2022-12-10 22:54:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-Fork-Join%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_Fork_Join框架详解">JUC线程池_Fork_Join框架详解</span>
+            <span class="post-date" title="2022-12-10 22:53:19">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ScheduledThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ScheduledThreadPoolExecutor详解">JUC线程池_ScheduledThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:52:28">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ThreadPoolExecutor详解">JUC线程池_ThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:51:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-FutureTask%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_FutureTask详解">JUC线程池_FutureTask详解</span>
+            <span class="post-date" title="2022-12-10 22:50:52">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-BlockingQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_BlockingQueue详解">JUC集合_BlockingQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:50:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentLinkedQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentLinkedQueue详解">JUC集合_ConcurrentLinkedQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:49:05">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-CopyOnWriteArrayList%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_CopyOnWriteArrayList详解">JUC集合_CopyOnWriteArrayList详解</span>
+            <span class="post-date" title="2022-12-10 22:48:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentHashMap%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentHashMap详解">JUC集合_ConcurrentHashMap详解</span>
+            <span class="post-date" title="2022-12-10 22:47:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantReadWriteLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantReadWriteLock详解">JUC锁_ReentrantReadWriteLock详解</span>
+            <span class="post-date" title="2022-12-10 22:46:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantLock详解">JUC锁_ReentrantLock详解</span>
+            <span class="post-date" title="2022-12-10 22:45:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-%E9%94%81%E6%A0%B8%E5%BF%83%E7%B1%BBAQS%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_锁核心类AQS详解">JUC锁_锁核心类AQS详解</span>
+            <span class="post-date" title="2022-12-10 22:44:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-LockSupport%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_LockSupport详解">JUC锁_LockSupport详解</span>
+            <span class="post-date" title="2022-12-10 22:43:25">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-CAS-Unsafe%E5%92%8C%E5%8E%9F%E5%AD%90%E7%B1%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC原子类_CAS_Unsafe和原子类详解">JUC原子类_CAS_Unsafe和原子类详解</span>
+            <span class="post-date" title="2022-12-10 22:42:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%B1%BB%E6%B1%87%E6%80%BB%E5%92%8C%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC类汇总和学习指南">JUC类汇总和学习指南</span>
+            <span class="post-date" title="2022-12-10 22:41:01">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/final%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="final详解">final详解</span>
+            <span class="post-date" title="2022-12-10 22:39:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/volatile%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="volatile详解">volatile详解</span>
+            <span class="post-date" title="2022-12-10 22:39:02">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/synchronized%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="synchronized详解">synchronized详解</span>
+            <span class="post-date" title="2022-12-10 22:37:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="线程基础">线程基础</span>
+            <span class="post-date" title="2022-12-10 22:31:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="理论基础">理论基础</span>
+            <span class="post-date" title="2022-12-10 22:30:46">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 "
+           href="/2022/12/10/WeakHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,WeakHashMap"
+           data-author="" >
+            <span class="post-title" title="WeakHashMap源码解析">WeakHashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:26:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 "
+           href="/2022/12/10/TreeSet-TreeMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,TreeSet,TreeMap"
+           data-author="" >
+            <span class="post-title" title="TreeSet&amp;TreeMap源码解析">TreeSet&amp;TreeMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:25:45">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedHashSet-Map%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedHashSet,Map"
+           data-author="" >
+            <span class="post-title" title="LinkedHashSet&amp;Map源码解析">LinkedHashSet&amp;Map源码解析</span>
+            <span class="post-date" title="2022-12-10 22:24:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/HashSet-HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,HashSet,HashMap"
+           data-author="" >
+            <span class="post-title" title="HashSet&amp;HashMap源码解析">HashSet&amp;HashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:23:24">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/PriorityQueue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,PriorityQueue"
+           data-author="" >
+            <span class="post-title" title="PriorityQueue源码解析">PriorityQueue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:22:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Stack-Queue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Stack,Queue"
+           data-author="" >
+            <span class="post-title" title="Stack&amp;Queue源码解析">Stack&amp;Queue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:21:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedList"
+           data-author="" >
+            <span class="post-title" title="LinkedList源码解析">LinkedList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:19:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/ArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,ArrayList"
+           data-author="" >
+            <span class="post-title" title="ArrayList源码解析">ArrayList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:18:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringBoot2.5.X系列 "
+           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring,spring boot"
+           data-author="" >
+            <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:14:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringFrameWork5基础 "
+           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring"
+           data-author="" >
+            <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:10:47">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/"
+           data-tag="java,Collection"
+           data-author="" >
+            <span class="post-title" title="Collection类关系图">Collection类关系图</span>
+            <span class="post-date" title="2022-12-10 21:59:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/SPI%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="SPI机制详解">SPI机制详解</span>
+            <span class="post-date" title="2022-12-10 21:58:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="反射机制详解">反射机制详解</span>
+            <span class="post-date" title="2022-12-10 21:57:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%BC%82%E5%B8%B8%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="异常机制详解">异常机制详解</span>
+            <span class="post-date" title="2022-12-10 21:56:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="注解机制详解">注解机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="泛型机制详解">泛型机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%9B%BE%E8%B0%B1-Q-A/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="图谱&amp;Q/A">图谱&amp;Q/A</span>
+            <span class="post-date" title="2022-12-10 21:53:16">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E7%9F%A5%E8%AF%86%E7%82%B9/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="知识点">知识点</span>
+            <span class="post-date" title="2022-12-10 21:52:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="面向对象">面向对象</span>
+            <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁">Java并发 - Java中所有的锁</span>
+            <span class="post-date" title="2022-12-10 21:25:40">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 HEXO "
+           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           data-tag="hexo,tool"
+           data-author="" >
+            <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
+            <span class="post-date" title="2022-12-10 19:02:24">2022/12/10</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-JUC工具类-Semaphore详解" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">JUC工具类_Semaphore详解</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="JAVA">JAVA</a> > 
+            
+            <a  data-rel="JAVA&lt;---&gt;JAVA多线程">JAVA多线程</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">java</a>
+            
+            <a class="color4">多线程</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-10 22:56:57'>2022-12-10 22:56</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:3.2k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3"><span class="toc-text">JUC工具类: Semaphore详解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%A6%E7%9D%80BAT%E5%A4%A7%E5%8E%82%E7%9A%84%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98%E5%8E%BB%E7%90%86%E8%A7%A3"><span class="toc-text">带着BAT大厂的面试问题去理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Semaphore%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-text">Semaphore源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB"><span class="toc-text">类的继承关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-text">类的内部类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB-Sync%E7%B1%BB"><span class="toc-text">类的内部类 - Sync类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB-NonfairSync%E7%B1%BB"><span class="toc-text">类的内部类 - NonfairSync类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB-FairSync%E7%B1%BB"><span class="toc-text">类的内部类 - FairSync类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="toc-text">类的属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="toc-text">类的构造函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%87%BD%E6%95%B0%E5%88%86%E6%9E%90-acquire%E5%87%BD%E6%95%B0"><span class="toc-text">核心函数分析 - acquire函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%87%BD%E6%95%B0%E5%88%86%E6%9E%90-release%E5%87%BD%E6%95%B0"><span class="toc-text">核心函数分析 - release函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Semaphore%E7%A4%BA%E4%BE%8B"><span class="toc-text">Semaphore示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3"><span class="toc-text">更深入理解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E7%8B%AC%E4%BD%BF%E7%94%A8Semaphore%E6%98%AF%E4%B8%8D%E4%BC%9A%E4%BD%BF%E7%94%A8%E5%88%B0AQS%E7%9A%84%E6%9D%A1%E4%BB%B6%E9%98%9F%E5%88%97%E7%9A%84"><span class="toc-text">单独使用Semaphore是不会使用到AQS的条件队列的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E9%97%AE%E9%A2%98"><span class="toc-text">场景问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#semaphore%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%8910%E4%B8%AA%E4%BB%A4%E7%89%8C%EF%BC%8C11%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%97%B6%E5%90%84%E8%B0%83%E7%94%A81%E6%AC%A1acquire%E6%96%B9%E6%B3%95%EF%BC%8C%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88"><span class="toc-text">semaphore初始化有10个令牌，11个线程同时各调用1次acquire方法，会发生什么?</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#semaphore%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%8910%E4%B8%AA%E4%BB%A4%E7%89%8C%EF%BC%8C%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E9%87%8D%E5%A4%8D%E8%B0%83%E7%94%A811%E6%AC%A1acquire%E6%96%B9%E6%B3%95%EF%BC%8C%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88"><span class="toc-text">semaphore初始化有10个令牌，一个线程重复调用11次acquire方法，会发生什么?</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#semaphore%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%891%E4%B8%AA%E4%BB%A4%E7%89%8C%EF%BC%8C1%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%B0%83%E7%94%A8%E4%B8%80%E6%AC%A1acquire%E6%96%B9%E6%B3%95%EF%BC%8C%E7%84%B6%E5%90%8E%E8%B0%83%E7%94%A8%E4%B8%A4%E6%AC%A1release%E6%96%B9%E6%B3%95%EF%BC%8C%E4%B9%8B%E5%90%8E%E5%8F%A6%E5%A4%96%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%B0%83%E7%94%A8acquire-2-%E6%96%B9%E6%B3%95%EF%BC%8C%E6%AD%A4%E7%BA%BF%E7%A8%8B%E8%83%BD%E5%A4%9F%E8%8E%B7%E5%8F%96%E5%88%B0%E8%B6%B3%E5%A4%9F%E7%9A%84%E4%BB%A4%E7%89%8C%E5%B9%B6%E7%BB%A7%E7%BB%AD%E8%BF%90%E8%A1%8C%E5%90%97"><span class="toc-text">semaphore初始化有1个令牌，1个线程调用一次acquire方法，然后调用两次release方法，之后另外一个线程调用acquire(2)方法，此线程能够获取到足够的令牌并继续运行吗?</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#semaphore%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%892%E4%B8%AA%E4%BB%A4%E7%89%8C%EF%BC%8C%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%B0%83%E7%94%A81%E6%AC%A1release%E6%96%B9%E6%B3%95%EF%BC%8C%E7%84%B6%E5%90%8E%E4%B8%80%E6%AC%A1%E6%80%A7%E8%8E%B7%E5%8F%963%E4%B8%AA%E4%BB%A4%E7%89%8C%EF%BC%8C%E4%BC%9A%E8%8E%B7%E5%8F%96%E5%88%B0%E5%90%97"><span class="toc-text">semaphore初始化有2个令牌，一个线程调用1次release方法，然后一次性获取3个令牌，会获取到吗?</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-text">参考文章</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="JUC工具类-Semaphore详解"><a href="#JUC工具类-Semaphore详解" class="headerlink" title="JUC工具类: Semaphore详解"></a>JUC工具类: Semaphore详解</h2><blockquote>
+<p>Semaphore底层是基于AbstractQueuedSynchronizer来实现的。Semaphore称为计数信号量，它允许n个任务同时访问某个资源，可以将信号量看做是在向外分发使用资源的许可证，只有成功获取许可证，才能使用资源。@pdai</p>
+</blockquote>
+<ul>
+<li><a href="#juc%E5%B7%A5%E5%85%B7%E7%B1%BB-semaphore%E8%AF%A6%E8%A7%A3">JUC工具类: Semaphore详解</a><ul>
+<li><a href="#%E5%B8%A6%E7%9D%80bat%E5%A4%A7%E5%8E%82%E7%9A%84%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98%E5%8E%BB%E7%90%86%E8%A7%A3">带着BAT大厂的面试问题去理解</a></li>
+<li><a href="#semaphore%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90">Semaphore源码分析</a><ul>
+<li><a href="#%E7%B1%BB%E7%9A%84%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB">类的继承关系</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB">类的内部类</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB---sync%E7%B1%BB">类的内部类 - Sync类</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB---nonfairsync%E7%B1%BB">类的内部类 - NonfairSync类</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB---fairsync%E7%B1%BB">类的内部类 - FairSync类</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E5%B1%9E%E6%80%A7">类的属性</a></li>
+<li><a href="#%E7%B1%BB%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0">类的构造函数</a></li>
+<li><a href="#%E6%A0%B8%E5%BF%83%E5%87%BD%E6%95%B0%E5%88%86%E6%9E%90---acquire%E5%87%BD%E6%95%B0">核心函数分析 - acquire函数</a></li>
+<li><a href="#%E6%A0%B8%E5%BF%83%E5%87%BD%E6%95%B0%E5%88%86%E6%9E%90---release%E5%87%BD%E6%95%B0">核心函数分析 - release函数</a></li>
+</ul>
+</li>
+<li><a href="#semaphore%E7%A4%BA%E4%BE%8B">Semaphore示例</a></li>
+<li><a href="#%E6%9B%B4%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3">更深入理解</a><ul>
+<li><a href="#%E5%8D%95%E7%8B%AC%E4%BD%BF%E7%94%A8semaphore%E6%98%AF%E4%B8%8D%E4%BC%9A%E4%BD%BF%E7%94%A8%E5%88%B0aqs%E7%9A%84%E6%9D%A1%E4%BB%B6%E9%98%9F%E5%88%97%E7%9A%84">单独使用Semaphore是不会使用到AQS的条件队列的</a></li>
+<li><a href="#%E5%9C%BA%E6%99%AF%E9%97%AE%E9%A2%98">场景问题</a><ul>
+<li><a href="#semaphore%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%8910%E4%B8%AA%E4%BB%A4%E7%89%8C11%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%97%B6%E5%90%84%E8%B0%83%E7%94%A81%E6%AC%A1acquire%E6%96%B9%E6%B3%95%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88">semaphore初始化有10个令牌，11个线程同时各调用1次acquire方法，会发生什么?</a></li>
+<li><a href="#semaphore%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%8910%E4%B8%AA%E4%BB%A4%E7%89%8C%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E9%87%8D%E5%A4%8D%E8%B0%83%E7%94%A811%E6%AC%A1acquire%E6%96%B9%E6%B3%95%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88">semaphore初始化有10个令牌，一个线程重复调用11次acquire方法，会发生什么?</a></li>
+<li><a href="#semaphore%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%891%E4%B8%AA%E4%BB%A4%E7%89%8C1%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%B0%83%E7%94%A8%E4%B8%80%E6%AC%A1acquire%E6%96%B9%E6%B3%95%E7%84%B6%E5%90%8E%E8%B0%83%E7%94%A8%E4%B8%A4%E6%AC%A1release%E6%96%B9%E6%B3%95%E4%B9%8B%E5%90%8E%E5%8F%A6%E5%A4%96%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%B0%83%E7%94%A8acquire2%E6%96%B9%E6%B3%95%E6%AD%A4%E7%BA%BF%E7%A8%8B%E8%83%BD%E5%A4%9F%E8%8E%B7%E5%8F%96%E5%88%B0%E8%B6%B3%E5%A4%9F%E7%9A%84%E4%BB%A4%E7%89%8C%E5%B9%B6%E7%BB%A7%E7%BB%AD%E8%BF%90%E8%A1%8C%E5%90%97">semaphore初始化有1个令牌，1个线程调用一次acquire方法，然后调用两次release方法，之后另外一个线程调用acquire(2)方法，此线程能够获取到足够的令牌并继续运行吗?</a></li>
+<li><a href="#semaphore%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%892%E4%B8%AA%E4%BB%A4%E7%89%8C%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%B0%83%E7%94%A81%E6%AC%A1release%E6%96%B9%E6%B3%95%E7%84%B6%E5%90%8E%E4%B8%80%E6%AC%A1%E6%80%A7%E8%8E%B7%E5%8F%963%E4%B8%AA%E4%BB%A4%E7%89%8C%E4%BC%9A%E8%8E%B7%E5%8F%96%E5%88%B0%E5%90%97">semaphore初始化有2个令牌，一个线程调用1次release方法，然后一次性获取3个令牌，会获取到吗?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0">参考文章</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="带着BAT大厂的面试问题去理解"><a href="#带着BAT大厂的面试问题去理解" class="headerlink" title="带着BAT大厂的面试问题去理解"></a>带着BAT大厂的面试问题去理解</h2><p>提示</p>
+<p>请带着这些问题继续后文，会很大程度上帮助你更好的理解相关知识点。@pdai</p>
+<ul>
+<li>什么是Semaphore?</li>
+<li>Semaphore内部原理?</li>
+<li>Semaphore常用方法有哪些? 如何实现线程同步和互斥的?</li>
+<li>Semaphore适合用在什么场景?</li>
+<li>单独使用Semaphore是不会使用到AQS的条件队列?</li>
+<li>Semaphore中申请令牌(acquire)、释放令牌(release)的实现?</li>
+<li>Semaphore初始化有10个令牌，11个线程同时各调用1次acquire方法，会发生什么?</li>
+<li>Semaphore初始化有10个令牌，一个线程重复调用11次acquire方法，会发生什么?</li>
+<li>Semaphore初始化有1个令牌，1个线程调用一次acquire方法，然后调用两次release方法，之后另外一个线程调用acquire(2)方法，此线程能够获取到足够的令牌并继续运行吗?</li>
+<li>Semaphore初始化有2个令牌，一个线程调用1次release方法，然后一次性获取3个令牌，会获取到吗?</li>
+</ul>
+<h2 id="Semaphore源码分析"><a href="#Semaphore源码分析" class="headerlink" title="Semaphore源码分析"></a>Semaphore源码分析</h2><h3 id="类的继承关系"><a href="#类的继承关系" class="headerlink" title="类的继承关系"></a>类的继承关系</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Semaphore</span> <span class="keyword">implements</span> <span class="title class_">java</span>.io.Serializable &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: Semaphore实现了Serializable接口，即可以进行序列化。</p>
+<h3 id="类的内部类"><a href="#类的内部类" class="headerlink" title="类的内部类"></a>类的内部类</h3><p>Semaphore总共有三个内部类，并且三个内部类是紧密相关的，下面先看三个类的关系。</p>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-1.png"></p>
+<p>说明: Semaphore与ReentrantLock的内部类的结构相同，类内部总共存在Sync、NonfairSync、FairSync三个类，NonfairSync与FairSync类继承自Sync类，Sync类继承自AbstractQueuedSynchronizer抽象类。下面逐个进行分析。</p>
+<h3 id="类的内部类-Sync类"><a href="#类的内部类-Sync类" class="headerlink" title="类的内部类 - Sync类"></a>类的内部类 - Sync类</h3><p>Sync类的源码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 内部类，继承自AQS</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Sync</span> <span class="keyword">extends</span> <span class="title class_">AbstractQueuedSynchronizer</span> &#123;</span><br><span class="line">    <span class="comment">// 版本号</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">1192457210091910933L</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 构造函数</span></span><br><span class="line">    Sync(<span class="type">int</span> <span class="keyword">permits</span>) &#123;</span><br><span class="line">        <span class="comment">// 设置状态数</span></span><br><span class="line">        setState(<span class="keyword">permits</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取许可</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">getPermits</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> getState();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 共享模式下非公平策略获取</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">nonfairTryAcquireShared</span><span class="params">(<span class="type">int</span> acquires)</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123; <span class="comment">// 无限循环</span></span><br><span class="line">            <span class="comment">// 获取许可数</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">available</span> <span class="operator">=</span> getState();</span><br><span class="line">            <span class="comment">// 剩余的许可</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">remaining</span> <span class="operator">=</span> available - acquires;</span><br><span class="line">            <span class="keyword">if</span> (remaining &lt; <span class="number">0</span> ||</span><br><span class="line">                compareAndSetState(available, remaining)) <span class="comment">// 许可小于0或者比较并且设置状态成功</span></span><br><span class="line">                <span class="keyword">return</span> remaining;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 共享模式下进行释放</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">tryReleaseShared</span><span class="params">(<span class="type">int</span> releases)</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123; <span class="comment">// 无限循环</span></span><br><span class="line">            <span class="comment">// 获取许可</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">current</span> <span class="operator">=</span> getState();</span><br><span class="line">            <span class="comment">// 可用的许可</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> current + releases;</span><br><span class="line">            <span class="keyword">if</span> (next &lt; current) <span class="comment">// overflow</span></span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;Maximum permit count exceeded&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (compareAndSetState(current, next)) <span class="comment">// 比较并进行设置成功</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 根据指定的缩减量减小可用许可的数目</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">reducePermits</span><span class="params">(<span class="type">int</span> reductions)</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123; <span class="comment">// 无限循环</span></span><br><span class="line">            <span class="comment">// 获取许可</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">current</span> <span class="operator">=</span> getState();</span><br><span class="line">            <span class="comment">// 可用的许可</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> current - reductions;</span><br><span class="line">            <span class="keyword">if</span> (next &gt; current) <span class="comment">// underflow</span></span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&quot;Permit count underflow&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (compareAndSetState(current, next)) <span class="comment">// 比较并进行设置成功</span></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取并返回立即可用的所有许可</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">drainPermits</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123; <span class="comment">// 无限循环</span></span><br><span class="line">            <span class="comment">// 获取许可</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">current</span> <span class="operator">=</span> getState();</span><br><span class="line">            <span class="keyword">if</span> (current == <span class="number">0</span> || compareAndSetState(current, <span class="number">0</span>)) <span class="comment">// 许可为0或者比较并设置成功</span></span><br><span class="line">                <span class="keyword">return</span> current;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: Sync类的属性相对简单，只有一个版本号，Sync类存在如下方法和作用如下。</p>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-2.png"></p>
+<h3 id="类的内部类-NonfairSync类"><a href="#类的内部类-NonfairSync类" class="headerlink" title="类的内部类 - NonfairSync类"></a>类的内部类 - NonfairSync类</h3><p>NonfairSync类继承了Sync类，表示采用非公平策略获取资源，其只有一个tryAcquireShared方法，重写了AQS的该方法，其源码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">NonfairSync</span> <span class="keyword">extends</span> <span class="title class_">Sync</span> &#123;</span><br><span class="line">    <span class="comment">// 版本号</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> -<span class="number">2694183684443567898L</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 构造函数</span></span><br><span class="line">    NonfairSync(<span class="type">int</span> <span class="keyword">permits</span>) &#123;</span><br><span class="line">        <span class="built_in">super</span>(<span class="keyword">permits</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 共享模式下获取</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="type">int</span> <span class="title function_">tryAcquireShared</span><span class="params">(<span class="type">int</span> acquires)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> nonfairTryAcquireShared(acquires);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 从tryAcquireShared方法的源码可知，其会调用父类Sync的nonfairTryAcquireShared方法，表示按照非公平策略进行资源的获取。</p>
+<h3 id="类的内部类-FairSync类"><a href="#类的内部类-FairSync类" class="headerlink" title="类的内部类 - FairSync类"></a>类的内部类 - FairSync类</h3><p>FairSync类继承了Sync类，表示采用公平策略获取资源，其只有一个tryAcquireShared方法，重写了AQS的该方法，其源码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="type">int</span> <span class="title function_">tryAcquireShared</span><span class="params">(<span class="type">int</span> acquires)</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123; <span class="comment">// 无限循环</span></span><br><span class="line">        <span class="keyword">if</span> (hasQueuedPredecessors()) <span class="comment">// 同步队列中存在其他节点</span></span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 获取许可</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">available</span> <span class="operator">=</span> getState();</span><br><span class="line">        <span class="comment">// 剩余的许可</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">remaining</span> <span class="operator">=</span> available - acquires;</span><br><span class="line">        <span class="keyword">if</span> (remaining &lt; <span class="number">0</span> ||</span><br><span class="line">            compareAndSetState(available, remaining)) <span class="comment">// 剩余的许可小于0或者比较设置成功</span></span><br><span class="line">            <span class="keyword">return</span> remaining;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 从tryAcquireShared方法的源码可知，它使用公平策略来获取资源，它会判断同步队列中是否存在其他的等待节点。</p>
+<h3 id="类的属性"><a href="#类的属性" class="headerlink" title="类的属性"></a>类的属性</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Semaphore</span> <span class="keyword">implements</span> <span class="title class_">java</span>.io.Serializable &#123;</span><br><span class="line">    <span class="comment">// 版本号</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> -<span class="number">3222578661600680210L</span>;</span><br><span class="line">    <span class="comment">// 属性</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Sync sync;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: Semaphore自身只有两个属性，最重要的是sync属性，基于Semaphore对象的操作绝大多数都转移到了对sync的操作。</p>
+<h3 id="类的构造函数"><a href="#类的构造函数" class="headerlink" title="类的构造函数"></a>类的构造函数</h3><ul>
+<li>Semaphore(int)型构造函数</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">Semaphore</span><span class="params">(<span class="type">int</span> <span class="keyword">permits</span>)</span> &#123;</span><br><span class="line">    sync = <span class="keyword">new</span> <span class="title class_">NonfairSync</span>(<span class="keyword">permits</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 该构造函数会创建具有给定的许可数和非公平的公平设置的Semaphore。</p>
+<ul>
+<li>Semaphore(int, boolean)型构造函数</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">Semaphore</span><span class="params">(<span class="type">int</span> <span class="keyword">permits</span>, <span class="type">boolean</span> fair)</span> &#123;</span><br><span class="line">    sync = fair ? <span class="keyword">new</span> <span class="title class_">FairSync</span>(<span class="keyword">permits</span>) : <span class="keyword">new</span> <span class="title class_">NonfairSync</span>(<span class="keyword">permits</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 该构造函数会创建具有给定的许可数和给定的公平设置的Semaphore。</p>
+<h3 id="核心函数分析-acquire函数"><a href="#核心函数分析-acquire函数" class="headerlink" title="核心函数分析 - acquire函数"></a>核心函数分析 - acquire函数</h3><p>此方法从信号量获取一个(多个)许可，在提供一个许可前一直将线程阻塞，或者线程被中断，其源码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">acquire</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">    sync.acquireSharedInterruptibly(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 该方法中将会调用Sync对象的acquireSharedInterruptibly(从AQS继承而来的方法)方法，而acquireSharedInterruptibly方法在上一篇CountDownLatch中已经进行了分析，在此不再累赘。</p>
+<p>最终可以获取大致的方法调用序列(假设使用非公平策略)。如下图所示。</p>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-3.png"></p>
+<p>说明: 上图只是给出了大体会调用到的方法，和具体的示例可能会有些差别，之后会根据具体的示例进行分析。</p>
+<h3 id="核心函数分析-release函数"><a href="#核心函数分析-release函数" class="headerlink" title="核心函数分析 - release函数"></a>核心函数分析 - release函数</h3><p>此方法释放一个(多个)许可，将其返回给信号量，源码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">release</span><span class="params">()</span> &#123;</span><br><span class="line">    sync.releaseShared(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明: 该方法中将会调用Sync对象的releaseShared(从AQS继承而来的方法)方法，而releaseShared方法在上一篇CountDownLatch中已经进行了分析，在此不再累赘。</p>
+<p>最终可以获取大致的方法调用序列(假设使用非公平策略)。如下图所示:</p>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-4.png"></p>
+<p>说明: 上图只是给出了大体会调用到的方法，和具体的示例可能会有些差别，之后会根据具体的示例进行分析。</p>
+<h2 id="Semaphore示例"><a href="#Semaphore示例" class="headerlink" title="Semaphore示例"></a>Semaphore示例</h2><p>下面给出了一个使用Semaphore的示例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.Semaphore;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyThread</span> <span class="keyword">extends</span> <span class="title class_">Thread</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> Semaphore semaphore;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyThread</span><span class="params">(String name, Semaphore semaphore)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(name);</span><br><span class="line">        <span class="built_in">this</span>.semaphore = semaphore;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;        </span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">3</span>;</span><br><span class="line">        System.out.println(Thread.currentThread().getName() + <span class="string">&quot; trying to acquire&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            semaphore.acquire(count);</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot; acquire successfully&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            semaphore.release(count);</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot; release successfully&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SemaphoreDemo</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">SEM_SIZE</span> <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Semaphore</span> <span class="variable">semaphore</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Semaphore</span>(SEM_SIZE);</span><br><span class="line">        <span class="type">MyThread</span> <span class="variable">t1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyThread</span>(<span class="string">&quot;t1&quot;</span>, semaphore);</span><br><span class="line">        <span class="type">MyThread</span> <span class="variable">t2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyThread</span>(<span class="string">&quot;t2&quot;</span>, semaphore);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        <span class="type">int</span> <span class="variable">permits</span> <span class="operator">=</span> <span class="number">5</span>;</span><br><span class="line">        System.out.println(Thread.currentThread().getName() + <span class="string">&quot; trying to acquire&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            semaphore.acquire(<span class="keyword">permits</span>);</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot; acquire successfully&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            semaphore.release();</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot; release successfully&quot;</span>);</span><br><span class="line">        &#125;      </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果(某一次):</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">main trying to acquire</span><br><span class="line">main acquire successfully</span><br><span class="line">t1 trying to acquire</span><br><span class="line">t1 acquire successfully</span><br><span class="line">t2 trying to acquire</span><br><span class="line">t1 release successfully</span><br><span class="line">main release successfully</span><br><span class="line">t2 acquire successfully</span><br><span class="line">t2 release successfully</span><br></pre></td></tr></table></figure>
+
+<p>说明: 首先，生成一个信号量，信号量有10个许可，然后，main，t1，t2三个线程获取许可运行，根据结果，可能存在如下的一种时序。</p>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-5.png"></p>
+<p>说明: 如上图所示，首先，main线程执行acquire操作，并且成功获得许可，之后t1线程执行acquire操作，成功获得许可，之后t2执行acquire操作，由于此时许可数量不够，t2线程将会阻塞，直到许可可用。之后t1线程释放许可，main线程释放许可，此时的许可数量可以满足t2线程的要求，所以，此时t2线程会成功获得许可运行，t2运行完成后释放许可。下面进行详细分析。</p>
+<ul>
+<li>main线程执行semaphore.acquire操作。主要的函数调用如下图所示。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-6.png"></p>
+<p>说明: 此时，可以看到只是AQS的state变为了5，main线程并没有被阻塞，可以继续运行。</p>
+<ul>
+<li>t1线程执行semaphore.acquire操作。主要的函数调用如下图所示。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-7.png"></p>
+<p>说明: 此时，可以看到只是AQS的state变为了2，t1线程并没有被阻塞，可以继续运行。</p>
+<ul>
+<li>t2线程执行semaphore.acquire操作。主要的函数调用如下图所示。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-8.png"></p>
+<p>说明: 此时，t2线程获取许可不会成功，之后会导致其被禁止运行，值得注意的是，AQS的state还是为2。</p>
+<ul>
+<li>t1执行semaphore.release操作。主要的函数调用如下图所示。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-9.png"></p>
+<p>说明: 此时，t2线程将会被unpark，并且AQS的state为5，t2获取cpu资源后可以继续运行。</p>
+<ul>
+<li>main线程执行semaphore.release操作。主要的函数调用如下图所示。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-10.png"></p>
+<p>说明: 此时，t2线程还会被unpark，但是不会产生影响，此时，只要t2线程获得CPU资源就可以运行了。此时，AQS的state为10。</p>
+<ul>
+<li>t2获取CPU资源，继续运行，此时t2需要恢复现场，回到parkAndCheckInterrupt函数中，也是在should继续运行。主要的函数调用如下图所示。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-11.png"></p>
+<p>说明: 此时，可以看到，Sync queue中只有一个结点，头节点与尾节点都指向该结点，在setHeadAndPropagate的函数中会设置头节点并且会unpark队列中的其他结点。</p>
+<ul>
+<li>t2线程执行semaphore.release操作。主要的函数调用如下图所示。</li>
+</ul>
+<p><img src="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/java-thread-x-semaphore-12.png"></p>
+<p>说明: t2线程经过release后，此时信号量的许可又变为10个了，此时Sync queue中的结点还是没有变化。</p>
+<h2 id="更深入理解"><a href="#更深入理解" class="headerlink" title="更深入理解"></a>更深入理解</h2><h3 id="单独使用Semaphore是不会使用到AQS的条件队列的"><a href="#单独使用Semaphore是不会使用到AQS的条件队列的" class="headerlink" title="单独使用Semaphore是不会使用到AQS的条件队列的"></a>单独使用Semaphore是不会使用到AQS的条件队列的</h3><p>不同于CyclicBarrier和ReentrantLock，单独使用Semaphore是不会使用到AQS的条件队列的，其实，只有进行await操作才会进入条件队列，其他的都是在同步队列中，只是当前线程会被park。</p>
+<h3 id="场景问题"><a href="#场景问题" class="headerlink" title="场景问题"></a>场景问题</h3><h4 id="semaphore初始化有10个令牌，11个线程同时各调用1次acquire方法，会发生什么"><a href="#semaphore初始化有10个令牌，11个线程同时各调用1次acquire方法，会发生什么" class="headerlink" title="semaphore初始化有10个令牌，11个线程同时各调用1次acquire方法，会发生什么?"></a>semaphore初始化有10个令牌，11个线程同时各调用1次acquire方法，会发生什么?</h4><p>答案：拿不到令牌的线程阻塞，不会继续往下运行。</p>
+<h4 id="semaphore初始化有10个令牌，一个线程重复调用11次acquire方法，会发生什么"><a href="#semaphore初始化有10个令牌，一个线程重复调用11次acquire方法，会发生什么" class="headerlink" title="semaphore初始化有10个令牌，一个线程重复调用11次acquire方法，会发生什么?"></a>semaphore初始化有10个令牌，一个线程重复调用11次acquire方法，会发生什么?</h4><p>答案：线程阻塞，不会继续往下运行。可能你会考虑类似于锁的重入的问题，很好，但是，令牌没有重入的概念。你只要调用一次acquire方法，就需要有一个令牌才能继续运行。</p>
+<h4 id="semaphore初始化有1个令牌，1个线程调用一次acquire方法，然后调用两次release方法，之后另外一个线程调用acquire-2-方法，此线程能够获取到足够的令牌并继续运行吗"><a href="#semaphore初始化有1个令牌，1个线程调用一次acquire方法，然后调用两次release方法，之后另外一个线程调用acquire-2-方法，此线程能够获取到足够的令牌并继续运行吗" class="headerlink" title="semaphore初始化有1个令牌，1个线程调用一次acquire方法，然后调用两次release方法，之后另外一个线程调用acquire(2)方法，此线程能够获取到足够的令牌并继续运行吗?"></a>semaphore初始化有1个令牌，1个线程调用一次acquire方法，然后调用两次release方法，之后另外一个线程调用acquire(2)方法，此线程能够获取到足够的令牌并继续运行吗?</h4><p>答案：能，原因是release方法会添加令牌，并不会以初始化的大小为准。</p>
+<h4 id="semaphore初始化有2个令牌，一个线程调用1次release方法，然后一次性获取3个令牌，会获取到吗"><a href="#semaphore初始化有2个令牌，一个线程调用1次release方法，然后一次性获取3个令牌，会获取到吗" class="headerlink" title="semaphore初始化有2个令牌，一个线程调用1次release方法，然后一次性获取3个令牌，会获取到吗?"></a>semaphore初始化有2个令牌，一个线程调用1次release方法，然后一次性获取3个令牌，会获取到吗?</h4><p>答案：能，原因是release会添加令牌，并不会以初始化的大小为准。Semaphore中release方法的调用并没有限制要在acquire后调用。</p>
+<p>具体示例如下，如果不相信的话，可以运行一下下面的demo，在做实验之前，笔者也认为应该是不允许的。。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestSemaphore2</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">permitsNum</span> <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">final</span> <span class="type">Semaphore</span> <span class="variable">semaphore</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Semaphore</span>(permitsNum);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;availablePermits:&quot;</span>+semaphore.availablePermits()+<span class="string">&quot;,semaphore.tryAcquire(3,1, TimeUnit.SECONDS):&quot;</span>+semaphore.tryAcquire(<span class="number">3</span>,<span class="number">1</span>, TimeUnit.SECONDS));</span><br><span class="line">            semaphore.release();</span><br><span class="line">            System.out.println(<span class="string">&quot;availablePermits:&quot;</span>+semaphore.availablePermits()+<span class="string">&quot;,semaphore.tryAcquire(3,1, TimeUnit.SECONDS):&quot;</span>+semaphore.tryAcquire(<span class="number">3</span>,<span class="number">1</span>, TimeUnit.SECONDS));</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li>文章主要参考自leesf的<a target="_blank" rel="noopener" href="https://www.cnblogs.com/leesf456/p/5414778.html%EF%BC%8C%E5%9C%A8%E6%AD%A4%E5%9F%BA%E7%A1%80%E4%B8%8A%E5%81%9A%E4%BA%86%E5%A2%9E%E6%94%B9%E3%80%82">https://www.cnblogs.com/leesf456/p/5414778.html，在此基础上做了增改。</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u010412719/article/details/94986327">https://blog.csdn.net/u010412719/article/details/94986327</a></li>
+</ul>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2017 王云生
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
