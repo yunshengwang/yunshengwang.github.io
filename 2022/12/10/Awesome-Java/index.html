@@ -1,0 +1,2316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Awesome_Java | Mr.Wang Blog</title>
+  <meta name="keywords" content=" java ">
+  <meta name="description" content="Awesome_Java | Mr.Wang Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="Better Java 这不是一本书，国外一个小哥总结的better java 的工具和实践参考。他的博客在新窗口打开. @pdai  目录 Better Java 目录 Style Structs The Builder Pattern Immutable Object Generation   Exceptions Dependency injection Avoid Nulls Immuta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Better_Java">
+<meta property="og:url" content="http://example.com/2022/12/10/Better-Java/index.html">
+<meta property="og:site_name" content="Mr.Wang Blog">
+<meta property="og:description" content="Better Java 这不是一本书，国外一个小哥总结的better java 的工具和实践参考。他的博客在新窗口打开. @pdai  目录 Better Java 目录 Style Structs The Builder Pattern Immutable Object Generation   Exceptions Dependency injection Avoid Nulls Immuta">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-12-10T15:26:09.000Z">
+<meta property="article:modified_time" content="2022-12-10T15:26:29.096Z">
+<meta property="article:author" content="王云生">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>王云生</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="cnblogs"
+               href="https://home.cnblogs.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-cnblogs"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/a996358a335f"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/yun-sheng-10-62-26"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="csdn"
+               href="https://blog.csdn.net/u011593571?type=collect"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-csdn"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/u/4978723"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="juejin"
+               href="https://juejin.cn/user/2604099346111086"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-juejin"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:w_huilong@163.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(65)</small>
+            
+        </div>
+    </li>
+    
+        
+            
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(1)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="JAVA">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        JAVA
+                        <small>(62)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA8特性">
+                                        
+                                        JAVA8特性
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA8以上版本特性">
+                                        
+                                        JAVA8以上版本特性
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA多线程">
+                                        
+                                        JAVA多线程
+                                        
+                                            <small>(27
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA基础">
+                                        
+                                        JAVA基础
+                                        
+                                            <small>(8
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java集合框架">
+                                        
+                                        Java集合框架
+                                        
+                                            <small>(9
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java其他相关">
+                                        
+                                        Java其他相关
+                                        
+                                            <small>(2
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVAIO">
+                                        
+                                        JAVAIO
+                                        
+                                            <small>(13
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JVM相关">
+                                        
+                                        JVM相关
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="Spring">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        Spring
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringBoot2.5.X系列">
+                                        
+                                        SpringBoot2.5.X系列
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringFrameWork5基础">
+                                        
+                                        SpringFrameWork5基础
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="65">
+<input type="hidden" id="yelog_site_word_count" value="297.3k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>多线程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>aio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ArrayList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>bio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Collection</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>hexo</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>io</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java8</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java8+</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>jvm</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedHashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Map</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>nio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>PriorityQueue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Queue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring boot</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Stack</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tool</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>WeakHashMap</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA Java其他相关 "
+           href="/2022/12/10/Better-Java/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="Better_Java">Better_Java</span>
+            <span class="post-date" title="2022-12-10 23:26:09">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java其他相关 "
+           href="/2022/12/10/Awesome-Java/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="Awesome_Java">Awesome_Java</span>
+            <span class="post-date" title="2022-12-10 23:24:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JVM相关 "
+           href="/2022/12/10/JVM%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,jvm"
+           data-author="" >
+            <span class="post-title" title="JVM相关知识体系详解">JVM相关知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:23:42">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8以上版本特性 "
+           href="/2022/12/10/Java8%E4%BB%A5%E4%B8%8A%E7%89%88%E6%9C%AC%E7%89%B9%E6%80%A7%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,java8+"
+           data-author="" >
+            <span class="post-title" title="Java8以上版本特性知识体系详解">Java8以上版本特性知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:22:38">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8特性 "
+           href="/2022/12/10/Java8%E7%89%B9%E6%80%A7%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,java8"
+           data-author="" >
+            <span class="post-title" title="Java8特性知识体系详解">Java8特性知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:20:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_零拷贝实现">JavaNIO_零拷贝实现</span>
+            <span class="post-date" title="2022-12-10 23:17:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-Netty/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="JavaIO_Netty">JavaIO_Netty</span>
+            <span class="post-date" title="2022-12-10 23:16:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaAIO-%E5%BC%82%E6%AD%A5IO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,aio"
+           data-author="" >
+            <span class="post-title" title="JavaAIO_异步IO详解">JavaAIO_异步IO详解</span>
+            <span class="post-date" title="2022-12-10 23:15:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_IO多路复用详解">JavaNIO_IO多路复用详解</span>
+            <span class="post-date" title="2022-12-10 23:15:03">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E5%9F%BA%E7%A1%80%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_基础详解">JavaNIO_基础详解</span>
+            <span class="post-date" title="2022-12-10 23:13:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-BIO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,bio"
+           data-author="" >
+            <span class="post-title" title="JavaIO_BIO详解">JavaIO_BIO详解</span>
+            <span class="post-date" title="2022-12-10 23:13:00">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/IO%E6%A8%A1%E5%9E%8B-UnixIO%E6%A8%A1%E5%9E%8B/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="IO模型_UnixIO模型">IO模型_UnixIO模型</span>
+            <span class="post-date" title="2022-12-10 23:11:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%B8%B8%E8%A7%81%E7%B1%BB%E4%BD%BF%E7%94%A8/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="常见类使用">常见类使用</span>
+            <span class="post-date" title="2022-12-10 23:10:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-OutputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_OutputStream">源码_OutputStream</span>
+            <span class="post-date" title="2022-12-10 23:09:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-InputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_InputStream">源码_InputStream</span>
+            <span class="post-date" title="2022-12-10 23:08:23">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="设计模式_装饰者模式">设计模式_装饰者模式</span>
+            <span class="post-date" title="2022-12-10 23:06:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%88%86%E7%B1%BB-%E4%BC%A0%E8%BE%93-%E6%93%8D%E4%BD%9C/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="分类_传输_操作">分类_传输_操作</span>
+            <span class="post-date" title="2022-12-10 23:06:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/Java-IO%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="Java_IO知识体系详解">Java_IO知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:04:43">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="ThreadLocal详解">ThreadLocal详解</span>
+            <span class="post-date" title="2022-12-10 22:58:20">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Exchanger%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Exchanger详解">JUC工具类_Exchanger详解</span>
+            <span class="post-date" title="2022-12-10 22:57:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Phaser%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Phaser详解">JUC工具类_Phaser详解</span>
+            <span class="post-date" title="2022-12-10 22:56:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Semaphore详解">JUC工具类_Semaphore详解</span>
+            <span class="post-date" title="2022-12-10 22:56:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CyclicBarrier%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CyclicBarrier详解">JUC工具类_CyclicBarrier详解</span>
+            <span class="post-date" title="2022-12-10 22:55:21">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CountDownLatch详解">JUC工具类_CountDownLatch详解</span>
+            <span class="post-date" title="2022-12-10 22:54:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-Fork-Join%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_Fork_Join框架详解">JUC线程池_Fork_Join框架详解</span>
+            <span class="post-date" title="2022-12-10 22:53:19">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ScheduledThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ScheduledThreadPoolExecutor详解">JUC线程池_ScheduledThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:52:28">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ThreadPoolExecutor详解">JUC线程池_ThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:51:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-FutureTask%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_FutureTask详解">JUC线程池_FutureTask详解</span>
+            <span class="post-date" title="2022-12-10 22:50:52">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-BlockingQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_BlockingQueue详解">JUC集合_BlockingQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:50:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentLinkedQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentLinkedQueue详解">JUC集合_ConcurrentLinkedQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:49:05">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-CopyOnWriteArrayList%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_CopyOnWriteArrayList详解">JUC集合_CopyOnWriteArrayList详解</span>
+            <span class="post-date" title="2022-12-10 22:48:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentHashMap%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentHashMap详解">JUC集合_ConcurrentHashMap详解</span>
+            <span class="post-date" title="2022-12-10 22:47:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantReadWriteLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantReadWriteLock详解">JUC锁_ReentrantReadWriteLock详解</span>
+            <span class="post-date" title="2022-12-10 22:46:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantLock详解">JUC锁_ReentrantLock详解</span>
+            <span class="post-date" title="2022-12-10 22:45:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-%E9%94%81%E6%A0%B8%E5%BF%83%E7%B1%BBAQS%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_锁核心类AQS详解">JUC锁_锁核心类AQS详解</span>
+            <span class="post-date" title="2022-12-10 22:44:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-LockSupport%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_LockSupport详解">JUC锁_LockSupport详解</span>
+            <span class="post-date" title="2022-12-10 22:43:25">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-CAS-Unsafe%E5%92%8C%E5%8E%9F%E5%AD%90%E7%B1%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC原子类_CAS_Unsafe和原子类详解">JUC原子类_CAS_Unsafe和原子类详解</span>
+            <span class="post-date" title="2022-12-10 22:42:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%B1%BB%E6%B1%87%E6%80%BB%E5%92%8C%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC类汇总和学习指南">JUC类汇总和学习指南</span>
+            <span class="post-date" title="2022-12-10 22:41:01">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/final%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="final详解">final详解</span>
+            <span class="post-date" title="2022-12-10 22:39:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/volatile%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="volatile详解">volatile详解</span>
+            <span class="post-date" title="2022-12-10 22:39:02">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/synchronized%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="synchronized详解">synchronized详解</span>
+            <span class="post-date" title="2022-12-10 22:37:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="线程基础">线程基础</span>
+            <span class="post-date" title="2022-12-10 22:31:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="理论基础">理论基础</span>
+            <span class="post-date" title="2022-12-10 22:30:46">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/WeakHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,WeakHashMap"
+           data-author="" >
+            <span class="post-title" title="WeakHashMap源码解析">WeakHashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:26:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/TreeSet-TreeMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,TreeSet,TreeMap"
+           data-author="" >
+            <span class="post-title" title="TreeSet&amp;TreeMap源码解析">TreeSet&amp;TreeMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:25:45">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedHashSet-Map%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedHashSet,Map"
+           data-author="" >
+            <span class="post-title" title="LinkedHashSet&amp;Map源码解析">LinkedHashSet&amp;Map源码解析</span>
+            <span class="post-date" title="2022-12-10 22:24:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/HashSet-HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,HashSet,HashMap"
+           data-author="" >
+            <span class="post-title" title="HashSet&amp;HashMap源码解析">HashSet&amp;HashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:23:24">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/PriorityQueue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,PriorityQueue"
+           data-author="" >
+            <span class="post-title" title="PriorityQueue源码解析">PriorityQueue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:22:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Stack-Queue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Stack,Queue"
+           data-author="" >
+            <span class="post-title" title="Stack&amp;Queue源码解析">Stack&amp;Queue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:21:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedList"
+           data-author="" >
+            <span class="post-title" title="LinkedList源码解析">LinkedList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:19:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/ArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,ArrayList"
+           data-author="" >
+            <span class="post-title" title="ArrayList源码解析">ArrayList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:18:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringBoot2.5.X系列 "
+           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring,spring boot"
+           data-author="" >
+            <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:14:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringFrameWork5基础 "
+           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring"
+           data-author="" >
+            <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:10:47">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/"
+           data-tag="java,Collection"
+           data-author="" >
+            <span class="post-title" title="Collection类关系图">Collection类关系图</span>
+            <span class="post-date" title="2022-12-10 21:59:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/SPI%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="SPI机制详解">SPI机制详解</span>
+            <span class="post-date" title="2022-12-10 21:58:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="反射机制详解">反射机制详解</span>
+            <span class="post-date" title="2022-12-10 21:57:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%BC%82%E5%B8%B8%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="异常机制详解">异常机制详解</span>
+            <span class="post-date" title="2022-12-10 21:56:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="注解机制详解">注解机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="泛型机制详解">泛型机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%9B%BE%E8%B0%B1-Q-A/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="图谱&amp;Q/A">图谱&amp;Q/A</span>
+            <span class="post-date" title="2022-12-10 21:53:16">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E7%9F%A5%E8%AF%86%E7%82%B9/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="知识点">知识点</span>
+            <span class="post-date" title="2022-12-10 21:52:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="面向对象">面向对象</span>
+            <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁">Java并发 - Java中所有的锁</span>
+            <span class="post-date" title="2022-12-10 21:25:40">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 HEXO "
+           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           data-tag="hexo,tool"
+           data-author="" >
+            <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
+            <span class="post-date" title="2022-12-10 19:02:24">2022/12/10</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-Awesome-Java" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Awesome_Java</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="JAVA">JAVA</a> > 
+            
+            <a  data-rel="JAVA&lt;---&gt;Java其他相关">Java其他相关</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">java</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-10 23:26:15'>2022-12-10 23:24</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:10.8k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Awesome-Java"><span class="toc-text">Awesome Java</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bean-Mapping"><span class="toc-text">Bean Mapping</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Build"><span class="toc-text">Build</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bytecode-Manipulation"><span class="toc-text">Bytecode Manipulation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Caching"><span class="toc-text">Caching</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CLI"><span class="toc-text">CLI</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cluster-Management"><span class="toc-text">Cluster Management</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Code-Analysis"><span class="toc-text">Code Analysis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Code-Coverage"><span class="toc-text">Code Coverage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Code-Generators"><span class="toc-text">Code Generators</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compiler-compiler"><span class="toc-text">Compiler-compiler</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Configuration"><span class="toc-text">Configuration</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Constraint-Satisfaction-Problem-Solver"><span class="toc-text">Constraint Satisfaction Problem Solver</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSV"><span class="toc-text">CSV</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Database"><span class="toc-text">Database</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Data-Structures"><span class="toc-text">Data Structures</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Date-and-Time"><span class="toc-text">Date and Time</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Dependency-Injection"><span class="toc-text">Dependency Injection</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Development"><span class="toc-text">Development</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Distributed-Applications"><span class="toc-text">Distributed Applications</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Distributed-Transactions"><span class="toc-text">Distributed Transactions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Distribution"><span class="toc-text">Distribution</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Document-Processing"><span class="toc-text">Document Processing</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Formal-Verification"><span class="toc-text">Formal Verification</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Functional-Programming"><span class="toc-text">Functional Programming</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Game-Development"><span class="toc-text">Game Development</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Geospatial"><span class="toc-text">Geospatial</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GUI"><span class="toc-text">GUI</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#High-Performance"><span class="toc-text">High Performance</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP-Clients"><span class="toc-text">HTTP Clients</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hypermedia-Types"><span class="toc-text">Hypermedia Types</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IDE"><span class="toc-text">IDE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Imagery"><span class="toc-text">Imagery</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JSON"><span class="toc-text">JSON</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JSON-Processing"><span class="toc-text">JSON Processing</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM-and-JDK"><span class="toc-text">JVM and JDK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Logging"><span class="toc-text">Logging</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Machine-Learning"><span class="toc-text">Machine Learning</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Messaging"><span class="toc-text">Messaging</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Miscellaneous"><span class="toc-text">Miscellaneous</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Microservice"><span class="toc-text">Microservice</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Monitoring"><span class="toc-text">Monitoring</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Native"><span class="toc-text">Native</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Natural-Language-Processing"><span class="toc-text">Natural Language Processing</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Networking"><span class="toc-text">Networking</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ORM"><span class="toc-text">ORM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PaaS"><span class="toc-text">PaaS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PDF"><span class="toc-text">PDF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Performance-analysis"><span class="toc-text">Performance analysis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Platform"><span class="toc-text">Platform</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Apache-Commons"><span class="toc-text">Apache Commons</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Other"><span class="toc-text">Other</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Processes"><span class="toc-text">Processes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reactive-libraries"><span class="toc-text">Reactive libraries</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#REST-Frameworks"><span class="toc-text">REST Frameworks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Science"><span class="toc-text">Science</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Search"><span class="toc-text">Search</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Security"><span class="toc-text">Security</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Serialization"><span class="toc-text">Serialization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Server"><span class="toc-text">Server</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Template-Engine"><span class="toc-text">Template Engine</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Testing"><span class="toc-text">Testing</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Asynchronous"><span class="toc-text">Asynchronous</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BDD"><span class="toc-text">BDD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fixtures"><span class="toc-text">Fixtures</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Frameworks"><span class="toc-text">Frameworks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Matchers"><span class="toc-text">Matchers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Miscellaneous-1"><span class="toc-text">Miscellaneous</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mocking"><span class="toc-text">Mocking</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Parameterization"><span class="toc-text">Parameterization</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Utility"><span class="toc-text">Utility</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Version-Managers"><span class="toc-text">Version Managers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web-Crawling"><span class="toc-text">Web Crawling</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web-Frameworks"><span class="toc-text">Web Frameworks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Resources"><span class="toc-text">Resources</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Awesome-Lists"><span class="toc-text">Awesome Lists</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Communities"><span class="toc-text">Communities</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Frontends"><span class="toc-text">Frontends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Influential-Books"><span class="toc-text">Influential Books</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Podcasts-and-Screencasts"><span class="toc-text">Podcasts and Screencasts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Twitter"><span class="toc-text">Twitter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Websites"><span class="toc-text">Websites</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Contributing"><span class="toc-text">Contributing</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Awesome-Java"><a href="#Awesome-Java" class="headerlink" title="Awesome Java"></a>Awesome Java</h2><blockquote>
+<p>这是Github上关于Java相关的工具，框架等等资源集合. 原文参考: <a target="_blank" rel="noopener" href="https://github.com/akullpp/awesome-java%E3%80%82">https://github.com/akullpp/awesome-java。</a> @pdai</p>
+</blockquote>
+<ul>
+<li><a href="#awesome-java">Awesome Java</a><ul>
+<li><a href="#bean-mapping">Bean Mapping</a></li>
+<li><a href="#build">Build</a></li>
+<li><a href="#bytecode-manipulation">Bytecode Manipulation</a></li>
+<li><a href="#caching">Caching</a></li>
+<li><a href="#cli">CLI</a></li>
+<li><a href="#cluster-management">Cluster Management</a></li>
+<li><a href="#code-analysis">Code Analysis</a></li>
+<li><a href="#code-coverage">Code Coverage</a></li>
+<li><a href="#code-generators">Code Generators</a></li>
+<li><a href="#compiler-compiler">Compiler-compiler</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#constraint-satisfaction-problem-solver">Constraint Satisfaction Problem Solver</a></li>
+<li><a href="#csv">CSV</a></li>
+<li><a href="#database">Database</a></li>
+<li><a href="#data-structures">Data Structures</a></li>
+<li><a href="#date-and-time">Date and Time</a></li>
+<li><a href="#dependency-injection">Dependency Injection</a></li>
+<li><a href="#development">Development</a></li>
+<li><a href="#distributed-applications">Distributed Applications</a></li>
+<li><a href="#distributed-transactions">Distributed Transactions</a></li>
+<li><a href="#distribution">Distribution</a></li>
+<li><a href="#document-processing">Document Processing</a></li>
+<li><a href="#formal-verification">Formal Verification</a></li>
+<li><a href="#functional-programming">Functional Programming</a></li>
+<li><a href="#game-development">Game Development</a></li>
+<li><a href="#geospatial">Geospatial</a></li>
+<li><a href="#gui">GUI</a></li>
+<li><a href="#high-performance">High Performance</a></li>
+<li><a href="#http-clients">HTTP Clients</a></li>
+<li><a href="#hypermedia-types">Hypermedia Types</a></li>
+<li><a href="#ide">IDE</a></li>
+<li><a href="#imagery">Imagery</a></li>
+<li><a href="#json">JSON</a></li>
+<li><a href="#json-processing">JSON Processing</a></li>
+<li><a href="#jvm-and-jdk">JVM and JDK</a></li>
+<li><a href="#logging">Logging</a></li>
+<li><a href="#machine-learning">Machine Learning</a></li>
+<li><a href="#messaging">Messaging</a></li>
+<li><a href="#miscellaneous">Miscellaneous</a></li>
+<li><a href="#microservice">Microservice</a></li>
+<li><a href="#monitoring">Monitoring</a></li>
+<li><a href="#native">Native</a></li>
+<li><a href="#natural-language-processing">Natural Language Processing</a></li>
+<li><a href="#networking">Networking</a></li>
+<li><a href="#orm">ORM</a></li>
+<li><a href="#paas">PaaS</a></li>
+<li><a href="#pdf">PDF</a></li>
+<li><a href="#performance-analysis">Performance analysis</a></li>
+<li><a href="#platform">Platform</a><ul>
+<li><a href="#apache-commons">Apache Commons</a></li>
+<li><a href="#other">Other</a></li>
+</ul>
+</li>
+<li><a href="#processes">Processes</a></li>
+<li><a href="#reactive-libraries">Reactive libraries</a></li>
+<li><a href="#rest-frameworks">REST Frameworks</a></li>
+<li><a href="#science">Science</a></li>
+<li><a href="#search">Search</a></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#serialization">Serialization</a></li>
+<li><a href="#server">Server</a></li>
+<li><a href="#template-engine">Template Engine</a></li>
+<li><a href="#testing">Testing</a><ul>
+<li><a href="#asynchronous">Asynchronous</a></li>
+<li><a href="#bdd">BDD</a></li>
+<li><a href="#fixtures">Fixtures</a></li>
+<li><a href="#frameworks">Frameworks</a></li>
+<li><a href="#matchers">Matchers</a></li>
+<li><a href="#miscellaneous-1">Miscellaneous</a></li>
+<li><a href="#mocking">Mocking</a></li>
+<li><a href="#parameterization">Parameterization</a></li>
+</ul>
+</li>
+<li><a href="#utility">Utility</a></li>
+<li><a href="#version-managers">Version Managers</a></li>
+<li><a href="#web-crawling">Web Crawling</a></li>
+<li><a href="#web-frameworks">Web Frameworks</a></li>
+</ul>
+</li>
+<li><a href="#resources">Resources</a><ul>
+<li><a href="#awesome-lists">Awesome Lists</a></li>
+<li><a href="#communities">Communities</a></li>
+<li><a href="#frontends">Frontends</a></li>
+<li><a href="#influential-books">Influential Books</a></li>
+<li><a href="#podcasts-and-screencasts">Podcasts and Screencasts</a></li>
+<li><a href="#twitter">Twitter</a></li>
+<li><a href="#websites">Websites</a></li>
+</ul>
+</li>
+<li><a href="#contributing">Contributing</a></li>
+</ul>
+<h2 id="Bean-Mapping"><a href="#Bean-Mapping" class="headerlink" title="Bean Mapping"></a>Bean Mapping</h2><p><em>Frameworks that ease bean mapping.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/DozerMapper/dozer">Dozer在新窗口打开</a> - Mapper that copies data from one object to another using annotations and API or XML configuration.</li>
+<li><a target="_blank" rel="noopener" href="https://jmapper-framework.github.io/jmapper-core">JMapper在新窗口打开</a> - Uses byte code manipulation for lightning-fast mapping. Supports annotations and API or XML configuration.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mapstruct/mapstruct">MapStruct在新窗口打开</a> - Code generator that simplifies mappings between different bean types, based on a convention-over-configuration approach.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jhalterman/modelmapper">ModelMapper在新窗口打开</a> - Intelligent object mapping library that automatically maps objects to each other.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/orika-mapper/orika">Orika在新窗口打开</a> - JavaBean-mapping framework that recursively copies (among other capabilities) data from one object to another.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/xebia-france/selma">Selma在新窗口打开</a> - Annotation processor-based bean mapper.</li>
+</ul>
+<h2 id="Build"><a href="#Build" class="headerlink" title="Build"></a>Build</h2><p><em>Tools that handle the build cycle and dependencies of an application.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://maven.apache.org/">Apache Maven在新窗口打开</a> - Declarative build and dependency management that favors convention over configuration. It might be preferable to Apache Ant, which uses a rather procedural approach and can be difficult to maintain.</li>
+<li><a target="_blank" rel="noopener" href="https://bazel.io/">Bazel在新窗口打开</a> - Tool from Google that builds code quickly and reliably.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/facebook/buck">Buck在新窗口打开</a> - Encourages the creation of small, reusable modules consisting of code and resources.</li>
+<li><a target="_blank" rel="noopener" href="https://gradle.org/">Gradle在新窗口打开</a> - Incremental builds programmed via Groovy instead of declaring XML. Works well with Maven’s dependency management.</li>
+</ul>
+<h2 id="Bytecode-Manipulation"><a href="#Bytecode-Manipulation" class="headerlink" title="Bytecode Manipulation"></a>Bytecode Manipulation</h2><p><em>Libraries to manipulate bytecode programmatically.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://asm.ow2.org/">ASM在新窗口打开</a> - All-purpose, low-level bytecode manipulation and analysis.</li>
+<li><a target="_blank" rel="noopener" href="http://bytebuddy.net/">Byte Buddy在新窗口打开</a> - Further simplifies bytecode generation with a fluent API.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Konloch/bytecode-viewer">bytecode-viewer在新窗口打开</a> - Java 8 Jar &amp; Android APK reverse engineering suite.</li>
+<li><a target="_blank" rel="noopener" href="https://byteman.jboss.org/">Byteman在新窗口打开</a> - Manipulate bytecode at runtime via DSL (rules); mainly for testing&#x2F;troubleshooting.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/cglib/cglib">cglib在新窗口打开</a> - Bytecode generation library.</li>
+<li><a target="_blank" rel="noopener" href="https://jboss-javassist.github.io/javassist">Javassist在新窗口打开</a> - Tries to simplify bytecode editing.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/SpongePowered/Mixin">Mixin在新窗口打开</a> - Manipulate bytecode at runtime using real Java code.</li>
+</ul>
+<h2 id="Caching"><a href="#Caching" class="headerlink" title="Caching"></a>Caching</h2><p><em>Libraries that provide caching facilities.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ben-manes/caffeine">Caffeine在新窗口打开</a> - High-performance, near-optimal caching library.</li>
+<li><a target="_blank" rel="noopener" href="http://www.ehcache.org/">Ehcache在新窗口打开</a> - Distributed general-purpose cache.</li>
+<li><a target="_blank" rel="noopener" href="http://infinispan.org/">Infinispan在新窗口打开</a> - Highly concurrent key&#x2F;value datastore used for caching.</li>
+</ul>
+<h2 id="CLI"><a href="#CLI" class="headerlink" title="CLI"></a>CLI</h2><p><em>Libraries for everything related to the CLI.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/vdmeer/asciitable">ASCII Table在新窗口打开</a> - Library to draw tables in ASCII.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/airlift/airline">Airline在新窗口打开</a> - Annotation-based framework for parsing Git-like command-line arguments.</li>
+<li><a target="_blank" rel="noopener" href="http://args4j.kohsuke.org/">args4j在新窗口打开</a> - Small library to parse command-line arguments.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/fusesource/jansi">Jansi在新窗口打开</a> - ANSI escape codes to format console output.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/indvd00m/java-ascii-render">Java ASCII Render在新窗口打开</a> - Graphical primitives for the console.</li>
+<li><a target="_blank" rel="noopener" href="http://jcommander.org/">JCommander在新窗口打开</a> - Command-line argument-parsing framework with custom types and validation via implementing interfaces.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jline/jline3">JLine在新窗口打开</a> - Includes features from modern shells like completion or history.</li>
+<li><a target="_blank" rel="noopener" href="https://pholser.github.io/jopt-simple">JOpt Simple在新窗口打开</a> - Fluent parser that uses the POSIX#getopt and GNU#getopt_long syntaxes.</li>
+<li><a target="_blank" rel="noopener" href="http://picocli.info/">picocli在新窗口打开</a> - ANSI colors and styles in usage help with annotation-based POSIX&#x2F;GNU&#x2F;any syntax, subcommands, strong typing for both options and positional args.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/beryx/text-io">Text-IO在新窗口打开</a> - Aids the creation of full console-based applications.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mabe02/lanterna">Lanterna在新窗口打开</a> - Easy console text-GUI library, similar to curses.</li>
+</ul>
+<h2 id="Cluster-Management"><a href="#Cluster-Management" class="headerlink" title="Cluster Management"></a>Cluster Management</h2><p><em>Frameworks that can dynamically manage applications inside of a cluster.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://aurora.apache.org/">Apache Aurora在新窗口打开</a> - Mesos framework for long-running services and cron jobs.</li>
+<li><a target="_blank" rel="noopener" href="https://mesos.apache.org/">Apache Mesos在新窗口打开</a> - Abstracts CPU, memory, storage, and other compute resources away from machines.</li>
+<li><a target="_blank" rel="noopener" href="http://getsingularity.com/">Singularity在新窗口打开</a> - Mesos framework that makes deployment and operations easy. It supports web services, background workers, scheduled jobs, and one-off tasks.</li>
+</ul>
+<h2 id="Code-Analysis"><a href="#Code-Analysis" class="headerlink" title="Code Analysis"></a>Code Analysis</h2><p><em>Tools that provide metrics and quality measurements.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/checkstyle/checkstyle">Checkstyle在新窗口打开</a> - Static analysis of coding conventions and standards.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/error-prone">Error Prone在新窗口打开</a> - Catches common programming mistakes as compile-time errors.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/facebook/infer">Infer在新窗口打开</a> - Modern static analysis tool for verifying the correctness of code.</li>
+<li><a target="_blank" rel="noopener" href="https://jqassistant.org/">jQAssistant在新窗口打开</a> - Static code analysis with Neo4J-based query language.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/uber/NullAway">NullAway在新窗口打开</a> - Eliminates NullPointerExceptions with low build-time overhead.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/pmd/pmd">PMD在新窗口打开</a> - Source code analysis for finding bad coding practices.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/SonarSource/sonar-java">SonarJava在新窗口打开</a> - Static analyzer for SonarQube &amp; SonarLint.</li>
+<li><a target="_blank" rel="noopener" href="https://www.sourcetrail.com/">Sourcetrail <img src="/2022/12/10/Awesome-Java/commercial.svg+xml" alt="c">在新窗口打开</a> - Visual source code navigator.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/INRIA/spoon">Spoon在新窗口打开</a> - Library for analyzing and transforming Java source code.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/spotbugs/spotbugs">Spotbugs在新窗口打开</a> - Static analysis of bytecode to find potential bugs.</li>
+</ul>
+<h2 id="Code-Coverage"><a href="#Code-Coverage" class="headerlink" title="Code Coverage"></a>Code Coverage</h2><p><em>Frameworks and tools that enable code coverage metrics collection for test suites.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.atlassian.com/software/clover/overview">Clover <img src="/2022/12/10/Awesome-Java/commercial.svg+xml" alt="c">在新窗口打开</a> - Relies on source-code instrumentation instead of bytecode instrumentation.</li>
+<li><a target="_blank" rel="noopener" href="https://cobertura.github.io/cobertura">Cobertura在新窗口打开</a> - Relies on offline (or static) bytecode instrumentation and class loading to collect code coverage metrics.</li>
+<li><a target="_blank" rel="noopener" href="http://eclemma.org/jacoco">JaCoCo在新窗口打开</a> - Framework that enables collection of code coverage metrics, using both offline and runtime bytecode instrumentation.</li>
+</ul>
+<h2 id="Code-Generators"><a href="#Code-Generators" class="headerlink" title="Code Generators"></a>Code Generators</h2><p><em>Tools that generate patterns for repetitive code in order to reduce verbosity and error-proneness.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/sviperll/adt4j">ADT4J在新窗口打开</a> - JSR-269 code generator for algebraic data types.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/auto">Auto在新窗口打开</a> - Generates factory, service, and value classes.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/FreeBuilder">FreeBuilder在新窗口打开</a> - Automatically generates the Builder pattern.</li>
+<li><a target="_blank" rel="noopener" href="https://immutables.github.io/">Immutables在新窗口打开</a> - Annotation processors to generate simple, safe and consistent value objects.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/square/javapoet">JavaPoet在新窗口打开</a> - API to generate source files.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jhipster/generator-jhipster">JHipster在新窗口打开</a> - Yeoman source code generator for Spring Boot and AngularJS.</li>
+<li><a target="_blank" rel="noopener" href="http://www.joda.org/joda-beans">Joda-Beans在新窗口打开</a> - Small framework that adds queryable properties to Java, enhancing JavaBeans.</li>
+<li><a target="_blank" rel="noopener" href="https://projectlombok.org/">Lombok在新窗口打开</a> - Code generator that aims to reduce verbosity.</li>
+</ul>
+<h2 id="Compiler-compiler"><a href="#Compiler-compiler" class="headerlink" title="Compiler-compiler"></a>Compiler-compiler</h2><p><em>Frameworks that help to create parsers, interpreters or compilers.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.antlr.org/">ANTLR在新窗口打开</a> - Complex full-featured framework for top-down parsing.</li>
+<li><a target="_blank" rel="noopener" href="https://javacc.org/">JavaCC在新窗口打开</a> - Parser generator that generates top-down parsers. Allows lexical state switching and permits extended BNF specifications.</li>
+<li><a target="_blank" rel="noopener" href="http://jflex.de/">JFlex在新窗口打开</a> - A lexical analyzer generator.</li>
+</ul>
+<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><p><em>Libraries that provide external configuration.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/line/centraldogma">centraldogma在新窗口打开</a> - Highly-available version-controlled service configuration repository based on Git, ZooKeeper and HTTP&#x2F;2.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/cfg4j/cfg4j">cfg4j在新窗口打开</a> - Modern configuration library for distributed apps written in Java.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/typesafehub/config">config在新窗口打开</a> - Configuration library for JVM languages.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/shyiko/dotenv">dotenv在新窗口打开</a> - A twelve-factor configuration library for Java.</li>
+<li><a target="_blank" rel="noopener" href="http://ini4j.sourceforge.net/">ini4j在新窗口打开</a> - Provides an API for handling Windows’ INI files.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mariomac/kaconf">KAConf在新窗口打开</a> - Annotation-based configuration system for Java and Kotlin.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/lviggiano/owner">owner在新窗口打开</a> - Reduces boilerplate of properties.</li>
+</ul>
+<h2 id="Constraint-Satisfaction-Problem-Solver"><a href="#Constraint-Satisfaction-Problem-Solver" class="headerlink" title="Constraint Satisfaction Problem Solver"></a>Constraint Satisfaction Problem Solver</h2><p><em>Libraries that help with implementing optimization and satisfiability problems.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://choco-solver.org/">Choco在新窗口打开</a> - Off-the-shelf constraint satisfaction problem solver that uses constraint programming techniques.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/radsz/jacop">JaCoP在新窗口打开</a> - Includes an interface for the FlatZinc language, enabling it to execute MiniZinc models.</li>
+<li><a target="_blank" rel="noopener" href="https://www.optaplanner.org/">OptaPlanner在新窗口打开</a> - Business planning and resource scheduling optimization solver.</li>
+</ul>
+<h2 id="CSV"><a href="#CSV" class="headerlink" title="CSV"></a>CSV</h2><p><em>Frameworks and libraries that simplify reading&#x2F;writing CSV data.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformat-csv">jackson-dataformat-csv在新窗口打开</a> - Jackson extension for reading and writing CSV.</li>
+<li><a target="_blank" rel="noopener" href="http://opencsv.sourceforge.net/">opencsv在新窗口打开</a> - Simple CSV parser.</li>
+<li><a target="_blank" rel="noopener" href="https://super-csv.github.io/super-csv">Super CSV在新窗口打开</a> - Powerful CSV parser with support for Dozer, Joda-Time and Java 8.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/uniVocity/univocity-parsers">uniVocity-parsers在新窗口打开</a> - One of the fastest and most feature-complete parsers. Also comes with parsers for TSV and fixed-width records.</li>
+</ul>
+<h2 id="Database"><a href="#Database" class="headerlink" title="Database"></a>Database</h2><p><em>Everything that simplifies interactions with the database.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://phoenix.apache.org/">Apache Phoenix在新窗口打开</a> - High-performance relational database layer over HBase for low-latency applications.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenHFT/Chronicle-Map">Chronicle Map在新窗口打开</a> - Efficient, in-memory (opt. persisted to disk), off-heap key-value store.</li>
+<li><a target="_blank" rel="noopener" href="http://druid.io/">druid在新窗口打开</a> - High-performance, column-oriented, distributed data store.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/eXist-db/exist">eXist在新窗口打开</a> - A NoSQL document database and application platform.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/vladmihalcea/flexy-pool">FlexyPool在新窗口打开</a> - Brings metrics and failover strategies to the most common connection pooling solutions.</li>
+<li><a target="_blank" rel="noopener" href="https://flywaydb.org/">Flyway在新窗口打开</a> - Simple database migration tool.</li>
+<li><a target="_blank" rel="noopener" href="https://h2database.com/">H2在新窗口打开</a> - Small SQL database notable for its in-memory functionality.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/brettwooldridge/HikariCP">HikariCP在新窗口打开</a> - High-performance JDBC connection pool.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jasync-sql/jasync-sql">jasync-sql在新窗口打开</a> - Async DB driver for MySQL and PostgreSQL.</li>
+<li><a target="_blank" rel="noopener" href="http://jdbi.org/">JDBI在新窗口打开</a> - Convenient abstraction of JDBC.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/xetorthio/jedis">Jedis在新窗口打开</a> - Small client for interaction with Redis, with methods for commands.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/searchbox-io/Jest">Jest在新窗口打开</a> - Client for the Elasticsearch REST API.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/justinsb/jetcd">jetcd在新窗口打开</a> - Client library for etcd.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/my2iu/Jinq">Jinq在新窗口打开</a> - Typesafe database queries via symbolic execution of Java 8 Lambdas (on top of JPA or jOOQ).</li>
+<li><a target="_blank" rel="noopener" href="https://www.jooq.org/">jOOQ在新窗口打开</a> - Generates typesafe code based on SQL schema.</li>
+<li><a target="_blank" rel="noopener" href="http://www.liquibase.org/">Liquibase在新窗口打开</a> - Database-independent library for tracking, managing and applying database schema changes.</li>
+<li><a target="_blank" rel="noopener" href="http://www.mapdb.org/">MapDB在新窗口打开</a> - Embedded database engine that provides concurrent collections backed on disk or in off-heap memory.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/vorburger/MariaDB4j">MariaDB4j在新窗口打开</a> - Launcher for MariaDB that requires no installation or external dependencies.</li>
+<li><a target="_blank" rel="noopener" href="https://orientdb.com/orientdb">OrientDB在新窗口打开</a> - Embeddable distributed database written on top of Hazelcast.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/prestodb/presto">Presto在新窗口打开</a> - Distributed SQL query engine for big data.</li>
+<li><a target="_blank" rel="noopener" href="http://www.querydsl.com/">Querydsl在新窗口打开</a> - Typesafe unified queries.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/realm/realm-java">Realm在新窗口打开</a> - Mobile database to run directly inside phones, tablets or wearables.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mrniko/redisson">Redisson在新窗口打开</a> - Allows for distributed and scalable data structures on top of a Redis server.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/requery/requery">requery在新窗口打开</a> - A modern, lightweight but powerful object mapping and SQL generator. Easily map to or create databases, or perform queries and updates from any Java-using platform.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/speedment/speedment">Speedment在新窗口打开</a> - Database access library that utilizes Java 8’s Stream API for querying.</li>
+<li><a target="_blank" rel="noopener" href="https://sql2o.org/">sql2o在新窗口打开</a> - Thin JDBC wrapper that simplifies database access and provides simple mapping of ResultSets to POJOs.</li>
+<li><a target="_blank" rel="noopener" href="https://www.vibur.org/">Vibur DBCP在新窗口打开</a> - JDBC connection pool library with advanced performance monitoring capabilities.</li>
+<li><a target="_blank" rel="noopener" href="https://jetbrains.github.io/xodus">Xodus在新窗口打开</a> - Highly concurrent transactional schema-less and ACID-compliant embedded database.</li>
+</ul>
+<h2 id="Data-Structures"><a href="#Data-Structures" class="headerlink" title="Data Structures"></a>Data Structures</h2><p><em>Efficient and specific data structures.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://avro.apache.org/">Apache Avro在新窗口打开</a> - Data interchange format with dynamic typing, untagged data, and absence of manually assigned IDs.</li>
+<li><a target="_blank" rel="noopener" href="https://orc.apache.org/">Apache Orc在新窗口打开</a> - Fast and efficient columnar storage format for Hadoop-based workloads.</li>
+<li><a target="_blank" rel="noopener" href="https://parquet.apache.org/">Apache Parquet在新窗口打开</a> - Columnar storage format based on assembly algorithms from Google’s paper on Dremel.</li>
+<li><a target="_blank" rel="noopener" href="https://thrift.apache.org/">Apache Thrift在新窗口打开</a> - Data interchange format that originated at Facebook.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/bulldog2011/bigqueue">Big Queue在新窗口打开</a> - A big, fast and persistent queue based on memory-mapped files.</li>
+<li><a target="_blank" rel="noopener" href="https://pcollections.org/">Persistent Collection在新窗口打开</a> - Persistent and immutable analogue of the Java Collections Framework.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/protobuf">Protobuf在新窗口打开</a> - Google’s data interchange format.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/real-logic/simple-binary-encoding">SBE在新窗口打开</a> - Simple Binary Encoding, one of the fastest message formats around.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/square/tape">Tape在新窗口打开</a> - A lightning-fast, transactional, file-based FIFO.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/square/wire">Wire在新窗口打开</a> - Clean, lightweight protocol buffers.</li>
+</ul>
+<h2 id="Date-and-Time"><a href="#Date-and-Time" class="headerlink" title="Date and Time"></a>Date and Time</h2><p><em>Libraries related to handling date and time.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/hypotemoose/almanac-converter">Almanac Converter在新窗口打开</a> - Simple conversion between different calendar systems.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ical4j/ical4j">iCal4j在新窗口打开</a> - Parse and build iCalendar <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc5545">RFC 5545在新窗口打开</a> data models.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ThreeTen/threeten-extra">ThreeTen-Extra在新窗口打开</a> - Additional date-time classes that complement those in JDK 8.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/MenoData/Time4J">Time4J在新窗口打开</a> - Advanced date and time library.</li>
+</ul>
+<h2 id="Dependency-Injection"><a href="#Dependency-Injection" class="headerlink" title="Dependency Injection"></a>Dependency Injection</h2><p><em>Libraries that help to realize the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Inversion_of_control">Inversion of Control在新窗口打开</a> paradigm.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://deltaspike.apache.org/">Apache DeltaSpike在新窗口打开</a> - CDI extension framework.</li>
+<li><a target="_blank" rel="noopener" href="https://google.github.io/dagger">Dagger2在新窗口打开</a> - Compile-time injection framework without reflection.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zsoltherpai/feather">Feather在新窗口打开</a> - Ultra-lightweight, JSR-330-compliant dependency injection library.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Netflix/governator">Governator在新窗口打开</a> - Extensions and utilities that enhance Google Guice.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/guice">Guice在新窗口打开</a> - Lightweight and opinionated framework that completes Dagger.</li>
+<li><a target="_blank" rel="noopener" href="https://javaee.github.io/hk2">HK2在新窗口打开</a> - Lightweight and dynamic dependency injection framework.</li>
+</ul>
+<h2 id="Development"><a href="#Development" class="headerlink" title="Development"></a>Development</h2><p><em>Augmentation of the development process at a fundamental level.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://eclipse.org/aspectj">AspectJ在新窗口打开</a> - Seamless aspect-oriented programming extension.</li>
+<li><a target="_blank" rel="noopener" href="https://dcevm.github.io/">DCEVM在新窗口打开</a> - JVM modification that allows unlimited redefinition of loaded classes at runtime.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zalando/faux-pas">Faux Pas在新窗口打开</a> - Library that simplifies error handling by circumventing the issue that none of the functional interfaces in the Java Runtime is allowed by default to throw checked exceptions.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/HotswapProjects/HotswapAgent">HotswapAgent在新窗口打开</a> - Unlimited runtime class and resource redefinition.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/javaparser/javaparser">JavaParser在新窗口打开</a> - Parse, modify and generate Java code.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/javaparser/javasymbolsolver">JavaSymbolSolver在新窗口打开</a> - A symbol solver for Java.</li>
+<li><a target="_blank" rel="noopener" href="https://zeroturnaround.com/software/jrebel">JRebel <img src="/2022/12/10/Awesome-Java/commercial.svg+xml" alt="c">在新窗口打开</a> - Instantly reloads code and configuration changes without redeploys.</li>
+<li><a target="_blank" rel="noopener" href="https://noexception.machinezoo.com/">NoException在新窗口打开</a> - Allows checked exceptions in functional interfaces and converts exceptions to Optional return.</li>
+</ul>
+<h2 id="Distributed-Applications"><a href="#Distributed-Applications" class="headerlink" title="Distributed Applications"></a>Distributed Applications</h2><p><em>Libraries and frameworks for writing distributed and fault-tolerant applications.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://geode.apache.org/">Apache Geode在新窗口打开</a> - In-memory data management system that provides reliable asynchronous event notifications and guaranteed message delivery.</li>
+<li><a target="_blank" rel="noopener" href="https://storm.apache.org/">Apache Storm在新窗口打开</a> - Realtime computation system.</li>
+<li><a target="_blank" rel="noopener" href="https://zookeeper.apache.org/">Apache ZooKeeper在新窗口打开</a> - Coordination service with distributed configuration, synchronization, and naming registry for large distributed systems.</li>
+<li><a target="_blank" rel="noopener" href="http://atomix.io/">Atomix在新窗口打开</a> - Fault-tolerant distributed coordination framework.</li>
+<li><a target="_blank" rel="noopener" href="http://www.axonframework.org/">Axon Framework在新窗口打开</a> - Framework for creating CQRS applications.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mtakaki/dropwizard-circuitbreaker">Dropwizard Circuit Breaker在新窗口打开</a> - Circuit breaker design pattern for Dropwizard.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jhalterman/failsafe">Failsafe在新窗口打开</a> - Simple failure handling with retries and circuit breakers.</li>
+<li><a target="_blank" rel="noopener" href="https://hazelcast.org/">Hazelcast <img src="/2022/12/10/Awesome-Java/commercial.svg+xml" alt="c">在新窗口打开</a> - Highly scalable in-memory datagrid with a free open-source version.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Netflix/Hystrix">Hystrix在新窗口打开</a> - Provides latency and fault tolerance.</li>
+<li><a target="_blank" rel="noopener" href="http://www.jgroups.org/">JGroups在新窗口打开</a> - Toolkit for reliable messaging and cluster creation.</li>
+<li><a target="_blank" rel="noopener" href="http://www.orbit.cloud/">Orbit在新窗口打开</a> - Virtual actors; adds another level of abstraction to traditional actors.</li>
+<li><a target="_blank" rel="noopener" href="https://www.paralleluniverse.co/quasar">Quasar在新窗口打开</a> - Lightweight threads and actors for the JVM.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/resilience4j/resilience4j">resilience4j在新窗口打开</a> - Functional fault tolerance library.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/scalecube/scalecube">ScaleCube在新窗口打开</a> - Embeddable Cluster-Membership library based on SWIM and gossip protocol.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Netflix/zuul">Zuul在新窗口打开</a> - A gateway service that provides dynamic routing, monitoring, resiliency, security, and more.</li>
+</ul>
+<h2 id="Distributed-Transactions"><a href="#Distributed-Transactions" class="headerlink" title="Distributed Transactions"></a>Distributed Transactions</h2><p><em>Distributed transactions provide a mechanism for ensuring consistency of data updates in the presence of concurrent access and partial failures.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.atomikos.com/">Atomikos在新窗口打开</a> - Provides transactions for REST, SOA and microservices with support for JTA and XA.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/bitronix/btm">Bitronix在新窗口打开</a> - A simple but complete implementation of the JTA 1.1 API.</li>
+<li><a target="_blank" rel="noopener" href="http://narayana.io/">Narayana在新窗口打开</a> - Provides support for traditional ACID and compensation transactions, also complies with JTA, JTS and other standards.</li>
+</ul>
+<h2 id="Distribution"><a href="#Distribution" class="headerlink" title="Distribution"></a>Distribution</h2><p><em>Tools that handle the distribution of applications in native formats.</em></p>
+<h2 id="Document-Processing"><a href="#Document-Processing" class="headerlink" title="Document Processing"></a>Document Processing</h2><p><em>Libraries that assist with processing office document formats.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://poi.apache.org/">Apache POI在新窗口打开</a> - Supports OOXML (XLSX, DOCX, PPTX) as well as OLE2 (XLS, DOC or PPT).</li>
+<li><a target="_blank" rel="noopener" href="http://documents4j.com/">documents4j在新窗口打开</a> - API for document format conversion using third-party converters such as MS Word.</li>
+<li><a target="_blank" rel="noopener" href="https://www.docx4java.org/trac/docx4j">docx4j在新窗口打开</a> - Create and manipulate Microsoft Open XML files.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/creditdatamw/zerocell">zerocell在新窗口打开</a> - Annotation-based API for reading data from Excel sheets into POJOs with focus on reduced overhead.</li>
+</ul>
+<h2 id="Formal-Verification"><a href="#Formal-Verification" class="headerlink" title="Formal Verification"></a>Formal Verification</h2><p><em>Formal-methods tools: proof assistants, model checking, symbolic execution, etc.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ksen007/janala2">CATG在新窗口打开</a> - Concolic unit testing engine. Automatically generates unit tests using formal methods.</li>
+<li><a target="_blank" rel="noopener" href="https://types.cs.washington.edu/checker-framework">Checker Framework在新窗口打开</a> - Pluggable type systems. Includes nullness types, physical units, immutability types and more.</li>
+<li><a target="_blank" rel="noopener" href="https://plse.cs.washington.edu/daikon">Daikon在新窗口打开</a> - Detects likely program invariants and generates JML specs based on those invariants.</li>
+<li><a target="_blank" rel="noopener" href="https://babelfish.arc.nasa.gov/trac/jpf">Java Path Finder (JPF)在新窗口打开</a> - JVM formal verification tool containing a model checker and more. Created by NASA.</li>
+<li><a target="_blank" rel="noopener" href="http://massoni.computacao.ufcg.edu.br/home/jmlok">JMLOK 2.0在新窗口打开</a> - Detects inconsistencies between code and JML specification through feedback-directed random tests generation, and suggests a likely cause for each nonconformance detected.</li>
+<li><a target="_blank" rel="noopener" href="https://key-project.org/">KeY在新窗口打开</a> - Formal software development tool that aims to integrate design, implementation, formal specification, and formal verification of object-oriented software as seamlessly as possible. Uses JML for specification and symbolic execution for verification.</li>
+<li><a target="_blank" rel="noopener" href="https://openjml.github.io/">OpenJML在新窗口打开</a> - Translates JML specifications into SMT-LIB format and passes the proof problems implied by the program to backend solvers.</li>
+</ul>
+<h2 id="Functional-Programming"><a href="#Functional-Programming" class="headerlink" title="Functional Programming"></a>Functional Programming</h2><p><em>Libraries that facilitate functional programming.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/aol/cyclops-react">cyclops-react在新窗口打开</a> - Monad and stream utilities, comprehensions, pattern matching, functional extensions for all JDK collections, future streams, trampolines and much more.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/derive4j/derive4j">derive4j在新窗口打开</a> - Java 8 annotation processor and framework for deriving algebraic data types constructors, pattern-matching and morphisms.</li>
+<li><a target="_blank" rel="noopener" href="https://bitbucket.org/atlassian/fugue">Fugue在新窗口打开</a> - Functional extensions to Guava.</li>
+<li><a target="_blank" rel="noopener" href="http://www.functionaljava.org/">Functional Java在新窗口打开</a> - Implements numerous basic and advanced programming abstractions that assist composition-oriented development.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jOOQ/jOOL">jOOλ在新窗口打开</a> - Extension to Java 8 that aims to fix gaps in lambda by providing numerous missing types and a rich set of sequential Stream API additions.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/poetix/protonpack">protonpack在新窗口打开</a> - Collection of stream utilities.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/amaembo/streamex">StreamEx在新窗口打开</a> - Enhances Java 8 Streams.</li>
+<li><a target="_blank" rel="noopener" href="http://www.vavr.io/">Vavr在新窗口打开</a> - Functional component library that provides persistent data types and functional control structures.</li>
+</ul>
+<h2 id="Game-Development"><a href="#Game-Development" class="headerlink" title="Game Development"></a>Game Development</h2><p><em>Frameworks that support the development of games.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://almasb.github.io/FXGL">FXGL在新窗口打开</a> - JavaFX Game Development Framework.</li>
+<li><a target="_blank" rel="noopener" href="http://jmonkeyengine.org/">jMonkeyEngine在新窗口打开</a> - Game engine for modern 3D development.</li>
+<li><a target="_blank" rel="noopener" href="https://libgdx.badlogicgames.com/">libGDX在新窗口打开</a> - All-round cross-platform, high-level framework.</li>
+<li><a target="_blank" rel="noopener" href="https://www.lwjgl.org/">LWJGL在新窗口打开</a> - Robust framework that abstracts libraries like OpenGL&#x2F;CL&#x2F;AL.</li>
+</ul>
+<h2 id="Geospatial"><a href="#Geospatial" class="headerlink" title="Geospatial"></a>Geospatial</h2><p><em>Libraries for working with geospatial data and algorithms.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://sis.apache.org/">Apache SIS在新窗口打开</a> - Library for developing geospatial applications.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/davidmoten/geo">Geo在新窗口打开</a> - GeoHash utilities in Java.</li>
+<li><a target="_blank" rel="noopener" href="http://www.geotoolkit.org/">Geotoolkit.org在新窗口打开</a> - Library for developing geospatial applications. Built on top of the Apache SIS project.</li>
+<li><a target="_blank" rel="noopener" href="http://geotools.org/">GeoTools在新窗口打开</a> - Library that provides tools for geospatial data.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/graphhopper/graphhopper">GraphHopper在新窗口打开</a> - Road-routing engine. Used as a Java library or standalone web service.</li>
+<li><a target="_blank" rel="noopener" href="http://www.h2gis.org/">H2GIS在新窗口打开</a> - A spatial extension of the H2 database.</li>
+<li><a target="_blank" rel="noopener" href="https://astrapi69.github.io/jgeohash">Jgeohash在新窗口打开</a> - Library for using the GeoHash algorithm.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mapsforge/mapsforge">Mapsforge在新窗口打开</a> - Map rendering based on OpenStreetMap data.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/locationtech/spatial4j">Spatial4j在新窗口打开</a> - General-purpose spatial&#x2F;geospatial library.</li>
+</ul>
+<h2 id="GUI"><a href="#GUI" class="headerlink" title="GUI"></a>GUI</h2><p><em>Libraries to create modern graphical user interfaces.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.oracle.com/technetwork/java/javase/overview/javafx-overview-2158620.html">JavaFX在新窗口打开</a> - The successor of Swing.</li>
+<li><a target="_blank" rel="noopener" href="https://gluonhq.com/open-source/scene-builder">Scene Builder在新窗口打开</a> - Visual layout tool for JavaFX applications.</li>
+<li><a target="_blank" rel="noopener" href="https://www.eclipse.org/swt">SWT在新窗口打开</a> - The Standard Widget Toolkit, a graphical widget toolkit.</li>
+</ul>
+<h2 id="High-Performance"><a href="#High-Performance" class="headerlink" title="High Performance"></a>High Performance</h2><p><em>Everything about high-performance computation, from collections to specific libraries.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/real-logic/Agrona">Agrona在新窗口打开</a> - Data structures and utility methods that are common in high-performance applications.</li>
+<li><a target="_blank" rel="noopener" href="https://lmax-exchange.github.io/disruptor">Disruptor在新窗口打开</a> - Inter-thread messaging library.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/eclipse/eclipse-collections">Eclipse Collections在新窗口打开</a> - Collections framework inspired by Smalltalk.</li>
+<li><a target="_blank" rel="noopener" href="http://fastutil.di.unimi.it/">fastutil在新窗口打开</a> - Fast and compact type-specific collections.</li>
+<li><a target="_blank" rel="noopener" href="https://labs.carrotsearch.com/hppc.html">HPPC在新窗口打开</a> - Primitive collections.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/JCTools/JCTools">JCTools在新窗口打开</a> - Concurrency tools currently missing from the JDK.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OpenHFT/Koloboke">Koloboke在新窗口打开</a> - Hash sets and hash maps.</li>
+</ul>
+<h2 id="HTTP-Clients"><a href="#HTTP-Clients" class="headerlink" title="HTTP Clients"></a>HTTP Clients</h2><p><em>Libraries that assist with creating HTTP requests and&#x2F;or binding responses.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/AsyncHttpClient/async-http-client">Async Http Client在新窗口打开</a> - Asynchronous HTTP and WebSocket client library.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Netflix/feign">Feign在新窗口打开</a> - HTTP client binder inspired by Retrofit, JAXRS-2.0, and WebSocket.</li>
+<li><a target="_blank" rel="noopener" href="https://square.github.io/okhttp">OkHttp在新窗口打开</a> - HTTP+SPDY client.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/playframework/play-ws">Play WS在新窗口打开</a> - Typesafe client with reactive streams and caching.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/B2W-BIT/restQL-core">restQL-core在新窗口打开</a> - Microservice query language that fetches information from multiple services.</li>
+<li><a target="_blank" rel="noopener" href="https://square.github.io/retrofit">Retrofit在新窗口打开</a> - Typesafe REST client.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Netflix/ribbon">Ribbon在新窗口打开</a> - Client-side IPC library that is battle-tested in cloud.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zalando/riptide">Riptide在新窗口打开</a> - Client-side response routing for Spring’s RestTemplate.</li>
+</ul>
+<h2 id="Hypermedia-Types"><a href="#Hypermedia-Types" class="headerlink" title="Hypermedia Types"></a>Hypermedia Types</h2><p><em>Libraries that handle serialization to hypermedia types.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/jsonld-java/jsonld-java">JSON-LD在新窗口打开</a> - JSON-LD implementation.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/eserating/siren4j">Siren4J在新窗口打开</a> - Library for the Siren specification.</li>
+</ul>
+<h2 id="IDE"><a href="#IDE" class="headerlink" title="IDE"></a>IDE</h2><p><em>Integrated development environments that try to simplify several aspects of development.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.eclipse.org/">Eclipse在新窗口打开</a> - Established open-source project with support for lots of plugins and languages.</li>
+<li><a target="_blank" rel="noopener" href="https://www.jetbrains.com/idea">IntelliJ IDEA <img src="/2022/12/10/Awesome-Java/commercial.svg+xml" alt="c">在新窗口打开</a> - Supports many JVM languages and provides good options for Android development. The commercial edition targets the enterprise sector.</li>
+<li><a target="_blank" rel="noopener" href="https://netbeans.org/">NetBeans在新窗口打开</a> - Provides integration for several Java SE and EE features, from database access to HTML5.</li>
+<li><a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/languages/java">Visual Studio Code在新窗口打开</a> - Provides Java support for lightweight projects with a simple, modern workflow by using extensions from the internal marketplace.</li>
+</ul>
+<h2 id="Imagery"><a href="#Imagery" class="headerlink" title="Imagery"></a>Imagery</h2><p><em>Libraries that assist with the creation, evaluation or manipulation of graphical images.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/thebuzzmedia/imgscalr">Imgscalr在新窗口打开</a> - Simple, efficient and hardware-accelerated image-scaling library implemented in pure Java 2D.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/nguyenq/tess4j">Tess4J在新窗口打开</a> - A JNA wrapper for Tesseract OCR API.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/coobird/thumbnailator">Thumbnailator在新窗口打开</a> - High-quality thumbnail generation library.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/haraldk/TwelveMonkeys">TwelveMonkeys在新窗口打开</a> - Collection of plugins that extend the number of supported image file formats.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zxing/zxing">ZXing在新窗口打开</a> - Multi-format 1D&#x2F;2D barcode image processing library.</li>
+</ul>
+<h2 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h2><p><em>Libraries for serializing and deserializing JSON to and from Java objects.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ngs-doo/dsl-json">DSL-JSON在新窗口打开</a> - JSON library with advanced compile time databinding.</li>
+<li><a target="_blank" rel="noopener" href="https://owlike.github.io/genson">Genson在新窗口打开</a> - Powerful and easy-to-use Java-to-JSON conversion library.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/gson">Gson在新窗口打开</a> - Serializes objects to JSON and vice versa. Good performance with on-the-fly usage.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/brettwooldridge/HikariJSON">HikariJSON在新窗口打开</a> - High-performance JSON parser, 2x faster than Jackson.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-modules-java8">jackson-modules-java8在新窗口打开</a> - Set of Jackson modules for Java 8 datatypes and features.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zalando/jackson-datatype-money">Jackson-datatype-money在新窗口打开</a> - Open-source Jackson module to support JSON serialization and deserialization of JavaMoney data types.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson">Jackson在新窗口打开</a> - Similar to GSON, but offers performance gains if you need to instantiate the library more often.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jdereg/json-io">JSON-io在新窗口打开</a> - Convert Java to JSON. Convert JSON to Java. Pretty print JSON. Java JSON serializer.</li>
+<li><a target="_blank" rel="noopener" href="http://jsoniter.com/">jsoniter在新窗口打开</a> - Fast and flexible library with iterator and lazy parsing API.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/bluelinelabs/LoganSquare">LoganSquare在新窗口打开</a> - JSON parsing and serializing library based on Jackson’s streaming API. Outperforms GSON &amp; Jackson’s library.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/square/moshi">Moshi在新窗口打开</a> - Modern JSON library, less opinionated and uses built-in types like List and Map.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/eclipse/yasson">Yasson在新窗口打开</a> - Binding layer between classes and JSON documents similar to JAXB.</li>
+</ul>
+<h2 id="JSON-Processing"><a href="#JSON-Processing" class="headerlink" title="JSON Processing"></a>JSON Processing</h2><p><em>Libraries for processing data in JSON format.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson">fastjson在新窗口打开</a> - Very fast processor with no additional dependencies and full data binding.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/bazaarvoice/jolt">Jolt在新窗口打开</a> - JSON to JSON transformation tool.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jayway/JsonPath">JsonPath在新窗口打开</a> - Extract data from JSON using XPATH-like syntax.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jsurfer/JsonSurfer">JsonSurfer在新窗口打开</a> - Streaming JsonPath processor dedicated to processing big and complicated JSON data.</li>
+</ul>
+<h2 id="JVM-and-JDK"><a href="#JVM-and-JDK" class="headerlink" title="JVM and JDK"></a>JVM and JDK</h2><p><em>Current implementations of the JVM&#x2F;JDK.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ReadyTalk/avian">Avian在新窗口打开</a> - JVM with both JIT and AOT modes. Includes an iOS port.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/oracle/graal">Graal在新窗口打开</a> - Polyglot virtual machine which can be embedded.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/eclipse/openj9">OpenJ9在新窗口打开</a> - High performance, enterprise calibre, flexibly licensed, openly governed cross platform Java Virtual Machine extending and augmenting the runtime technology components from the Eclipse OMR and OpenJDK project.</li>
+<li><a target="_blank" rel="noopener" href="http://openjdk.java.net/">OpenJDK在新窗口打开</a> - Open-source implementation for Linux.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/codenameone/CodenameOne/tree/master/vm">ParparVM在新窗口打开</a> - VM with non-blocking, concurrent GC for iOS.</li>
+<li><a target="_blank" rel="noopener" href="https://www.azul.com/downloads/zulu">Zulu在新窗口打开</a> - OpenJDK builds for Windows, Linux, and Mac OS X.</li>
+</ul>
+<h2 id="Logging"><a href="#Logging" class="headerlink" title="Logging"></a>Logging</h2><p><em>Libraries that log the behavior of an application.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://logging.apache.org/log4j">Apache Log4j 2在新窗口打开</a> - Complete rewrite with a powerful plugin and configuration architecture.</li>
+<li><a target="_blank" rel="noopener" href="https://www.graylog.org/">Graylog在新窗口打开</a> - Open-source aggregator suited for extended role and permission management.</li>
+<li><a target="_blank" rel="noopener" href="https://www.elastic.co/products/kibana">Kibana在新窗口打开</a> - Analyzes and visualizes log files. Some features require payment.</li>
+<li><a target="_blank" rel="noopener" href="https://logback.qos.ch/">Logback在新窗口打开</a> - Robust logging library with interesting configuration options via Groovy.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zalando/logbook">Logbook在新窗口打开</a> - Extensible, open-source library for HTTP request and response logging.</li>
+<li><a target="_blank" rel="noopener" href="https://www.elastic.co/products/logstash">Logstash在新窗口打开</a> - Tool for managing log files.</li>
+<li><a target="_blank" rel="noopener" href="https://www.slf4j.org/">SLF4J在新窗口打开</a> - Abstraction layer&#x2F;simple logging facade.</li>
+<li><a target="_blank" rel="noopener" href="http://www.tinylog.org/">tinylog在新窗口打开</a> - Lightweight logging framework with static logger class.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zalando/tracer">Tracer在新窗口打开</a> - Call tracing and log correlation in distributed systems.</li>
+</ul>
+<h2 id="Machine-Learning"><a href="#Machine-Learning" class="headerlink" title="Machine Learning"></a>Machine Learning</h2><p><em>Tools that provide specific statistical algorithms for learning from data.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://flink.apache.org/">Apache Flink在新窗口打开</a> - Fast, reliable, large-scale data processing engine.</li>
+<li><a target="_blank" rel="noopener" href="https://mahout.apache.org/">Apache Mahout在新窗口打开</a> - Scalable algorithms focused on collaborative filtering, clustering and classification.</li>
+<li><a target="_blank" rel="noopener" href="https://spark.apache.org/">Apache Spark在新窗口打开</a> - Data analytics cluster-computing framework.</li>
+<li><a target="_blank" rel="noopener" href="http://www.datumbox.com/">DatumBox在新窗口打开</a> - Provides several algorithms and pre-trained models for natural language processing.</li>
+<li><a target="_blank" rel="noopener" href="http://deepdive.stanford.edu/">DeepDive在新窗口打开</a> - Creates structured information from unstructured data and integrates it into an existing database.</li>
+<li><a target="_blank" rel="noopener" href="https://deeplearning4j.org/">Deeplearning4j在新窗口打开</a> - Distributed and multi-threaded deep learning library.</li>
+<li><a target="_blank" rel="noopener" href="https://www.h2o.ai/">H2O在新窗口打开</a> - Analytics engine for statistics over big data.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/EdwardRaff/JSAT">JSAT在新窗口打开</a> - Algorithms for pre-processing, classification, regression, and clustering with support for multi-threaded execution.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OryxProject/oryx">Oryx 2在新窗口打开</a> - Framework for building real-time, large-scale machine learning applications. Includes end-to-end applications for collaborative filtering, classification, regression, and clustering.</li>
+<li><a target="_blank" rel="noopener" href="https://haifengl.github.io/smile">Smile在新窗口打开</a> - The Statistical Machine Intelligence and Learning Engine provides a set of machine learning algorithms and a visualization library.</li>
+<li><a target="_blank" rel="noopener" href="https://www.cs.waikato.ac.nz/ml/weka">Weka在新窗口打开</a> - Collection of algorithms for data mining tasks ranging from pre-processing to visualization.</li>
+</ul>
+<h2 id="Messaging"><a href="#Messaging" class="headerlink" title="Messaging"></a>Messaging</h2><p><em>Tools that help send messages between clients to ensure protocol independency.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/real-logic/Aeron">Aeron在新窗口打开</a> - Efficient, reliable, unicast and multicast message transport.</li>
+<li><a target="_blank" rel="noopener" href="https://activemq.apache.org/">Apache ActiveMQ在新窗口打开</a> - Message broker that implements JMS and converts synchronous to asynchronous communication.</li>
+<li><a target="_blank" rel="noopener" href="https://camel.apache.org/">Apache Camel在新窗口打开</a> - Glues together different transport APIs via Enterprise Integration Patterns.</li>
+<li><a target="_blank" rel="noopener" href="https://kafka.apache.org/">Apache Kafka在新窗口打开</a> - High-throughput distributed messaging system.</li>
+<li><a target="_blank" rel="noopener" href="https://pulsar.apache.org/">Apache Pulsar在新窗口打开</a> - Distributed pub&#x2F;sub-messaging system.</li>
+<li><a target="_blank" rel="noopener" href="https://rocketmq.apache.org/">Apache RocketMQ在新窗口打开</a> - A fast, reliable, and scalable distributed messaging platform.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/greenrobot/EventBus">EventBus在新窗口打开</a> - Simple publish&#x2F;subscribe event bus.</li>
+<li><a target="_blank" rel="noopener" href="http://hermes.allegro.tech/">Hermes在新窗口打开</a> - Fast and reliable message broker built on top of Kafka.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zeromq/jeromq">JeroMQ在新窗口打开</a> - Implementation of ZeroMQ.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zalando/nakadi">Nakadi在新窗口打开</a> - Provides a RESTful API on top of Kafka.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/igniterealtime/Smack">Smack在新窗口打开</a> - Cross-platform XMPP client library.</li>
+</ul>
+<h2 id="Miscellaneous"><a href="#Miscellaneous" class="headerlink" title="Miscellaneous"></a>Miscellaneous</h2><p><em>Everything else.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.codenameone.com/">Codename One在新窗口打开</a> - Cross-platform solution for writing native mobile apps.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/npgall/cqengine">CQEngine在新窗口打开</a> - Ultra-fast, SQL-like queries on Java collections.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/iluwatar/java-design-patterns">Design Patterns在新窗口打开</a> - Implementation and explanation of the most common design patterns.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jhalterman/failsafe">Failsafe在新窗口打开</a> - Simple failure handling with retries and circuit breakers.</li>
+<li><a target="_blank" rel="noopener" href="http://www.ff4j.org/">FF4J在新窗口打开</a> - Feature Flags for Java.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/EnterpriseQualityCoding/FizzBuzzEnterpriseEdition">FizzBuzz Enterprise Edition在新窗口打开</a> - No-nonsense implementation of FizzBuzz made by serious businessmen for serious business purposes.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/j2objc">J2ObjC在新窗口打开</a> - Java-to-Objective-C translator for porting Android libraries to iOS.</li>
+<li><a target="_blank" rel="noopener" href="http://javax.ai1.lol/">JavaX在新窗口打开</a> - Reinventing and extending Java with a focus on simplicity.</li>
+<li><a target="_blank" rel="noopener" href="http://jbake.org/">JBake在新窗口打开</a> - Static website generator.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ramswaroop/jbot">JBot在新窗口打开</a> - Framework for building chatbots.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/jimfs">Jimfs在新窗口打开</a> - In-memory file system.</li>
+<li><a target="_blank" rel="noopener" href="http://www.joda.org/joda-money">Joda-Money在新窗口打开</a> - Basic currency and money classes and algorithms not provided by the JDK.</li>
+<li><a target="_blank" rel="noopener" href="http://jpad.io/">JPad在新窗口打开</a> - Snippet runner.</li>
+<li><a target="_blank" rel="noopener" href="http://lightadmin.org/">LightAdmin在新窗口打开</a> - Pluggable CRUD UI library for rapid application development.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/takari/maven-wrapper">Maven Wrapper在新窗口打开</a> - Analogue of Gradle Wrapper for Maven, allows building projects without installing maven.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/membrane/service-proxy">Membrane Service Proxy在新窗口打开</a> - An open-source, reverse-proxy framework written in Java.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Guichaguri/MinimalFTP">MinimalFTP在新窗口打开</a> - Lightweight, small and customizable FTP server.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/winterbe/java8-tutorial">Modern Java - A Guide to Java 8在新窗口打开</a> - Popular Java 8 guide.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/andrewgaul/modernizer-maven-plugin">Modernizer在新窗口打开</a> - Detect uses of legacy Java APIs.</li>
+<li><a target="_blank" rel="noopener" href="https://software.intel.com/en-us/multi-os-engine">Multi-OS Engine在新窗口打开</a> - An open-source, cross-platform engine to develop native mobile (iOS, Android, etc.) apps.</li>
+<li><a target="_blank" rel="noopener" href="http://openrefine.org/">OpenRefine在新窗口打开</a> - Tool for working with messy data: cleaning, transforming, extending it with web services and linking it to databases.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/takari/polyglot-maven">Polyglot for Maven在新窗口打开</a> - Extensions for Maven 3.3.1+ that allows writing the POM model in dialects other than XML.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/smooks/smooks">Smooks在新窗口打开</a> - Extensible framework for building applications that process data which means bindings, transformations, message processing and enrichment.</li>
+<li><a target="_blank" rel="noopener" href="https://www.togglz.org/">Togglz在新窗口打开</a> - Implementation of the Feature Toggles pattern.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jhalterman/typetools">TypeTools在新窗口打开</a> - Tools for resolving generic types.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/SvenEwald/xmlbeam">XMLBeam在新窗口打开</a> - Processes XML by using annotations or XPath within code.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OctoLinker/browser-extension">OctoLinker在新窗口打开</a> - Browser extension which allows to navigate through code on GitHub more efficiently.</li>
+</ul>
+<h2 id="Microservice"><a href="#Microservice" class="headerlink" title="Microservice"></a>Microservice</h2><p><em>Tools for creating and managing microservices.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://spotify.github.io/apollo">Apollo在新窗口打开</a> - Libraries for writing composable microservices.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Ecwid/consul-api">consul-api在新窗口打开</a> - Client for the <a target="_blank" rel="noopener" href="https://www.consul.io/">Consul在新窗口打开</a> API: a distributed, highly available and datacenter-aware registry&#x2F;discovery service.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Netflix/eureka">Eureka在新窗口打开</a> - REST-based service registry for resilient load balancing and failover.</li>
+<li><a target="_blank" rel="noopener" href="https://www.lightbend.com/lagom">Lagom在新窗口打开</a> - Framework for creating microservice-based systems.</li>
+<li><a target="_blank" rel="noopener" href="http://micronaut.io/">Micronaut在新窗口打开</a> - Modern full-stack framework with focus on modularity, minimal memory footprint and startup time.</li>
+</ul>
+<h2 id="Monitoring"><a href="#Monitoring" class="headerlink" title="Monitoring"></a>Monitoring</h2><p><em>Tools that monitor applications in production.</em></p>
+<h2 id="Native"><a href="#Native" class="headerlink" title="Native"></a>Native</h2><p><em>For working with platform-specific native libraries.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/bytedeco/javacpp">JavaCPP在新窗口打开</a> - Provides efficient and easy access to native C++.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/java-native-access/jna">JNA在新窗口打开</a> - Work with native libraries without writing JNI. Also provides interfaces to common system libraries.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jnr/jnr-ffi">JNR在新窗口打开</a> - Work with native libraries without writing JNI. Also provides interfaces to common system libraries. Same goals as JNA, but faster, and serves as the basis for the upcoming <a target="_blank" rel="noopener" href="http://openjdk.java.net/projects/panama">Project Panama在新窗口打开</a>.</li>
+</ul>
+<h2 id="Natural-Language-Processing"><a href="#Natural-Language-Processing" class="headerlink" title="Natural Language Processing"></a>Natural Language Processing</h2><p><em>Libraries that specialize in processing text.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/CogComp/cogcomp-nlp">CogCompNLP在新窗口打开</a> - Provides common annotators for plain text input.</li>
+<li><a target="_blank" rel="noopener" href="https://nlp.stanford.edu/software/corenlp.shtml">CoreNLP在新窗口打开</a> - Provides a set of fundamental tools for tasks like tagging, named entity recognition, and sentiment analysis.</li>
+<li><a target="_blank" rel="noopener" href="https://dkpro.github.io/">DKPro在新窗口打开</a> - Collection of reusable NLP tools for linguistic pre-processing, machine learning, lexical resources, etc.</li>
+<li><a target="_blank" rel="noopener" href="http://alias-i.com/lingpipe">LingPipe在新窗口打开</a> - Toolkit for tasks ranging from POS tagging to sentiment analysis.</li>
+</ul>
+<h2 id="Networking"><a href="#Networking" class="headerlink" title="Networking"></a>Networking</h2><p><em>Libraries for building network servers.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/puniverse/comsat">Comsat在新窗口打开</a> - Integrates standard Java web-related APIs with Quasar fibers and actors.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/alibaba/dubbo">Dubbo在新窗口打开</a> - High-performance RPC framework.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/twitter/finagle">Finagle在新窗口打开</a> - Extensible RPC system for constructing high-concurrency servers. It implements uniform client and server APIs for several protocols, and is protocol-agnostic to simplify implementation of new protocols.</li>
+<li><a target="_blank" rel="noopener" href="https://javaee.github.io/grizzly">Grizzly在新窗口打开</a> - NIO framework. Used as a network layer in Glassfish.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/grpc/grpc-java">gRPC在新窗口打开</a> - RPC framework based on protobuf and HTTP&#x2F;2.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/EsotericSoftware/kryonet">KryoNet在新窗口打开</a> - Provides a clean and simple API for efficient TCP and UDP client&#x2F;server network communication using NIO and Kryo.</li>
+<li><a target="_blank" rel="noopener" href="https://mina.apache.org/">MINA在新窗口打开</a> - Abstract, event-driven async I&#x2F;O API for network operations over TCP&#x2F;IP and UDP&#x2F;IP via Java NIO.</li>
+<li><a target="_blank" rel="noopener" href="https://netty.io/">Netty在新窗口打开</a> - Framework for building high-performance network applications.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/facebook/nifty">Nifty在新窗口打开</a> - Implementation of Thrift clients and servers on Netty.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/hierynomus/sshj">sshj在新窗口打开</a> - Programatically use SSH, SCP or SFTP.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/marianobarrios/tls-channel">TLS Channel在新窗口打开</a> - Implements a ByteChannel interface over SSLEngine, enabling easy-to-use (socket-like) TLS.</li>
+<li><a target="_blank" rel="noopener" href="http://undertow.io/">Undertow在新窗口打开</a> - Web server providing both blocking and non-blocking APIs based on NIO. Used as a network layer in WildFly.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/slub/urnlib">urnlib在新窗口打开</a> - Represent, parse and encode URNs, as in RFC 2141.</li>
+</ul>
+<h2 id="ORM"><a href="#ORM" class="headerlink" title="ORM"></a>ORM</h2><p><em>APIs that handle the persistence of objects.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://cayenne.apache.org/">Apache Cayenne在新窗口打开</a> - Provides a clean, static API for data access. Also includes a GUI Modeler for working with database mappings, and DB reverse engineering and generation.</li>
+<li><a target="_blank" rel="noopener" href="https://ebean-orm.github.io/">Ebean在新窗口打开</a> - Provides simple and fast data access.</li>
+<li><a target="_blank" rel="noopener" href="https://www.eclipse.org/eclipselink">EclipseLink在新窗口打开</a> - Supports a number of persistence standards: JPA, JAXB, JCA and SDO.</li>
+<li><a target="_blank" rel="noopener" href="http://hibernate.org/orm">Hibernate在新窗口打开</a> - Robust and widely used, with an active community.</li>
+<li><a target="_blank" rel="noopener" href="http://www.mybatis.org/mybatis-3">MyBatis在新窗口打开</a> - Couples objects with stored procedures or SQL statements.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/arnaudroger/SimpleFlatMapper">SimpleFlatMapper在新窗口打开</a> - Simple database and CSV mapper.</li>
+</ul>
+<h2 id="PaaS"><a href="#PaaS" class="headerlink" title="PaaS"></a>PaaS</h2><p><em>Java platform as a service.</em></p>
+<h2 id="PDF"><a href="#PDF" class="headerlink" title="PDF"></a>PDF</h2><p><em>Tools to help with PDF file creation.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://xmlgraphics.apache.org/fop">Apache FOP在新窗口打开</a> - Creates PDFs from XSL-FO.</li>
+<li><a target="_blank" rel="noopener" href="https://pdfbox.apache.org/">Apache PDFBox在新窗口打开</a> - Toolbox for creating and manipulating PDFs.</li>
+<li><a target="_blank" rel="noopener" href="http://dynamicjasper.com/">Dynamic Jasper在新窗口打开</a> - Abstraction layer to JasperReports.</li>
+<li><a target="_blank" rel="noopener" href="http://dynamicreports.org/">DynamicReports在新窗口打开</a> - Simplifies JasperReports.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/flyingsaucerproject/flyingsaucer">flyingsaucer在新窗口打开</a> - XML&#x2F;XHTML and CSS 2.1 renderer.</li>
+<li><a target="_blank" rel="noopener" href="https://itextpdf.com/">iText <img src="/2022/12/10/Awesome-Java/commercial.svg+xml" alt="c">在新窗口打开</a> - Creates PDF files programmatically.</li>
+<li><a target="_blank" rel="noopener" href="https://community.jaspersoft.com/project/jasperreports-library">JasperReports在新窗口打开</a> - Complex reporting engine.</li>
+</ul>
+<h2 id="Performance-analysis"><a href="#Performance-analysis" class="headerlink" title="Performance analysis"></a>Performance analysis</h2><p><em>Tools for performance analysis, profiling and benchmarking.</em></p>
+<h2 id="Platform"><a href="#Platform" class="headerlink" title="Platform"></a>Platform</h2><p><em>Frameworks that are suites of multiple libraries encompassing several categories.</em></p>
+<h3 id="Apache-Commons"><a href="#Apache-Commons" class="headerlink" title="Apache Commons"></a>Apache Commons</h3><ul>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-pool">Pool在新窗口打开</a> - Generic object pooling component.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-bcel">BCEL在新窗口打开</a> - Byte Code Engineering Library - analyze, create, and manipulate Java class files.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-codec">Codec在新窗口打开</a> - General encoding&#x2F;decoding algorithms (for example phonetic, base64, URL).</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-compress">Compress在新窗口打开</a> - Defines an API for working with tar, zip and bzip2 files.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-io">IO在新窗口打开</a> - Collection of I&#x2F;O utilities.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-configuration">Configuration在新窗口打开</a> - Reading of configuration&#x2F;preferences files in various formats.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-vfs">VFS在新窗口打开</a> - Virtual File System component for treating files, FTP, SMB, ZIP and such like as a single logical file system.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-jelly">Jelly在新窗口打开</a> - XML based scripting and processing engine.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-csv">CSV在新窗口打开</a> - Component for reading and writing comma separated value files.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-jcs">JCS在新窗口打开</a> - Java Caching System.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-email">Email在新窗口打开</a> - Library for sending e-mail from Java.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-dbutils">DbUtils在新窗口打开</a> - JDBC helper library.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-fileupload">FileUpload在新窗口打开</a> - File upload capability for your servlets and web applications.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-lang">Lang在新窗口打开</a> - Provides extra functionality for classes in java.lang.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-jexl">Jexl在新窗口打开</a> - Expression language which extends the Expression Language of the JSTL.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-cli">CLI在新窗口打开</a> - Command-line arguments parser.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-validator">Validator在新窗口打开</a> - Framework to define validators and validation rules in an xml file.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-net">Net在新窗口打开</a> - Collection of network utilities and protocol implementations.</li>
+<li><a target="_blank" rel="noopener" href="https://commons.apache.org/proper/commons-rng">RNG在新窗口打开</a> - Commons Rng provides implementations of pseudo-random numbers generators.</li>
+<li><a target="_blank" rel="noopener" href="https://commons.apache.org/proper/commons-rdf">RDF在新窗口打开</a> - Common implementation of RDF 1.1 that could be implemented by systems on the JVM.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-weaver">Weaver在新窗口打开</a> - Provides an easy way to enhance (weave) compiled bytecode.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-beanutils">BeanUtils在新窗口打开</a> - Easy-to-use wrappers around the Java reflection and introspection APIs.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-collections">Collections在新窗口打开</a> - Extends or augments the Java Collections Framework.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-dbcp">DBCP在新窗口打开</a> - Database connection pooling services.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-math">Math在新窗口打开</a> - Lightweight, self-contained mathematics and statistics components.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-exec">Exec在新窗口打开</a> - API for dealing with external process execution and environment management in Java.</li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Apache_Commons_Logging">Logging在新窗口打开</a> Wrapper around a variety of logging API implementations.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-ognl">OGNL在新窗口打开</a> - An Object-Graph Navigation Language.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-jci">JCI在新窗口打开</a> - Java Compiler Interface.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-daemon">Daemon在新窗口打开</a> - Alternative invocation mechanism for unix-daemon-like java code.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-functor">Functor在新窗口打开</a> - A functor is a function that can be manipulated as an object, or an object representing a single, generic function.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-digester">Digester在新窗口打开</a> - XML-to-Java-object mapping utility.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-bsf">BSF在新窗口打开</a> - Bean Scripting Framework - interface to scripting languages, including JSR-223.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-imaging">Imaging在新窗口打开</a> - A pure-Java image library.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-scxml">SCXML在新窗口打开</a> - An implementation of the State Chart XML specification aimed at creating and maintaining a Java SCXML engine.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-jxpath">JXPath在新窗口打开</a> - Utilities for manipulating Java Beans using the XPath syntax.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-chain">Chain在新窗口打开</a> - Chain of Responsibility pattern implementation.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-proxy">Proxy在新窗口打开</a> - Library for creating dynamic proxies.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-beanutils2">BeanUtils2在新窗口打开</a> - Redesign of Commons BeanUtils.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-classscan">ClassScan在新窗口打开</a> - Find Class interfaces, methods, fields, and annotations without loading.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-cli2">CLI2在新窗口打开</a> Redesign of Commons CLI.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-convert">Convert在新窗口打开</a> - Commons-Convert aims to provide a single library dedicated to the task of converting an object of one type to another.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-finder">Finder在新窗口打开</a> - Java library inspired by the UNIX find command.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-flatfile">Flatfile在新窗口打开</a> - Java library for working with flat data structures.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-graph">Graph在新窗口打开</a> - A general purpose Graph APIs and algorithms.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-i18n">I18n在新窗口打开</a> - Adds the feature of localized message bundles that consist of one or many localized texts that belong together.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-id">Id在新窗口打开</a> - Id is a component used to generate identifiers.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-javaflow">Javaflow在新窗口打开</a> - Continuation implementation to capture the state of the application.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-jnet">JNet在新窗口打开</a> - JNet allows to use dynamically register url stream handlers through the java.net API.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-monitoring">Monitoring在新窗口打开</a> - Monitoring aims to provide a simple but extensible monitoring solution for Java applications.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-nabla">Nabla在新窗口打开</a> - Nabla provides automatic differentiation classes that can generate derivative of any function implemented in the Java language.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-openpgp">OpenPGP在新窗口打开</a> - Interface to signing and verifying data using OpenPGP.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-performance">Performance在新窗口打开</a> - A small framework for microbenchmark clients, with implementations for Commons DBCP and Pool.</li>
+<li><a target="_blank" rel="noopener" href="http://commons.apache.org/sandbox/commons-pipeline">Pipeline在新窗口打开</a> - Provides a set of pipeline utilities designed around work queues that run in parallel to sequentially process data objects.</li>
+</ul>
+<h3 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://cuba-platform.com/">CUBA Platform在新窗口打开</a> - High-level framework for developing enterprise applications with a rich web interface, based on Spring, EclipseLink and Vaadin.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/networknt/light-java">Light-Java在新窗口打开</a> - A fast, lightweight and productive microservices framework with built-in <a target="_blank" rel="noopener" href="https://github.com/networknt/light-oauth2">security在新窗口打开</a>.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/OrienteerBAP/Orienteer">Orienteer在新窗口打开</a> - Open-source business application platform for rapid configuration&#x2F;development of CRM, ERP, LMS and other applications.</li>
+<li><a target="_blank" rel="noopener" href="https://spring.io/projects">Spring在新窗口打开</a> - Provides many packages for dependency injection, aspect-oriented programming, security, etc.</li>
+</ul>
+<h2 id="Processes"><a href="#Processes" class="headerlink" title="Processes"></a>Processes</h2><p><em>Libraries that help the management of operating system processes.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/vorburger/ch.vorburger.exec">ch.vorburger.exec在新窗口打开</a> - Convenient API around Apache Commons Exec.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zeroturnaround/zt-exec">zt-exec在新窗口打开</a> - Provides a unified API to Apache Commons Exec and ProcessBuilder.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zeroturnaround/zt-process-killer">zt-process-killer在新窗口打开</a> - Stops processes started from Java or the system processes via PID.</li>
+</ul>
+<h2 id="Reactive-libraries"><a href="#Reactive-libraries" class="headerlink" title="Reactive libraries"></a>Reactive libraries</h2><p><em>Libraries for developing reactive applications.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://akka.io/">Akka在新窗口打开</a> - Toolkit and runtime for building concurrent, distributed, fault-tolerant and event-driven applications.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/reactive-streams/reactive-streams-jvm">Reactive Streams在新窗口打开</a> - Provides a standard for asynchronous stream processing with non-blocking backpressure.</li>
+<li><a target="_blank" rel="noopener" href="https://projectreactor.io/">Reactor在新窗口打开</a> - Library for building reactive fast-data applications.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ReactiveX/RxJava">RxJava在新窗口打开</a> - Allows for composing asynchronous and event-based programs using observable sequences.</li>
+<li><a target="_blank" rel="noopener" href="http://vertx.io/">vert.x在新窗口打开</a> - Polyglot event-driven application framework.</li>
+</ul>
+<h2 id="REST-Frameworks"><a href="#REST-Frameworks" class="headerlink" title="REST Frameworks"></a>REST Frameworks</h2><p><em>Frameworks specifically for creating RESTful services.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://dropwizard.github.io/dropwizard">Dropwizard在新窗口打开</a> - Opinionated framework for setting up modern web applications with Jetty, Jackson, Jersey and Metrics.</li>
+<li><a target="_blank" rel="noopener" href="https://jersey.github.io/">Jersey在新窗口打开</a> - JAX-RS reference implementation.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/aol/micro-server">Microserver在新窗口打开</a> — A convenient, extensible microservices plugin system for Spring &amp; Spring Boot. With more than 30 plugins and growing, it supports both micro-monolith and pure microservices styles.</li>
+<li><a target="_blank" rel="noopener" href="https://www.rapidoid.org/">Rapidoid在新窗口打开</a> - A simple, secure and extremely fast framework consisting of an embedded HTTP server, GUI components and dependency injection.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/linkedin/rest.li">rest.li在新窗口打开</a> - Framework for building robust, scalable RESTful architectures using typesafe bindings and asynchronous, non-blocking IO with an end-to-end developer workflow that promotes clean practices, uniform interface design and consistent data modeling.</li>
+<li><a target="_blank" rel="noopener" href="https://resteasy.jboss.org/">RESTEasy在新窗口打开</a> - Fully certified and portable implementation of the JAX-RS specification.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/RestExpress/RestExpress">RestExpress在新窗口打开</a> - Thin wrapper on the JBoss Netty HTTP stack that provides scaling and performance.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/restlet/restlet-framework-java">Restlet Framework在新窗口打开</a> - Pioneering framework with powerful routing and filtering capabilities, and a unified client and server API.</li>
+<li><a target="_blank" rel="noopener" href="http://sparkjava.com/">Spark在新窗口打开</a> - Sinatra inspired framework.</li>
+<li><a target="_blank" rel="noopener" href="http://www.crnk.io/">Crnk在新窗口打开</a> - Implementation of the JSON API specification to build resource-oriented REST endpoints with sorting, filtering, paging, linking, object graphs, type-safety, bulk updates, integrations and more.</li>
+<li><a target="_blank" rel="noopener" href="https://swagger.io/">Swagger在新窗口打开</a> - Standard, language-agnostic interface to REST APIs.</li>
+</ul>
+<h2 id="Science"><a href="#Science" class="headerlink" title="Science"></a>Science</h2><p><em>Libraries for scientific computing, analysis and visualization.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://jwork.org/dmelt">DataMelt在新窗口打开</a> - Environment for scientific computation, data analysis and data visualization.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Erdos-Graph-Framework/Erdos">Erdos在新窗口打开</a> - Modular, light and easy graph framework for theoretic algorithms.</li>
+<li><a target="_blank" rel="noopener" href="http://graphstream-project.org/">GraphStream在新窗口打开</a> - Library for modeling and analyzing dynamic graphs.</li>
+<li><a target="_blank" rel="noopener" href="http://www.jfree.org/jfreechart">JFreeChart在新窗口打开</a> - 2D chart library for Swing, JavaFX and server-side applications.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jgrapht/jgrapht">JGraphT在新窗口打开</a> - Graph library that provides mathematical graph-theory objects and algorithms.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jgraph/jgraphx">JGraphX在新窗口打开</a> - Library for visualizing (mainly Swing) and interacting with node-edge graphs.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/MinesJTK/jtk">Mines Java Toolkit在新窗口打开</a> - Library for geophysical scientific computation, visualization and digital signal analysis.</li>
+<li><a target="_blank" rel="noopener" href="http://www.zavtech.com/morpheus/docs">Morpheus在新窗口打开</a> - Provides a versatile two-dimensional memory efficient tabular data structure called a DataFrame to enable efficient in-memory analytics for scientific computing on the JVM.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/lwhite1/tablesaw">Tablesaw在新窗口打开</a> - Includes a data-frame, an embedded column store, and hundreds of methods to transform, summarize, or filter data.</li>
+</ul>
+<h2 id="Search"><a href="#Search" class="headerlink" title="Search"></a>Search</h2><p><em>Engines that index documents for search and analysis.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://lucene.apache.org/">Apache Lucene在新窗口打开</a> - High-performance, full-featured, cross-platform, text search engine library.</li>
+<li><a target="_blank" rel="noopener" href="https://lucene.apache.org/solr">Apache Solr在新窗口打开</a> - Enterprise search engine optimized for high-volume traffic.</li>
+<li><a target="_blank" rel="noopener" href="https://www.elastic.co/">Elasticsearch在新窗口打开</a> - Distributed, multitenant-capable, full-text search engine with a RESTful web interface and schema-free JSON documents.</li>
+</ul>
+<h2 id="Security"><a href="#Security" class="headerlink" title="Security"></a>Security</h2><p><em>Libraries that handle security, authentication, authorization or session management.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://shiro.apache.org/">Apache Shiro在新窗口打开</a> - Performs authentication, authorization, cryptography and session management.</li>
+<li><a target="_blank" rel="noopener" href="https://www.bouncycastle.org/java.html">Bouncy Castle在新窗口打开</a> - All-purpose cryptographic library and JCA provider offering a wide range of functions, from basic helpers to PGP&#x2F;SMIME operations.</li>
+<li><a target="_blank" rel="noopener" href="https://cryptomator.org/">Cryptomator在新窗口打开</a> - Multiplatform, transparent, client-side encryption of files in the cloud.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/hdiv/hdiv">Hdiv在新窗口打开</a> - Runtime application that repels application security risks included in the OWASP Top 10, including SQL injection, cross-site scripting, cross-site request forgery, data tampering, and brute force attacks.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jwtk/jjwt">jjwt在新窗口打开</a> - JSON web token for Java and Android.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/auth0/jwks-rsa-java">Jwks RSA在新窗口打开</a> - JSON Web Key Set parser.</li>
+<li><a target="_blank" rel="noopener" href="https://keycloak.jboss.org/">Keycloak在新窗口打开</a> - Integrated SSO and IDM for browser apps and RESTful web services.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/keyczar">Keyczar在新窗口打开</a> - Easy-to-use, safe encryption framework with key versioning.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/square/keywhiz">Keywhiz在新窗口打开</a> - System for distributing and managing secrets.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/GoSimpleLLC/nbvcxz">Nbvcxz在新窗口打开</a> - Advanced password strength estimation.</li>
+<li><a target="_blank" rel="noopener" href="http://oaccframework.org/">OACC在新窗口打开</a> - Provides permission-based authorization services.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/pac4j/pac4j">pac4j在新窗口打开</a> - Security engine.</li>
+<li><a target="_blank" rel="noopener" href="http://picketlink.org/">PicketLink在新窗口打开</a> - Umbrella project for security and identity management.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tersesystems/securitybuilder">SecurityBuilder在新窗口打开</a> - Fluent Builder API for JCA and JSSE classes and especially X.509 certificates.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/cossacklabs/themis">Themis在新窗口打开</a> - Multi-platform high-level cryptographic library provides easy-to-use encryption for protecting sensitive data: secure messaging with forward secrecy, secure data storage (AES256GCM); suits for building end-to-end encrypted applications.</li>
+<li><a target="_blank" rel="noopener" href="http://github.com/google/tink">Tink在新窗口打开</a> - Provides a simple and misuse-proof API for common cryptographic tasks.</li>
+<li><a target="_blank" rel="noopener" href="https://www.vaultproject.io/">Vault在新窗口打开</a> - Secures, stores, and tightly controls access to tokens, passwords, certificates, API keys, and other secrets. It handles leasing, key revocation, key rolling, and auditing. Through a unified API, users can access an encrypted Key&#x2F;Value store and network encryption-as-a-service, or generate AWS IAM&#x2F;STS credentials, SQL&#x2F;NoSQL databases, X.509 certificates, SSH credentials, and more.</li>
+</ul>
+<h2 id="Serialization"><a href="#Serialization" class="headerlink" title="Serialization"></a>Serialization</h2><p><em>Libraries that handle serialization with high efficiency.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/flatbuffers">FlatBuffers在新窗口打开</a> - Memory-efficient serialization library that can access serialized data without unpacking and parsing it.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/RuedigerMoeller/fast-serialization">FST在新窗口打开</a> - JDK-compatible, high-performance object graph serialization.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/EsotericSoftware/kryo">Kryo在新窗口打开</a> - Fast and efficient object graph serialization framework.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/msgpack/msgpack-java">MessagePack在新窗口打开</a> - Efficient binary serialization format.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/marcospassos/java-php-serializer">PHP Serializer在新窗口打开</a> - Serializing objects in the PHP serialization format.</li>
+</ul>
+<h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><p><em>Servers specifically used to deploy applications.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://tomcat.apache.org/">Apache Tomcat在新窗口打开</a> - Robust, all-round server for Servlet and JSP.</li>
+<li><a target="_blank" rel="noopener" href="https://tomee.apache.org/">Apache TomEE在新窗口打开</a> - Tomcat plus Java EE.</li>
+<li><a target="_blank" rel="noopener" href="https://www.eclipse.org/jetty">Jetty在新窗口打开</a> - Provides a Web server and javax.servlet container, plus support for HTTP&#x2F;2, WebSocket, OSGi, JMX, JNDI, JAAS and many other integrations.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/NanoHttpd/nanohttpd">nanohttpd在新窗口打开</a> - Tiny, easily embeddable HTTP server.</li>
+<li><a target="_blank" rel="noopener" href="https://developer.ibm.com/wasdev">WebSphere Liberty在新窗口打开</a> - Lightweight, modular server developed by IBM.</li>
+<li><a target="_blank" rel="noopener" href="http://www.wildfly.org/">WildFly在新窗口打开</a> - Formerly known as JBoss and developed by Red Hat with extensive Java EE support.</li>
+</ul>
+<h2 id="Template-Engine"><a href="#Template-Engine" class="headerlink" title="Template Engine"></a>Template Engine</h2><p><em>Tools that substitute expressions in a template.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://jknack.github.io/handlebars.java">Handlebars.java在新窗口打开</a> - Logicless and semantic Mustache templates.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/neuland/jade4j">Jade4J在新窗口打开</a> - Implementation of Pug (formerly known as Jade).</li>
+<li><a target="_blank" rel="noopener" href="http://jtwig.org/">Jtwig在新窗口打开</a> - Modular, configurable and fully tested template engine.</li>
+<li><a target="_blank" rel="noopener" href="http://www.mitchellbosecke.com/pebble/home">Pebble在新窗口打开</a> - Inspired by Twig and separates itself with its inheritance feature and its easy-to-read syntax. It ships with built-in autoescaping for security and it includes integrated support for internationalization.</li>
+<li><a target="_blank" rel="noopener" href="http://www.thymeleaf.org/">Thymeleaf在新窗口打开</a> - Aims to be a substitute for JSP and works for XML files.</li>
+</ul>
+<h2 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h2><p><em>Tools that test from model to the view.</em></p>
+<h3 id="Asynchronous"><a href="#Asynchronous" class="headerlink" title="Asynchronous"></a>Asynchronous</h3><p><em>Tools that simplify testing asynchronous services.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/jayway/awaitility">Awaitility在新窗口打开</a> - DSL for synchronizing asynchronous operations.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jhalterman/concurrentunit">ConcurrentUnit在新窗口打开</a> - Toolkit for testing multi-threaded and asynchronous applications.</li>
+<li><a target="_blank" rel="noopener" href="http://www.icegreen.com/greenmail">GreenMail在新窗口打开</a> - In-memory email server for integration testing. Supports SMTP, POP3 and IMAP including SSL.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/SpectoLabs/hoverfly-java">Hoverfly Java在新窗口打开</a> - Native bindings for Hoverfly, a proxy which allows you to simulate HTTP services.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jayway/rest-assured">REST Assured在新窗口打开</a> - DSL for easy testing of REST&#x2F;HTTP services.</li>
+</ul>
+<h3 id="BDD"><a href="#BDD" class="headerlink" title="BDD"></a>BDD</h3><p><em>Testing for the software development process that emerged from TDD and was heavily influenced by DDD and OOAD.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/cucumber/cucumber-jvm">Cucumber在新窗口打开</a> - Provides a way to describe features in a plain language which customers can understand.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ctco/cukes-rest">Cukes-REST在新窗口打开</a> - A collection of Gherkin steps for REST-service testing using Cucumber.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/j8spec/j8spec">J8Spec在新窗口打开</a> - Follows a Jasmine-like syntax.</li>
+<li><a target="_blank" rel="noopener" href="http://jbehave.org/">JBehave在新窗口打开</a> - Extensively configurable framework that describes stories.</li>
+<li><a target="_blank" rel="noopener" href="http://jgiven.org/">JGiven在新窗口打开</a> - Provides a fluent API which allows for simpler composition.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/RichardWarburton/lambda-behave">Lamdba Behave在新窗口打开</a> - Aims to provide a fluent API to write tests in long and descriptive sentences that read like plain English.</li>
+</ul>
+<h3 id="Fixtures"><a href="#Fixtures" class="headerlink" title="Fixtures"></a>Fixtures</h3><p><em>Everything related to the creation and handling of random data.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/keepcosmos/beanmother">Beanmother在新窗口打开</a> - Sets up beans from YAML fixtures.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/six2six/fixture-factory">Fixture Factory在新窗口打开</a> - Generates fake objects from a template.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Codearte/jfairy">JFairy在新窗口打开</a> - Fake data generator.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/randomizedtesting/randomizedtesting">Randomized Testing在新窗口打开</a> - JUnit test runner and plugins for running JUnit tests with pseudo-randomness.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/DiUS/java-faker">Java Faker在新窗口打开</a> - A port of Ruby’s fake data generator.</li>
+</ul>
+<h3 id="Frameworks"><a href="#Frameworks" class="headerlink" title="Frameworks"></a>Frameworks</h3><p><em>Provide environments to run tests for a specific use case.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/TNG/ArchUnit">ArchUnit在新窗口打开</a> - Test library for specifying and asserting architecture rules.</li>
+<li><a target="_blank" rel="noopener" href="http://jmeter.apache.org/">Apache JMeter在新窗口打开</a> - Functional testing and performance measurements.</li>
+<li><a target="_blank" rel="noopener" href="http://arquillian.org/">Arquillian在新窗口打开</a> - Integration and functional testing platform for Java EE containers.</li>
+<li><a target="_blank" rel="noopener" href="https://citrusframework.org/">Citrus在新窗口打开</a> - Integration testing framework that focuses on both client- and server-side messaging.</li>
+<li><a target="_blank" rel="noopener" href="https://gatling.io/">Gatling在新窗口打开</a> - Load testing tool designed for ease of use, maintainability and high performance.</li>
+<li><a target="_blank" rel="noopener" href="http://junit.org/">JUnit在新窗口打开</a> - Common testing framework.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/DiUS/pact-jvm">Pact JVM在新窗口打开</a> - Consumer-driven contract testing.</li>
+<li><a target="_blank" rel="noopener" href="http://pitest.org/">PIT在新窗口打开</a> - Fast mutation-testing framework for evaluating fault-detection abilities of existing JUnit or TestNG test suites.</li>
+</ul>
+<h3 id="Matchers"><a href="#Matchers" class="headerlink" title="Matchers"></a>Matchers</h3><p><em>Libraries that provide custom matchers.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://joel-costigliola.github.io/assertj">AssertJ在新窗口打开</a> - Fluent assertions that improve readability.</li>
+<li><a target="_blank" rel="noopener" href="http://jsonassert.skyscreamer.org/">JSONAssert在新窗口打开</a> - Simplifies testing JSON strings.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/truth">Truth在新窗口打开</a> - Google’s assertion and proposition framework.</li>
+</ul>
+<h3 id="Miscellaneous-1"><a href="#Miscellaneous-1" class="headerlink" title="Miscellaneous"></a>Miscellaneous</h3><p><em>Other stuff related to testing.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/MutabilityDetector/MutabilityDetector">Mutability Detector在新窗口打开</a> - Reports whether instances of a given class are immutable.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/nidi3/raml-tester">raml-tester在新窗口打开</a> - Tests if a request&#x2F;response matches a given RAML definition.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/testcontainers/testcontainers-java">TestContainers在新窗口打开</a> - Provides throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container.</li>
+<li><a target="_blank" rel="noopener" href="http://www.pojo.pl/">pojo-tester在新窗口打开</a> - Automatically performs tests on basic POJO methods.</li>
+</ul>
+<h3 id="Mocking"><a href="#Mocking" class="headerlink" title="Mocking"></a>Mocking</h3><p><em>Tools which mock collaborators to help testing single, isolated units.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://jmockit.github.io/">JMockit在新窗口打开</a> - Integration testing, API mocking and faking, and code coverage.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mockito/mockito">Mockito在新窗口打开</a> - Mocking framework that lets you write tests with a clean and simple API.</li>
+<li><a target="_blank" rel="noopener" href="https://www.mock-server.com/">MockServer在新窗口打开</a> - Allows mocking of systems integrated with HTTPS.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/dreamhead/moco">Moco在新窗口打开</a> - Concise web services for stubs and mocks.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jayway/powermock">PowerMock在新窗口打开</a> - Mocks static methods, constructors, final classes and methods, private methods, and removal of static initializers.</li>
+<li><a target="_blank" rel="noopener" href="http://wiremock.org/">WireMock在新窗口打开</a> - Stubs and mocks web services.</li>
+</ul>
+<h3 id="Parameterization"><a href="#Parameterization" class="headerlink" title="Parameterization"></a>Parameterization</h3><p><em>Simplifies the writing of parameterized tests.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/square/burst">Burst在新窗口打开</a> - A unit testing library for varying test data.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/TNG/junit-dataprovider">junit-dataprovider在新窗口打开</a> - A TestNG-like data provider&#x2F;runner for JUnit.</li>
+<li><a target="_blank" rel="noopener" href="https://pragmatists.github.io/JUnitParams">JUnitParams在新窗口打开</a> - Creates readable and maintainable parametrised tests.</li>
+</ul>
+<h2 id="Utility"><a href="#Utility" class="headerlink" title="Utility"></a>Utility</h2><p><em>Libraries which provide general utility functions.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/vladimir-bukhtoyarov/bucket4j">bucket4j在新窗口打开</a> - Rate limiting library based on token-bucket algorithm.</li>
+<li><a target="_blank" rel="noopener" href="http://www.cactoos.org/">cactoos在新窗口打开</a> - Collection of object-oriented primitives.</li>
+<li><a target="_blank" rel="noopener" href="http://www.crashub.org/">CRaSH在新窗口打开</a> - Provides a shell into a JVM that’s running CRaSH. Used by Spring Boot and others.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/PatMartin/Dex">Dex在新窗口打开</a> - Java&#x2F;JavaFX tool capable of powerful ETL and data visualization.</li>
+<li><a target="_blank" rel="noopener" href="http://www.embulk.org/">Embulk在新窗口打开</a> - Bulk data loader that helps data transfer between various databases, storages, file formats, and cloud services.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/vorburger/ch.vorburger.fswatch">fswatch在新窗口打开</a> - Micro library to watch for directory file system changes, simplifying java.nio.file.WatchService</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/gephi/gephi">Gephi在新窗口打开</a> - Cross-platform for visualizing and manipulating large graph networks.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/guava">Guava在新窗口打开</a> - Collections, caching, primitives support, concurrency libraries, common annotations, string processing, I&#x2F;O, and more.</li>
+<li><a target="_blank" rel="noopener" href="http://jade.tilab.com/">JADE在新窗口打开</a> - Framework and environment for building and debugging multi-agent systems.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/VerbalExpressions/JavaVerbalExpressions">JavaVerbalExpressions在新窗口打开</a> - Library that helps with constructing difficult regular expressions.</li>
+<li><a target="_blank" rel="noopener" href="https://eclipse.org/jgit">JGit在新窗口打开</a> - A lightweight, pure Java library implementing the Git version control system.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/minio/minio-java">minio-java在新窗口打开</a> - Provides simple APIs to access any Amazon S3-compatible object storage server.</li>
+<li><a target="_blank" rel="noopener" href="https://protege.stanford.edu/">Protégé在新窗口打开</a> - Provides an ontology editor and a framework to build knowledge-based systems.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/javadev/underscore-java">Underscore-java在新窗口打开</a> - Port of Underscore.js functions.</li>
+</ul>
+<h2 id="Version-Managers"><a href="#Version-Managers" class="headerlink" title="Version Managers"></a>Version Managers</h2><p><em>Utilities that help create the development shell environment and switch between different Java versions.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/shyiko/jabba">jabba在新窗口打开</a> - Java Version Manager inspired by nvm. Supports Mac OS X, Linux and Windows.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/gcuisinier/jenv">jenv在新窗口打开</a> - Java Version Manager inspired by rbenv. Can configure globally or per project. Tested on Debian and Mac OS X.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/sdkman/sdkman-cli">SDKMan在新窗口打开</a> - Java Version Manager inspired by RVM and rbenv. Supports UNIX-based platforms and Windows.</li>
+</ul>
+<h2 id="Web-Crawling"><a href="#Web-Crawling" class="headerlink" title="Web Crawling"></a>Web Crawling</h2><p><em>Libraries that analyze the content of websites.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://nutch.apache.org/">Apache Nutch在新窗口打开</a> - Highly extensible, highly scalable web crawler for production environments.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/yasserg/crawler4j">Crawler4j在新窗口打开</a> - Simple and lightweight web crawler.</li>
+<li><a target="_blank" rel="noopener" href="https://jsoup.org/">jsoup在新窗口打开</a> - Scrapes, parses, manipulates and cleans HTML.</li>
+<li><a target="_blank" rel="noopener" href="http://stormcrawler.net/">StormCrawler在新窗口打开</a> - SDK for building low-latency and scalable web crawlers.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/code4craft/webmagic">webmagic在新窗口打开</a> - Scalable crawler with downloading, url management, content extraction and persistent.</li>
+</ul>
+<h2 id="Web-Frameworks"><a href="#Web-Frameworks" class="headerlink" title="Web Frameworks"></a>Web Frameworks</h2><p><em>Frameworks that handle the communication between the layers of a web application.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://tapestry.apache.org/">Apache Tapestry在新窗口打开</a> - Component-oriented framework for creating dynamic, robust, highly scalable web applications.</li>
+<li><a target="_blank" rel="noopener" href="https://wicket.apache.org/">Apache Wicket在新窗口打开</a> - Component-based web application framework similar to Tapestry, with a stateful GUI.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/biezhi/blade">Blade在新窗口打开</a> - Lightweight, modular framework that aims to be elegant and simple.</li>
+<li><a target="_blank" rel="noopener" href="http://bootique.io/">Bootique在新窗口打开</a> - Minimally opinionated framework for runnable apps.</li>
+<li><a target="_blank" rel="noopener" href="http://www.fireflysource.com/">Firefly在新窗口打开</a> - Asynchronous framework for rapid development of high-performance web application.</li>
+<li><a target="_blank" rel="noopener" href="https://grails.org/">Grails在新窗口打开</a> - Groovy framework that provides a highly productive environment by favoring convention over configuration, no XML and support for mixins.</li>
+<li><a target="_blank" rel="noopener" href="http://jooby.org/">Jooby在新窗口打开</a> - Scalable, fast and modular micro-framework that offers multiple programming models.</li>
+<li><a target="_blank" rel="noopener" href="http://www.ninjaframework.org/">Ninja在新窗口打开</a> - Full-stack web framework.</li>
+<li><a target="_blank" rel="noopener" href="http://www.pippo.ro/">Pippo在新窗口打开</a> - Small, highly modularized, Sinatra-like framework.</li>
+<li><a target="_blank" rel="noopener" href="https://www.playframework.com/">Play在新窗口打开</a> - Built on Akka, it provides predictable and minimal resource consumption (CPU, memory, threads) for highly-scalable applications in Java and Scala.</li>
+<li><a target="_blank" rel="noopener" href="https://primefaces.org/">PrimeFaces在新窗口打开</a> - JSF framework with both free and commercial&#x2F;support versions and frontend components.</li>
+<li><a target="_blank" rel="noopener" href="https://ratpack.io/">Ratpack在新窗口打开</a> - Set of libraries that facilitate fast, efficient, evolvable and well-tested HTTP applications.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/yegor256/takes">Takes在新窗口打开</a> - Opinionated web framework which is built around the concepts of True Object-Oriented Programming and immutability.</li>
+<li><a target="_blank" rel="noopener" href="https://vaadin.com/home">Vaadin在新窗口打开</a> - Event-driven framework built on top of GWT. Uses server-side architecture with Ajax on the client side.</li>
+</ul>
+<h2 id="Resources"><a href="#Resources" class="headerlink" title="Resources"></a>Resources</h2><h2 id="Awesome-Lists"><a href="#Awesome-Lists" class="headerlink" title="Awesome Lists"></a>Awesome Lists</h2><p><em>Awesome lists related to the Java &amp; JVM ecosystem.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/ksoichiro/awesome-gradle">Awesome Gradle Plugins在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mhrimaz/AwesomeJavaFX">AwesomeJavaFX在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/deephacks/awesome-jvm">Awesome JVM在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mfornos/awesome-microservices">Awesome Microservices在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/marmelab/awesome-rest">Awesome REST在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/christian-bromann/awesome-selenium">Awesome Selenium在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ciandcd/awesome-ciandcd">ciandcd在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Vedenin/useful-java-links">Useful Java Links在新窗口打开</a></li>
+</ul>
+<h2 id="Communities"><a href="#Communities" class="headerlink" title="Communities"></a>Communities</h2><p><em>Active discussions.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.reddit.com/r/java">r&#x2F;java在新窗口打开</a> - Subreddit for the Java community.</li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/tagged/java">stackoverflow在新窗口打开</a> - Question&#x2F;answer platform.</li>
+<li><a target="_blank" rel="noopener" href="https://virtualjug.com/">VirtualJUG在新窗口打开</a> - Virtual Java User Group.</li>
+</ul>
+<h2 id="Frontends"><a href="#Frontends" class="headerlink" title="Frontends"></a>Frontends</h2><p><em>Websites that provide a frontend for this list. Please note, there won’t be an official website. We don’t associate with a particular website and everybody is allowed to create one.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://java.libhunt.com/">java.libhunt.com在新窗口打开</a></li>
+</ul>
+<h2 id="Influential-Books"><a href="#Influential-Books" class="headerlink" title="Influential Books"></a>Influential Books</h2><p><em>Books that made a big impact and are still worth reading.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.amazon.com/Core-Java-I-Fundamentals-10th/dp/0134177304">Core Java Volume I–Fundamentals在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.amazon.com/Core-Java-II-Advanced-Features-10th/dp/0134177290">Core Java, Volume II–Advanced Features在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.amazon.com/Effective-Java-3rd-Joshua-Bloch/dp/0134685997">Effective Java (3rd Edition)在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.amazon.com/Java-Concurrency-Practice-Brian-Goetz/dp/0321349601">Java Concurrency in Practice在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.amazon.com/Thinking-Java-Edition-Bruce-Eckel/dp/0131872486">Thinking in Java在新窗口打开</a></li>
+</ul>
+<h2 id="Podcasts-and-Screencasts"><a href="#Podcasts-and-Screencasts" class="headerlink" title="Podcasts and Screencasts"></a>Podcasts and Screencasts</h2><p><em>Something to look at or listen to while programming.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.javaoffheap.com/">Java Off Heap在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.marcobehler.com/series">Marco Behler’s Screencasts在新窗口打开</a> - Screencasts about modern Java development.</li>
+<li><a target="_blank" rel="noopener" href="https://virtualjug.com/podcast">The Java Council在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.javaposse.com/">The Java Posse在新窗口打开</a> - Discontinued as of 02&#x2F;2015.</li>
+</ul>
+<h2 id="Twitter"><a href="#Twitter" class="headerlink" title="Twitter"></a>Twitter</h2><p><em>Active accounts to follow. Descriptions from Twitter.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/AdamBien">Adam Bien在新窗口打开</a> - Freelance author, JavaOne Rockstar speaker, consultant, Java Champion.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/shipilev">Aleksey Shipilëv在新窗口打开</a> - Performance geek, benchmarking czar, concurrency bug hunter.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/agoncal">Antonio Goncalves在新窗口打开</a> - Java Champion, JUG Leader, Devoxx France, Java EE 6&#x2F;7, JCP, Author.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/arungupta">Arun Gupta在新窗口打开</a> - Java Champion, JavaOne Rockstar, JUG Leader, Devoxx4Kids-er, VP of Developer Advocacy at Couchbase.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/BrianGoetz">Brian Goetz在新窗口打开</a> - Java Language Architect at Oracle.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/brunoborges">Bruno Borges在新窗口打开</a> - Product Manager&#x2F;Java Jock at Oracle.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/crichardson">Chris Richardson在新窗口打开</a> - Software architect, consultant, and serial entrepreneur, Java Champion, JavaOne Rock Star, *POJOs in Action- author.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/edburns">Ed Burns在新窗口打开</a> - Consulting Member of the Technical Staff at Oracle.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/baeldung">Eugen Paraschiv在新窗口打开</a> - Author of the Spring Security Course.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/heinzkabutz">Heinz Kabutz在新窗口打开</a> - Java Champion, speaker, author of The Java Specialists’ Newsletter, concurrency performance expert.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/holly_cummins">Holly Cummins在新窗口打开</a> - Technical Lead of IBM London’s Bluemix Garage, Java Champion, developer, author, JavaOne rockstar.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/JavaFXpert">James Weaver在新窗口打开</a> - Java&#x2F;JavaFX&#x2F;IoT developer, author and speaker.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/Java_EE">Java EE在新窗口打开</a> - Official Java EE Twitter account.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/Oraclejavamag">Java Magazine在新窗口打开</a> - Official Java Magazine account.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/java">Java在新窗口打开</a> - Official Java Twitter account.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/javinpaul">Javin Paul在新窗口打开</a> - Well-known Java blogger.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/starbuxman">Josh Long在新窗口打开</a> - Spring Advocate at Pivotal, author of O’Reilly’s Cloud Native Java- and Building Microservices with Spring Boot, JavaOne Rock Star.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/lukaseder">Lukas Eder在新窗口打开</a> - Java Champion, speaker, JUG.ch co-leader, Founder and CEO Data Geekery (jOOQ).</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/mariofusco">Mario Fusco在新窗口打开</a> - RedHatter, JUG coordinator, frequent speaker and author.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/MkHeck">Mark Heckler在新窗口打开</a> - Pivotal Principal Technologist and Developer Advocate, conference speaker, published author, and Java Champion, focusing on Internet of Things and the cloud.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/mreinhold">Mark Reinhold在新窗口打开</a> - Chief Architect, Java Platform Group, Oracle.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/myfear">Markus Eisele在新窗口打开</a> - Java EE evangelist, Red Hat.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/karianna">Martijn Verburg在新窗口打开</a> - London JUG co-leader, speaker, author, Java Champion and much more.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/mjpt777">Martin Thompson在新窗口打开</a> - Pasty faced performance gangster.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/mon_beck">Monica Beckwith在新窗口打开</a> - Performance consultant, JavaOne Rock Star.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/OpenJDK">OpenJDK在新窗口打开</a> - Official OpenJDK account.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/PeterLawrey">Peter Lawrey在新窗口打开</a> - Peter Lawrey, Java performance expert.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/randyshoup">Randy Shoup在新窗口打开</a> - Stitch Fix VP Engineering, speaker, JavaOne Rock Star.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/reza_rahman">Reza Rahman在新窗口打开</a> - Java EE&#x2F;GlassFish&#x2F;WebLogic evangelist, author, speaker, open source hacker.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/sjmaple">Simon Maple在新窗口打开</a> - Java Champion, VirtualJUG founder, LJC leader, RebelLabs author.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/jodastephen">Stephen Colebourne在新窗口打开</a> - Java Champion, speaker.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/trisha_gee">Trisha Gee在新窗口打开</a> - Java Champion and speaker.</li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/venkat_s">Venkat Subramaniam在新窗口打开</a> - Author, University of Houston professor, MicroSoft MVP award recipient, JavaOne Rock Star, Java Champion.</li>
+</ul>
+<h2 id="Websites"><a href="#Websites" class="headerlink" title="Websites"></a>Websites</h2><p><em>Sites to read.</em></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://google.github.io/styleguide/javaguide.html">Google Java Style在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.infoq.com/">InfoQ在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://algs4.cs.princeton.edu/code">Java Algorithms and Clients在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.jooq.org/">Java, SQL, and jOOQ在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://community.oracle.com/community/java">Java.net在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://dzone.com/java-jdk-development-tutorials-tools-news">Javalobby在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.javaworld.com/">JavaWorld在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://jaxenter.com/">JAXenter在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://zeroturnaround.com/rebellabs">RebelLabs在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.takipi.com/">The Takipi Blog在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.theserverside.com/">TheServerSide.com在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://vanilla-java.github.io/">Vanilla Java在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.voxxed.com/">Voxxed在新窗口打开</a></li>
+</ul>
+<h2 id="Contributing"><a href="#Contributing" class="headerlink" title="Contributing"></a>Contributing</h2><p>Contributions are very welcome!</p>
+<p>Please have a look at the <a target="_blank" rel="noopener" href="https://github.com/akullpp/awesome-java/blob/master/CONTRIBUTING.md">CONTRIBUTING在新窗口打开</a> guidelines.</p>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2017 王云生
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

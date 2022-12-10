@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Better_Java | Mr.Wang Blog</title>
+  <meta name="keywords" content=" java ">
+  <meta name="description" content="Better_Java | Mr.Wang Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="Better Java 这不是一本书，国外一个小哥总结的better java 的工具和实践参考。他的博客在新窗口打开. @pdai  目录 Better Java 目录 Style Structs The Builder Pattern Immutable Object Generation   Exceptions Dependency injection Avoid Nulls Immuta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Better_Java">
+<meta property="og:url" content="http://example.com/2022/12/10/Better-Java/index.html">
+<meta property="og:site_name" content="Mr.Wang Blog">
+<meta property="og:description" content="Better Java 这不是一本书，国外一个小哥总结的better java 的工具和实践参考。他的博客在新窗口打开. @pdai  目录 Better Java 目录 Style Structs The Builder Pattern Immutable Object Generation   Exceptions Dependency injection Avoid Nulls Immuta">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-12-10T15:26:09.000Z">
+<meta property="article:modified_time" content="2022-12-10T15:26:29.096Z">
+<meta property="article:author" content="王云生">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>王云生</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="cnblogs"
+               href="https://home.cnblogs.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-cnblogs"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/a996358a335f"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/yun-sheng-10-62-26"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="csdn"
+               href="https://blog.csdn.net/u011593571?type=collect"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-csdn"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/u/4978723"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="juejin"
+               href="https://juejin.cn/user/2604099346111086"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-juejin"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:w_huilong@163.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(65)</small>
+            
+        </div>
+    </li>
+    
+        
+            
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(1)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="JAVA">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        JAVA
+                        <small>(62)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA8特性">
+                                        
+                                        JAVA8特性
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA8以上版本特性">
+                                        
+                                        JAVA8以上版本特性
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA多线程">
+                                        
+                                        JAVA多线程
+                                        
+                                            <small>(27
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA基础">
+                                        
+                                        JAVA基础
+                                        
+                                            <small>(8
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java集合框架">
+                                        
+                                        Java集合框架
+                                        
+                                            <small>(9
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java其他相关">
+                                        
+                                        Java其他相关
+                                        
+                                            <small>(2
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVAIO">
+                                        
+                                        JAVAIO
+                                        
+                                            <small>(13
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JVM相关">
+                                        
+                                        JVM相关
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="Spring">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        Spring
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringBoot2.5.X系列">
+                                        
+                                        SpringBoot2.5.X系列
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringFrameWork5基础">
+                                        
+                                        SpringFrameWork5基础
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="65">
+<input type="hidden" id="yelog_site_word_count" value="297.3k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>多线程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>aio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ArrayList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>bio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Collection</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>hexo</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>io</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java8</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java8+</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>jvm</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedHashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Map</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>nio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>PriorityQueue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Queue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring boot</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Stack</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tool</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>WeakHashMap</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a  class="全部文章 JAVA Java其他相关 "
+           href="/2022/12/10/Better-Java/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="Better_Java">Better_Java</span>
+            <span class="post-date" title="2022-12-10 23:26:09">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java其他相关 "
+           href="/2022/12/10/Awesome-Java/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="Awesome_Java">Awesome_Java</span>
+            <span class="post-date" title="2022-12-10 23:24:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JVM相关 "
+           href="/2022/12/10/JVM%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,jvm"
+           data-author="" >
+            <span class="post-title" title="JVM相关知识体系详解">JVM相关知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:23:42">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8以上版本特性 "
+           href="/2022/12/10/Java8%E4%BB%A5%E4%B8%8A%E7%89%88%E6%9C%AC%E7%89%B9%E6%80%A7%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,java8+"
+           data-author="" >
+            <span class="post-title" title="Java8以上版本特性知识体系详解">Java8以上版本特性知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:22:38">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8特性 "
+           href="/2022/12/10/Java8%E7%89%B9%E6%80%A7%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,java8"
+           data-author="" >
+            <span class="post-title" title="Java8特性知识体系详解">Java8特性知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:20:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_零拷贝实现">JavaNIO_零拷贝实现</span>
+            <span class="post-date" title="2022-12-10 23:17:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-Netty/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="JavaIO_Netty">JavaIO_Netty</span>
+            <span class="post-date" title="2022-12-10 23:16:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaAIO-%E5%BC%82%E6%AD%A5IO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,aio"
+           data-author="" >
+            <span class="post-title" title="JavaAIO_异步IO详解">JavaAIO_异步IO详解</span>
+            <span class="post-date" title="2022-12-10 23:15:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_IO多路复用详解">JavaNIO_IO多路复用详解</span>
+            <span class="post-date" title="2022-12-10 23:15:03">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E5%9F%BA%E7%A1%80%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_基础详解">JavaNIO_基础详解</span>
+            <span class="post-date" title="2022-12-10 23:13:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-BIO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,bio"
+           data-author="" >
+            <span class="post-title" title="JavaIO_BIO详解">JavaIO_BIO详解</span>
+            <span class="post-date" title="2022-12-10 23:13:00">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/IO%E6%A8%A1%E5%9E%8B-UnixIO%E6%A8%A1%E5%9E%8B/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="IO模型_UnixIO模型">IO模型_UnixIO模型</span>
+            <span class="post-date" title="2022-12-10 23:11:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%B8%B8%E8%A7%81%E7%B1%BB%E4%BD%BF%E7%94%A8/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="常见类使用">常见类使用</span>
+            <span class="post-date" title="2022-12-10 23:10:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-OutputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_OutputStream">源码_OutputStream</span>
+            <span class="post-date" title="2022-12-10 23:09:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-InputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_InputStream">源码_InputStream</span>
+            <span class="post-date" title="2022-12-10 23:08:23">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="设计模式_装饰者模式">设计模式_装饰者模式</span>
+            <span class="post-date" title="2022-12-10 23:06:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%88%86%E7%B1%BB-%E4%BC%A0%E8%BE%93-%E6%93%8D%E4%BD%9C/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="分类_传输_操作">分类_传输_操作</span>
+            <span class="post-date" title="2022-12-10 23:06:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/Java-IO%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="Java_IO知识体系详解">Java_IO知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:04:43">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="ThreadLocal详解">ThreadLocal详解</span>
+            <span class="post-date" title="2022-12-10 22:58:20">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Exchanger%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Exchanger详解">JUC工具类_Exchanger详解</span>
+            <span class="post-date" title="2022-12-10 22:57:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Phaser%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Phaser详解">JUC工具类_Phaser详解</span>
+            <span class="post-date" title="2022-12-10 22:56:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Semaphore详解">JUC工具类_Semaphore详解</span>
+            <span class="post-date" title="2022-12-10 22:56:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CyclicBarrier%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CyclicBarrier详解">JUC工具类_CyclicBarrier详解</span>
+            <span class="post-date" title="2022-12-10 22:55:21">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CountDownLatch详解">JUC工具类_CountDownLatch详解</span>
+            <span class="post-date" title="2022-12-10 22:54:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-Fork-Join%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_Fork_Join框架详解">JUC线程池_Fork_Join框架详解</span>
+            <span class="post-date" title="2022-12-10 22:53:19">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ScheduledThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ScheduledThreadPoolExecutor详解">JUC线程池_ScheduledThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:52:28">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ThreadPoolExecutor详解">JUC线程池_ThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:51:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-FutureTask%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_FutureTask详解">JUC线程池_FutureTask详解</span>
+            <span class="post-date" title="2022-12-10 22:50:52">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-BlockingQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_BlockingQueue详解">JUC集合_BlockingQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:50:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentLinkedQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentLinkedQueue详解">JUC集合_ConcurrentLinkedQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:49:05">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-CopyOnWriteArrayList%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_CopyOnWriteArrayList详解">JUC集合_CopyOnWriteArrayList详解</span>
+            <span class="post-date" title="2022-12-10 22:48:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentHashMap%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentHashMap详解">JUC集合_ConcurrentHashMap详解</span>
+            <span class="post-date" title="2022-12-10 22:47:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantReadWriteLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantReadWriteLock详解">JUC锁_ReentrantReadWriteLock详解</span>
+            <span class="post-date" title="2022-12-10 22:46:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantLock详解">JUC锁_ReentrantLock详解</span>
+            <span class="post-date" title="2022-12-10 22:45:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-%E9%94%81%E6%A0%B8%E5%BF%83%E7%B1%BBAQS%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_锁核心类AQS详解">JUC锁_锁核心类AQS详解</span>
+            <span class="post-date" title="2022-12-10 22:44:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-LockSupport%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_LockSupport详解">JUC锁_LockSupport详解</span>
+            <span class="post-date" title="2022-12-10 22:43:25">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-CAS-Unsafe%E5%92%8C%E5%8E%9F%E5%AD%90%E7%B1%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC原子类_CAS_Unsafe和原子类详解">JUC原子类_CAS_Unsafe和原子类详解</span>
+            <span class="post-date" title="2022-12-10 22:42:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%B1%BB%E6%B1%87%E6%80%BB%E5%92%8C%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC类汇总和学习指南">JUC类汇总和学习指南</span>
+            <span class="post-date" title="2022-12-10 22:41:01">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/final%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="final详解">final详解</span>
+            <span class="post-date" title="2022-12-10 22:39:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/volatile%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="volatile详解">volatile详解</span>
+            <span class="post-date" title="2022-12-10 22:39:02">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/synchronized%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="synchronized详解">synchronized详解</span>
+            <span class="post-date" title="2022-12-10 22:37:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="线程基础">线程基础</span>
+            <span class="post-date" title="2022-12-10 22:31:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="理论基础">理论基础</span>
+            <span class="post-date" title="2022-12-10 22:30:46">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/WeakHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,WeakHashMap"
+           data-author="" >
+            <span class="post-title" title="WeakHashMap源码解析">WeakHashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:26:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/TreeSet-TreeMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,TreeSet,TreeMap"
+           data-author="" >
+            <span class="post-title" title="TreeSet&amp;TreeMap源码解析">TreeSet&amp;TreeMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:25:45">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedHashSet-Map%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedHashSet,Map"
+           data-author="" >
+            <span class="post-title" title="LinkedHashSet&amp;Map源码解析">LinkedHashSet&amp;Map源码解析</span>
+            <span class="post-date" title="2022-12-10 22:24:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/HashSet-HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,HashSet,HashMap"
+           data-author="" >
+            <span class="post-title" title="HashSet&amp;HashMap源码解析">HashSet&amp;HashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:23:24">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/PriorityQueue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,PriorityQueue"
+           data-author="" >
+            <span class="post-title" title="PriorityQueue源码解析">PriorityQueue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:22:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Stack-Queue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Stack,Queue"
+           data-author="" >
+            <span class="post-title" title="Stack&amp;Queue源码解析">Stack&amp;Queue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:21:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedList"
+           data-author="" >
+            <span class="post-title" title="LinkedList源码解析">LinkedList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:19:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/ArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,ArrayList"
+           data-author="" >
+            <span class="post-title" title="ArrayList源码解析">ArrayList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:18:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringBoot2.5.X系列 "
+           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring,spring boot"
+           data-author="" >
+            <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:14:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringFrameWork5基础 "
+           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring"
+           data-author="" >
+            <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:10:47">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/"
+           data-tag="java,Collection"
+           data-author="" >
+            <span class="post-title" title="Collection类关系图">Collection类关系图</span>
+            <span class="post-date" title="2022-12-10 21:59:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/SPI%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="SPI机制详解">SPI机制详解</span>
+            <span class="post-date" title="2022-12-10 21:58:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="反射机制详解">反射机制详解</span>
+            <span class="post-date" title="2022-12-10 21:57:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%BC%82%E5%B8%B8%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="异常机制详解">异常机制详解</span>
+            <span class="post-date" title="2022-12-10 21:56:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="注解机制详解">注解机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="泛型机制详解">泛型机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%9B%BE%E8%B0%B1-Q-A/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="图谱&amp;Q/A">图谱&amp;Q/A</span>
+            <span class="post-date" title="2022-12-10 21:53:16">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E7%9F%A5%E8%AF%86%E7%82%B9/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="知识点">知识点</span>
+            <span class="post-date" title="2022-12-10 21:52:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="面向对象">面向对象</span>
+            <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁">Java并发 - Java中所有的锁</span>
+            <span class="post-date" title="2022-12-10 21:25:40">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 HEXO "
+           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           data-tag="hexo,tool"
+           data-author="" >
+            <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
+            <span class="post-date" title="2022-12-10 19:02:24">2022/12/10</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-Better-Java" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Better_Java</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="JAVA">JAVA</a> > 
+            
+            <a  data-rel="JAVA&lt;---&gt;Java其他相关">Java其他相关</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">java</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-10 23:26:29'>2022-12-10 23:26</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:7.7k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Better-Java"><span class="toc-text">Better Java</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Style"><span class="toc-text">Style</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Structs"><span class="toc-text">Structs</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#The-Builder-Pattern"><span class="toc-text">The Builder Pattern</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Immutable-Object-Generation"><span class="toc-text">Immutable Object Generation</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exceptions"><span class="toc-text">Exceptions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dependency-injection"><span class="toc-text">Dependency injection</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Avoid-Nulls"><span class="toc-text">Avoid Nulls</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Immutable-by-default"><span class="toc-text">Immutable-by-default</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Avoid-lots-of-Util-classes"><span class="toc-text">Avoid lots of Util classes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Formatting"><span class="toc-text">Formatting</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Javadoc"><span class="toc-text">Javadoc</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Streams"><span class="toc-text">Streams</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Deploying"><span class="toc-text">Deploying</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Frameworks"><span class="toc-text">Frameworks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Maven"><span class="toc-text">Maven</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Dependency-Convergence"><span class="toc-text">Dependency Convergence</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Continuous-Integration"><span class="toc-text">Continuous Integration</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Maven-repository"><span class="toc-text">Maven repository</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Configuration-management"><span class="toc-text">Configuration management</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Libraries"><span class="toc-text">Libraries</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Missing-Features"><span class="toc-text">Missing Features</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Apache-Commons"><span class="toc-text">Apache Commons</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Guava"><span class="toc-text">Guava</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Gson"><span class="toc-text">Gson</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Java-Tuples"><span class="toc-text">Java Tuples</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Javaslang"><span class="toc-text">Javaslang</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Joda-Time"><span class="toc-text">Joda-Time</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Lombok"><span class="toc-text">Lombok</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Play-framework"><span class="toc-text">Play framework</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SLF4J"><span class="toc-text">SLF4J</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#jOOQ"><span class="toc-text">jOOQ</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Testing"><span class="toc-text">Testing</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#jUnit-4"><span class="toc-text">jUnit 4</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#jMock"><span class="toc-text">jMock</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AssertJ"><span class="toc-text">AssertJ</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tools"><span class="toc-text">Tools</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IntelliJ-IDEA"><span class="toc-text">IntelliJ IDEA</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Chronon"><span class="toc-text">Chronon</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JRebel"><span class="toc-text">JRebel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Checker-Framework"><span class="toc-text">The Checker Framework</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Code-Quality"><span class="toc-text">Code Quality</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eclipse-Memory-Analyzer"><span class="toc-text">Eclipse Memory Analyzer</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Resources"><span class="toc-text">Resources</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Books"><span class="toc-text">Books</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Podcasts"><span class="toc-text">Podcasts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Videos"><span class="toc-text">Videos</span></a></li></ol></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Better-Java"><a href="#Better-Java" class="headerlink" title="Better Java"></a>Better Java</h2><blockquote>
+<p>这不是一本书，国外一个小哥总结的better java 的工具和实践参考。<a target="_blank" rel="noopener" href="https://www.seancassidy.me/better-java.html">他的博客在新窗口打开</a>. @pdai</p>
+</blockquote>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li><a href="#better-java">Better Java</a><ul>
+<li><a href="#%E7%9B%AE%E5%BD%95">目录</a></li>
+<li><a href="#style">Style</a><ul>
+<li><a href="#structs">Structs</a><ul>
+<li><a href="#the-builder-pattern">The Builder Pattern</a></li>
+<li><a href="#immutable-object-generation">Immutable Object Generation</a></li>
+</ul>
+</li>
+<li><a href="#exceptions">Exceptions</a></li>
+<li><a href="#dependency-injection">Dependency injection</a></li>
+<li><a href="#avoid-nulls">Avoid Nulls</a></li>
+<li><a href="#immutable-by-default">Immutable-by-default</a></li>
+<li><a href="#avoid-lots-of-util-classes">Avoid lots of Util classes</a></li>
+<li><a href="#formatting">Formatting</a><ul>
+<li><a href="#javadoc">Javadoc</a></li>
+</ul>
+</li>
+<li><a href="#streams">Streams</a></li>
+</ul>
+</li>
+<li><a href="#deploying">Deploying</a><ul>
+<li><a href="#frameworks">Frameworks</a></li>
+<li><a href="#maven">Maven</a><ul>
+<li><a href="#dependency-convergence">Dependency Convergence</a></li>
+</ul>
+</li>
+<li><a href="#continuous-integration">Continuous Integration</a></li>
+<li><a href="#maven-repository">Maven repository</a></li>
+<li><a href="#configuration-management">Configuration management</a></li>
+</ul>
+</li>
+<li><a href="#libraries">Libraries</a><ul>
+<li><a href="#missing-features">Missing Features</a><ul>
+<li><a href="#apache-commons">Apache Commons</a></li>
+<li><a href="#guava">Guava</a></li>
+<li><a href="#gson">Gson</a></li>
+<li><a href="#java-tuples">Java Tuples</a></li>
+<li><a href="#javaslang">Javaslang</a></li>
+<li><a href="#joda-time">Joda-Time</a></li>
+<li><a href="#lombok">Lombok</a></li>
+<li><a href="#play-framework">Play framework</a></li>
+<li><a href="#slf4j">SLF4J</a></li>
+<li><a href="#jooq">jOOQ</a></li>
+</ul>
+</li>
+<li><a href="#testing">Testing</a><ul>
+<li><a href="#junit-4">jUnit 4</a></li>
+<li><a href="#jmock">jMock</a></li>
+<li><a href="#assertj">AssertJ</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#tools">Tools</a><ul>
+<li><a href="#intellij-idea">IntelliJ IDEA</a><ul>
+<li><a href="#chronon">Chronon</a></li>
+</ul>
+</li>
+<li><a href="#jrebel">JRebel</a></li>
+<li><a href="#the-checker-framework">The Checker Framework</a></li>
+<li><a href="#code-quality">Code Quality</a></li>
+<li><a href="#eclipse-memory-analyzer">Eclipse Memory Analyzer</a></li>
+</ul>
+</li>
+<li><a href="#resources">Resources</a><ul>
+<li><a href="#books">Books</a></li>
+<li><a href="#podcasts">Podcasts</a></li>
+<li><a href="#videos">Videos</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Style"><a href="#Style" class="headerlink" title="Style"></a>Style</h2><p>Java 传统的代码风格是被用来编写非常复杂的企业级 JavaBean。新的代码风格看起来会更加整洁，更加正确，并且更加简单。</p>
+<h3 id="Structs"><a href="#Structs" class="headerlink" title="Structs"></a>Structs</h3><p>对我们程序员来说，包装数据是最简单的事情之一。下面是传统的通过定义一个 JavaBean 的实现方式:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DataHolder</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> String data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">DataHolder</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setData</span><span class="params">(String data)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.data = data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getData</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.data;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种方式既繁琐又浪费代码。即使你的 IDE 可以自动生成这些代码，也是浪费。因此，<a target="_blank" rel="noopener" href="http://www.javapractices.com/topic/TopicAction.do?Id=84">别这么干在新窗口打开</a>.</p>
+<p>相反，我更喜欢 C 语言保存数据的风格来写一个类:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DataHolder</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> String data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">DataHolder</span><span class="params">(String data)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.data = data;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样不仅减少了近一半的代码行数。并且，这个类里面保存的数据除了你去继承它，否则不会改变，由于它不可变性，我们可以认为这会更加简单。</p>
+<p>如果你想保存很容易修改的对象数据，像 Map 或者 List，你应该使用 ImmutableMap 或者 ImmutableList，这些会在不变性那一部分讨论。</p>
+<h4 id="The-Builder-Pattern"><a href="#The-Builder-Pattern" class="headerlink" title="The Builder Pattern"></a>The Builder Pattern</h4><p>如果你想用这种构造的方式构造更复杂的对象，请考虑构建器模式。</p>
+<p>你可以建一个静态内部类来构建你的对象。构建器构建对象的时候，对象的状态是可变的，但是一旦你调用了 build 方法之后，构建的对象就变成了不可变的了。</p>
+<p>想象一下我们有一个更复杂的 <em>DataHolder</em>。那么它的构建器看起来应该是这样的:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ComplicatedDataHolder</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> String data;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="type">int</span> num;</span><br><span class="line">    <span class="comment">// lots more fields and a constructor</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Builder</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> String data;</span><br><span class="line">        <span class="keyword">private</span> <span class="type">int</span> num;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">public</span> Builder <span class="title function_">data</span><span class="params">(String data)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.data = data;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> Builder <span class="title function_">num</span><span class="params">(<span class="type">int</span> num)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.num = num;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> ComplicatedDataHolder <span class="title function_">build</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ComplicatedDataHolder</span>(data, num); <span class="comment">// etc</span></span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后调用它:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">ComplicatedDataHolder</span> <span class="variable">cdh</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ComplicatedDataHolder</span>.Builder()</span><br><span class="line">    .data(<span class="string">&quot;set this&quot;</span>)</span><br><span class="line">    .num(<span class="number">523</span>)</span><br><span class="line">    .build();</span><br></pre></td></tr></table></figure>
+
+<p>这有<a target="_blank" rel="noopener" href="http://jlordiales.me/2012/12/13/the-builder-pattern-in-practice/">关于构建器更好的例子在新窗口打开</a>，他会让你感受到构建器到底是怎么回事。它没有使用许多我们尽力避免使用的样板，并且它会给你不可变的对象和非常好用的接口。</p>
+<p>可以考虑下在众多的库中选择一个来帮你生成构建器，取代你亲手去写构建器的方式。</p>
+<h4 id="Immutable-Object-Generation"><a href="#Immutable-Object-Generation" class="headerlink" title="Immutable Object Generation"></a>Immutable Object Generation</h4><p>如果你要手动创建许多不可变对象，请考虑用注解处理器的方式从它们的接口自动生成。它使样板代码减少到最小化，减少产生 bug 的可能性，促进了对象的不可变性。看这 <a target="_blank" rel="noopener" href="https://docs.google.com/presentation/d/14u_h-lMn7f1rXE1nDiLX0azS3IkgjGl5uxp5jGJ75RE/edit#slide=id.g2a5e9c4a8_00">presentation在新窗口打开</a> 有常见的 Java 设计模式中一些问题的有趣的讨论。</p>
+<p>一些非常棒的代码生成库如 [immutables] (<a target="_blank" rel="noopener" href="https://github.com/immutables/immutables">https://github.com/immutables/immutables</a>), 谷歌的 <a target="_blank" rel="noopener" href="https://github.com/google/auto/tree/master/value">auto-value在新窗口打开</a> 和 <a target="_blank" rel="noopener" href="https://projectlombok.org/">Lombok在新窗口打开</a></p>
+<h3 id="Exceptions"><a href="#Exceptions" class="headerlink" title="Exceptions"></a>Exceptions</h3><p>使用<a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/7/docs/api/java/lang/Exception.html">检查在新窗口打开</a>异常的时候一定要注意，或者干脆别用。它会强制你去用 try&#x2F;catch 代码块包裹住可能抛出异常的部分。比较好的方式就是使你自定义的异常继承自运行时异常来取而代之。这样，可以让你的用户使用他们喜欢的方式去处理异常，而不是每次抛出异常的时候都强制它们去处理&#x2F;声明，这样会污染代码。</p>
+<p>一个比较漂亮的绝招是在你的方法异常声明中声明 RuntimeExceptions。这对编译器没有影响，但是可以通过文档告诉你的用户在这里可能会有异常抛出。</p>
+<h3 id="Dependency-injection"><a href="#Dependency-injection" class="headerlink" title="Dependency injection"></a>Dependency injection</h3><p>在软件工程领域，而不仅是在 Java 领域，使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dependency_injection">依赖注入在新窗口打开</a>是编写可测试软件最好的方法之一。 由于 Java 强烈鼓励使用面向对象的设计，所以在 Java 中为了开发可测试软件，你不得不使用依赖注入。</p>
+<p>在 Java 中，通常使用<a target="_blank" rel="noopener" href="http://projects.spring.io/spring-framework/">Spring 框架在新窗口打开</a>来完成依赖注入。Spring 有基于代码的和基于 XML 配置文件的两种连接方式。如果你使用基于 XML 配置文件的方式，注意不要<a target="_blank" rel="noopener" href="http://programmers.stackexchange.com/questions/92393/what-does-the-spring-framework-do-should-i-use-it-why-or-why-not">过度使用 Spring在新窗口打开</a>，正是由于它使用的基于 XML 配置文件的格式。在 XML 配置文件中绝对不应该有逻辑或者控制结构。它应该仅仅被用来做依赖注入。</p>
+<p>使用 Google 和 Square 的 <a target="_blank" rel="noopener" href="http://square.github.io/dagger/">Dagger在新窗口打开</a> 或者 Google 的 <a target="_blank" rel="noopener" href="https://github.com/google/guice">Guice在新窗口打开</a> 库是 Spring 比较好的替代品。它们不使用像 Spring 那样的 XML 配置文件的格式，相反它们把注入逻辑以注解的方式写到代码中。</p>
+<h3 id="Avoid-Nulls"><a href="#Avoid-Nulls" class="headerlink" title="Avoid Nulls"></a>Avoid Nulls</h3><p>尽量避免使用空值。不要返回 null 的集合，你应该返回一个 empty 的集合。如果你确实准备使用 null 请考虑使用 <a target="_blank" rel="noopener" href="https://github.com/google/guice/wiki/UseNullable">@Nullable在新窗口打开</a> 注解。<a target="_blank" rel="noopener" href="http://www.jetbrains.com/idea/">IntelliJ IDEA在新窗口打开</a> 内置支持 @Nullable 注解。</p>
+<p>阅读<a target="_blank" rel="noopener" href="https://www.lucidchart.com/techblog/2015/08/31/the-worst-mistake-of-computer-science/">计算机科学领域最糟糕的错误在新窗口打开</a>了解更多为何不使用 null。</p>
+<p>如果你使用的是 Java 8，你可以用新出的优秀的 <a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/articles/java/java8-optional-2175753.html">Optional在新窗口打开</a> 类型。如果有一个值你不确定是否存在，你可以像这样在类中用 <em>Optional</em> 包裹住它们:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FooWidget</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String data;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Optional&lt;Bar&gt; bar;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">FooWidget</span><span class="params">(String data)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>(data, Optional.empty());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">FooWidget</span><span class="params">(String data, Optional&lt;Bar&gt; bar)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.data = data;</span><br><span class="line">        <span class="built_in">this</span>.bar = bar;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Optional&lt;Bar&gt; <span class="title function_">getBar</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> bar;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样，现在你可以清晰地知道 <em>data</em> 肯定不为 null，但是 <em>bar</em> 不清楚是不是存在。<em>Optional</em> 有如 <em>isPresent</em> 这样的方法，可以用来检查是否为 <em>null</em>，感觉和原来的方式并没有太大区别。但是它允许你可以这样写:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Optional&lt;FooWidget&gt; fooWidget = maybeGetFooWidget();</span><br><span class="line"><span class="keyword">final</span> <span class="type">Baz</span> <span class="variable">baz</span> <span class="operator">=</span> fooWidget.flatMap(FooWidget::getBar)</span><br><span class="line">                         .flatMap(BarWidget::getBaz)</span><br><span class="line">                         .orElse(defaultBaz);</span><br></pre></td></tr></table></figure>
+
+<p>这样比写一连串的判断是否为空的检查代码更好。使用 Optional 唯一不好的是标准库对 Optional 的支持并不是很好，所以对 null 的处理仍然是必要的。</p>
+<h3 id="Immutable-by-default"><a href="#Immutable-by-default" class="headerlink" title="Immutable-by-default"></a>Immutable-by-default</h3><p>变量，类和集合应该设置为不可变的，除非你有很好的理由去修改他们。</p>
+<p>变量可以用 <em>final</em> 关键字使起不可变:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> FooWidget fooWidget;</span><br><span class="line"><span class="keyword">if</span> (condition()) &#123;</span><br><span class="line">    fooWidget = getWidget();</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        fooWidget = cachedFooWidget.get();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (CachingException e) &#123;</span><br><span class="line">        log.error(<span class="string">&quot;Couldn&#x27;t get cached value&quot;</span>, e);</span><br><span class="line">        <span class="keyword">throw</span> e;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// fooWidget is guaranteed to be set here</span></span><br></pre></td></tr></table></figure>
+
+<p>现在你可以确定 fooWidget 对象不会意外地被重新赋值了。<em>final</em> 关键词也可以在 if&#x2F;else 和 try&#x2F;catch 代码块中使用。当然，如果 <em>fooWidget</em> 对象本身不是不可变的，你可以很容易去修改它。</p>
+<p>使用集合的时候，任何可能的情况下尽量使用 Guava 的 <a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/collect/ImmutableMap.html">ImmutableMap在新窗口打开</a>, <a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/collect/ImmutableList.html">ImmutableList在新窗口打开</a>, 或者 <a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/collect/ImmutableSet.html">ImmutableSet在新窗口打开</a> 类。这些类都有构建器，你可以很容易地动态构建集合，一旦你执行了 build 方法，集合就变成了不可变的。</p>
+<p>类应该声明不可变的字段(通过 <em>final</em> 实现)和不可变的集合使该类不可变。或者，可以对类本身使用 <em>final</em> 关键词，这样这个类就不会被继承也不会被修改了。</p>
+<h3 id="Avoid-lots-of-Util-classes"><a href="#Avoid-lots-of-Util-classes" class="headerlink" title="Avoid lots of Util classes"></a>Avoid lots of Util classes</h3><p>如果你发现在你正在往工具类中添加很多方法，就要注意了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MiscUtil</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">frobnicateString</span><span class="params">(String base, <span class="type">int</span> times)</span> &#123;</span><br><span class="line">        <span class="comment">// ... etc</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">throwIfCondition</span><span class="params">(<span class="type">boolean</span> condition, String msg)</span> &#123;</span><br><span class="line">        <span class="comment">// ... etc</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>乍一看这些工具类似乎很不错，因为里面的那些方法放在别处确实都不太合适。因此，你以可重用代码的名义全放这了。</p>
+<p>这个想法比本身这么做还要糟糕。请把这些类放到它应该在的地方去并积极重构。不要命名一些像 “MiscUtils” 或者 “ExtrasLibrary” 这样的很普通的类，包或者库。这会鼓励产生无关代码。</p>
+<h3 id="Formatting"><a href="#Formatting" class="headerlink" title="Formatting"></a>Formatting</h3><p>格式化代码对大多数程序员来说并没有它应有的那么重要。统一化你的代码格式对阅读你的代码的人有帮助吗? 当然了。但是别在为了 if 代码块匹配添加空格上耗一天。</p>
+<p>如果你确实需要一个代码格式风格的教程，我高度推荐 <a target="_blank" rel="noopener" href="http://google.github.io/styleguide/javaguide.html">Google’s Java Style在新窗口打开</a> 这个教程。写的最好的部分是 <a target="_blank" rel="noopener" href="http://google.github.io/styleguide/javaguide.html#s6-programming-practices">Programming Practices在新窗口打开</a>。绝对值得一读。</p>
+<h4 id="Javadoc"><a href="#Javadoc" class="headerlink" title="Javadoc"></a>Javadoc</h4><p>文档对对你代码的阅读着来说也很重要。这意味着你要给出<a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/ImmutableMap.Builder.html">使用示例在新窗口打开</a>，并且给出你的变量，方法和类清晰地描述。</p>
+<p>这样做的必然结果是不要对不需要写文档的地方填写文档。如果你对一个参数的含义没什么可说的，或者它本身已经很明显是什么意思了，就不要为其写文档了。统一样板的文档比没有文档更加糟糕，这样会让读你代码的人误以为那就是文档。</p>
+<h3 id="Streams"><a href="#Streams" class="headerlink" title="Streams"></a>Streams</h3><p><a target="_blank" rel="noopener" href="http://www.java8.org/">Java 8在新窗口打开</a> 有很棒的 <a target="_blank" rel="noopener" href="http://blog.hartveld.com/2013/03/jdk-8-33-stream-api.html">stream在新窗口打开</a> and lambda 语法。你可以像这样来写代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> List&lt;String&gt; filtered = list.stream()</span><br><span class="line">    .filter(s -&gt; s.startsWith(<span class="string">&quot;s&quot;</span>))</span><br><span class="line">    .map(s -&gt; s.toUpperCase())</span><br><span class="line">    .collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+<p>取代这样的写法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> List&lt;String&gt; filtered = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (String str : list) &#123;</span><br><span class="line">    <span class="keyword">if</span> (str.startsWith(<span class="string">&quot;s&quot;</span>) &#123;</span><br><span class="line">        filtered.add(str.toUpperCase());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它让你可以写更多的流畅的代码，并且可读性更高。</p>
+<h2 id="Deploying"><a href="#Deploying" class="headerlink" title="Deploying"></a>Deploying</h2><p>Java 的部署问题确实有点棘手。现如今有两种主流的方式: 使用框架或者灵活性更高的内部研发的解决方案。</p>
+<h3 id="Frameworks"><a href="#Frameworks" class="headerlink" title="Frameworks"></a>Frameworks</h3><p>由于 Java 的部署并不容易，所以使用框架还是很有帮助的。最好的两个框架是 <a target="_blank" rel="noopener" href="https://dropwizard.github.io/dropwizard/">Dropwizard在新窗口打开</a> 和 <a target="_blank" rel="noopener" href="http://projects.spring.io/spring-boot/">Spring Boot在新窗口打开</a>。<a target="_blank" rel="noopener" href="https://www.playframework.com/">Play 框架在新窗口打开</a> 也可以被看作为一种部署框架。</p>
+<p>这些框架都是尽力地降低你部署代码的壁垒。它们对 Java 新手或者想提高效率的人尤有帮助。单独的 JAR 包部署会比复杂的 WAR 包或者 EAR 包部署更简单一点。</p>
+<p>然而，这些框架并没有你想象的那么灵活，如果你的项目的开发者选择的框架并不合适，你不得不迁移到手动配置更多的部署方案上来。</p>
+<h3 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h3><p><strong>不错的替代工具</strong>: <a target="_blank" rel="noopener" href="http://gradle.org/">Gradle在新窗口打开</a>.</p>
+<p>Maven 仍然是构建，打包和测试的标准。有很多不错的替代工具，如 Gradle，但是他们同样都没有像 Maven 那样的适应性。如果你是 Maven 新手，你应该从<a target="_blank" rel="noopener" href="http://books.sonatype.com/mvnex-book/reference/index.html">Maven 实例在新窗口打开</a>这里开始。</p>
+<p>我喜欢用一个根 POM(Project Object Model，项目对象模型)来管理所有用到的外部依赖。它会像<a target="_blank" rel="noopener" href="https://gist.github.com/cxxr/10787344">这个样子在新窗口打开</a>。这个根 POM 仅仅包含一个外部依赖，但是如果你的产品足够大，你将会有几十个外部依赖了。你的根 POM 应该像其他 Java 项目一样采用版本控制和发布的方式，有一个自己的项目。</p>
+<p>如果你认为你的根 POM 每添加一个外部依赖都打上一个标签很麻烦，那你肯定没有遇到过为了排查依赖错误引起的问题，浪费一周的时间翻遍整个项目的情况。</p>
+<p>你所有的 Maven 项目都应该包含你的根 POM，以及这些项目的所有版本信息。这样你会清除地了解到你们公司选择的每一个外部依赖的版本，以及所有正确的 Maven 插件。如果你要引入很多的外部依赖，它将会是这样子的:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.third.party<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>some-artifact<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果你想使用内部依赖，它应该被每一个单独项目的 <code>&lt;dependencyManagement&gt;</code> 部分来管理。否则那将会很难保持根 POM 的版本号是正常的。</p>
+<h4 id="Dependency-Convergence"><a href="#Dependency-Convergence" class="headerlink" title="Dependency Convergence"></a>Dependency Convergence</h4><p>Java 最好的一方面就是拥有大量的第三方库可以做任何事。基本上每一个 API 或者工具包都有一个 Java SDK，可以很方便的用 Maven 引入。</p>
+<p>并且这些第三方 Java 库本身依赖特定版本的其他的库。如果你引入足够多的库，你会发现有些库的版本是冲突的，像这样:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Foo library depends on Bar library v1.0</span><br><span class="line">Widget library depends on Bar library v0.9</span><br></pre></td></tr></table></figure>
+
+<p>你的项目到底要引入哪一个版本呢?</p>
+<p>如果你的项目依赖于不同版本的同一个库，使用 <a target="_blank" rel="noopener" href="https://maven.apache.org/enforcer/enforcer-rules/dependencyConvergence.html">Maven 依赖趋同插件在新窗口打开</a>构建时将会报错。然后你有两个方案来解决这个冲突:</p>
+<ol>
+<li>在你的 <em>dependencyManagement</em> 部分明确地支出你所使用的 Bar 的版本号</li>
+<li>在 FOO 或者 Widget 中排除对 Bar 的依赖。</li>
+</ol>
+<p>这两个方案到底选哪一个要看你面对的是什么情况: 如果你想跟踪一个项目的版本，那么选择排除的方案是不错的。另一方面，如果你想明确地指出它，你可以选择一个版本，尽管你在需要更新其他依赖的时候也需要更新它。</p>
+<h3 id="Continuous-Integration"><a href="#Continuous-Integration" class="headerlink" title="Continuous Integration"></a>Continuous Integration</h3><p>很明显，你需要某种形式的持续集成服务器来帮你不断构建你的快照版本和基于 git 标签构建。</p>
+<p><a target="_blank" rel="noopener" href="http://jenkins-ci.org/">Jenkins在新窗口打开</a> 和 <a target="_blank" rel="noopener" href="https://travis-ci.org/">Travis-CI在新窗口打开</a> 就成了很自然的选择.</p>
+<p>代码覆盖率非常有用，<a target="_blank" rel="noopener" href="http://cobertura.github.io/cobertura/">Cobertura在新窗口打开</a> 就有 <a target="_blank" rel="noopener" href="http://mojo.codehaus.org/cobertura-maven-plugin/usage.html">一个很好的 Maven 插件在新窗口打开</a><a target="_blank" rel="noopener" href="http://mojo.codehaus.org/cobertura-maven-plugin/usage.html">a good Maven plugin在新窗口打开</a> 并且支持 CI。还有一些其他的支持 Java 的代码覆盖率工具，但是我只用过 Cobertura。</p>
+<h3 id="Maven-repository"><a href="#Maven-repository" class="headerlink" title="Maven repository"></a>Maven repository</h3><p>你需要一个地方存储你生成的 JAR 包，WAR 包或者 EAR 包，因此，你需要一个仓库。</p>
+<p>一般选择有 <a target="_blank" rel="noopener" href="http://www.jfrog.com/">Artifactory在新窗口打开</a> 和 <a target="_blank" rel="noopener" href="http://www.sonatype.com/nexus">Nexus在新窗口打开</a> 这两个。它们都可以用，但是它们都有着各自的优缺点。</p>
+<p>你应该有自己的 Artifactory&#x2F;Nexus 设备和<a target="_blank" rel="noopener" href="http://www.jfrog.com/confluence/display/RTF/Configuring+Artifacts+Resolution">镜像在新窗口打开</a> 使你的依赖基于此。这样就不会由于上游的 Maven 库宕机而使你的构建崩溃了。</p>
+<h3 id="Configuration-management"><a href="#Configuration-management" class="headerlink" title="Configuration management"></a>Configuration management</h3><p>现在，你的代码已经编译完了，你的仓库也跑起来了，最终你需要把你的代码从开发环境部署到生产环境了。到了这里，千万不要吝啬，因为将来很长一段时间，你会从这些自动化方式中尝到很多的甜头。</p>
+<p><a target="_blank" rel="noopener" href="https://www.chef.io/chef/">Chef在新窗口打开</a>，<a target="_blank" rel="noopener" href="https://puppetlabs.com/">Puppet在新窗口打开</a>，和 <a target="_blank" rel="noopener" href="http://www.ansible.com/home">Ansible在新窗口打开</a> 是很典型的选择。我曾经也写了一个叫 <a target="_blank" rel="noopener" href="http://www.gosquadron.com/">Squadron在新窗口打开</a> 的也可供选择，当然，我认为你应该仔细看看这个，因为它使用起来比其他的更为简单方便。</p>
+<p>无论你选择了什么工具，不要忘了使你的部署实现自动化。</p>
+<h2 id="Libraries"><a href="#Libraries" class="headerlink" title="Libraries"></a>Libraries</h2><p>对 Java 来说，拥有大量的扩展库也许是最大的特点了。下面这些一小部分的扩展库对大部分人来说很适用的。</p>
+<h3 id="Missing-Features"><a href="#Missing-Features" class="headerlink" title="Missing Features"></a>Missing Features</h3><p>Java 标准库曾经作出过惊人的改进，但是现在来看，它仍然缺少一些关键的特性。</p>
+<h4 id="Apache-Commons"><a href="#Apache-Commons" class="headerlink" title="Apache Commons"></a>Apache Commons</h4><p><a target="_blank" rel="noopener" href="http://commons.apache.org/">Apache Commons 项目在新窗口打开</a> 拥有大量的有用的扩展库。</p>
+<p><strong>Commons Codec</strong> 对 Base64 和 16 进制字符串来说有很多有用的编&#x2F;解码方法。不要再浪费时间重写这些东西了。</p>
+<p><strong>Commons Lang</strong> 有许多关于字符串的操作和创建，字符集和许多各种各样的实用的方法。</p>
+<p><strong>Commons IO</strong> 拥有所有你能想到的关于文件操作的方法。有 <a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-io/javadocs/api-release/org/apache/commons/io/FileUtils.html#copyDirectory(java.io.File,%20java.io.File)">FileUtils.copyDirectory在新窗口打开</a>，<a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-io/javadocs/api-release/org/apache/commons/io/FileUtils.html#writeStringToFile(java.io.File,%20java.lang.String)">FileUtils.writeStringToFile在新窗口打开</a>，<a target="_blank" rel="noopener" href="http://commons.apache.org/proper/commons-io/javadocs/api-release/org/apache/commons/io/IOUtils.html#readLines(java.io.InputStream)">IOUtils.readLines在新窗口打开</a> 和更多实用的方法。</p>
+<h4 id="Guava"><a href="#Guava" class="headerlink" title="Guava"></a>Guava</h4><p><a target="_blank" rel="noopener" href="https://github.com/google/guava">Guava在新窗口打开</a> 是谷歌优秀的对 Java 标准库缺少的特性进行补充的扩展库。虽然这很难提炼总结出我有多喜欢这个库，但是我会尽力的。</p>
+<p><strong>Cache</strong> 让你可以用很简单的方法，实现把网络访问，磁盘访问，缓存函数或者其他任何你想要缓存的内容，缓存到内存当中。你仅仅只需要实现 <a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/cache/CacheBuilder.html">CacheBuilder在新窗口打开</a> 类并且告诉 Guava 怎么样构建你的缓存，一切就搞定了！</p>
+<p><strong>Immutable</strong> 集合。它有许多如: <a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/collect/ImmutableMap.html">ImmutableMap在新窗口打开</a>，<a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/collect/ImmutableList.html">ImmutableList在新窗口打开</a>，或者甚至 <a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/ImmutableSortedMultiset.html">ImmutableSortedMultiSet在新窗口打开</a> 等不可变集合可以使用，如果你喜欢用这种风格的话。</p>
+<p>我也喜欢用 Guava 的方式来写一些可变的集合:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Instead of</span></span><br><span class="line"><span class="keyword">final</span> Map&lt;String, Widget&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="comment">// You can use</span></span><br><span class="line"><span class="keyword">final</span> Map&lt;String, Widget&gt; map = Maps.newHashMap();</span><br></pre></td></tr></table></figure>
+
+<p>它还有一些静态类如 <a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Lists.html">Lists在新窗口打开</a>，<a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Maps.html">Maps在新窗口打开</a>和<a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Sets.html">Sets在新窗口打开</a> 等。使用起来它们显得更整洁，并且可读性更强。</p>
+<p>如果你坚持使用 Java 6 或者 7 的话，你可以使用 <a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/collect/Collections2.html">Collections2在新窗口打开</a> 这个类，它有一些像 filter 和 transform 这样的方法。能够让你没有 Java 8 的 Stream 的支持也能写出流畅的代码。</p>
+<p>Guava 也可以做一些很简单的事情，比如 <strong>Joiner</strong> 类可以用来用分隔符把字符串拼接起来，并且可以用忽略的方式<a target="_blank" rel="noopener" href="http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/com/google/common/util/concurrent/Uninterruptibles.html">来处理打断程序在新窗口打开</a>的数据。</p>
+<h4 id="Gson"><a href="#Gson" class="headerlink" title="Gson"></a>Gson</h4><p>谷歌的 <a target="_blank" rel="noopener" href="https://github.com/google/gson">Gson在新窗口打开</a> 库是一个简单快速的 JSON 解析库。可以这样用:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">Gson</span> <span class="variable">gson</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Gson</span>();</span><br><span class="line"><span class="keyword">final</span> <span class="type">String</span> <span class="variable">json</span> <span class="operator">=</span> gson.toJson(fooWidget);</span><br><span class="line"></span><br><span class="line"><span class="keyword">final</span> <span class="type">FooWidget</span> <span class="variable">newFooWidget</span> <span class="operator">=</span> gson.fromJson(json, FooWidget.class);</span><br></pre></td></tr></table></figure>
+
+<p>这用起来真的很简单，很愉悦。<a target="_blank" rel="noopener" href="https://sites.google.com/site/gson/gson-user-guide">Gson 用户手册在新窗口打开</a> 有很多的使用示例。</p>
+<h4 id="Java-Tuples"><a href="#Java-Tuples" class="headerlink" title="Java Tuples"></a>Java Tuples</h4><p>Java 令我比较烦恼的问题之一 Java 标准库中没有内置对元组的支持。幸运的是，<a target="_blank" rel="noopener" href="http://www.javatuples.org/">Java tuples在新窗口打开</a> 项目解决了这个问题。</p>
+<p>它使用用起来很简单，很棒:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Pair&lt;String, Integer&gt; <span class="title function_">func</span><span class="params">(String input)</span> &#123;</span><br><span class="line">    <span class="comment">// something...</span></span><br><span class="line">    <span class="keyword">return</span> Pair.with(stringResult, intResult);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Javaslang"><a href="#Javaslang" class="headerlink" title="Javaslang"></a>Javaslang</h4><p><a target="_blank" rel="noopener" href="http://javaslang.com/">Javaslang在新窗口打开</a> 是一个函数式编程库，它被设计用来弥补本应该出现在 Java 8 中但缺失的一些特性。它有这样的一些特点:</p>
+<ul>
+<li>一个全新函数式集合库</li>
+<li>紧密集成的元组功能</li>
+<li>模式匹配</li>
+<li>通过不可变性保证线程安全</li>
+<li>饥汉式和懒汉式的数据类型</li>
+<li>通过 Option 实现了 null 的安全性</li>
+<li>通过 Try 更好的实现异常处理</li>
+</ul>
+<p>有一些 Java 库依赖于原始的 Java 集合类。它们通过以面向对象和被设计为可变的方式来保证和其他的类的兼容性。而 Javaslang 的集合的设计灵感来源于 Haskell, Clojure 和 Scala，是一个全新的飞跃。它们被设计为函数式风格并且遵循不可变性的设计风格。</p>
+<p>像下面这样的代码就可以自动实现线程安全，并且不用 try-catch 语句处理异常:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Success/Failure containing the result/exception</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Try&lt;User&gt; <span class="title function_">getUser</span><span class="params">(<span class="type">int</span> userId)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> Try.of(() -&gt; DB.findUser(userId))</span><br><span class="line">        .recover(x -&gt; Match.of(x)</span><br><span class="line">            .whenType(RemoteException.class).then(e -&gt; ...)</span><br><span class="line">            .whenType(SQLException.class).then(e -&gt; ...));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Thread-safe, reusable collections</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title function_">sayByeBye</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> List.of(<span class="string">&quot;bye, &quot;</span>bye<span class="string">&quot;, &quot;</span>collect<span class="string">&quot;, &quot;</span>mania<span class="string">&quot;)</span></span><br><span class="line"><span class="string">               .map(String::toUpperCase)</span></span><br><span class="line"><span class="string">               .intersperse(&quot;</span> <span class="string">&quot;);</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Joda-Time"><a href="#Joda-Time" class="headerlink" title="Joda-Time"></a>Joda-Time</h4><p><a target="_blank" rel="noopener" href="http://www.joda.org/joda-time/">Joda-Time在新窗口打开</a> 是我用过的最简单的时间处理库。简单，直接，并且很容易测试。夫复何求?</p>
+<p>因为 Java 8 已经有了自己的新的 <a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/articles/java/jf14-date-time-2125367.html">时间处理在新窗口打开</a>库， 所以如果你还没有用 Java 8，你需要这一个库足矣。</p>
+<h4 id="Lombok"><a href="#Lombok" class="headerlink" title="Lombok"></a>Lombok</h4><p><a target="_blank" rel="noopener" href="https://projectlombok.org/">Lombok在新窗口打开</a> 是一个很有意思的库。它可以让你以注解的方式减少 Java 中糟糕的样板代码。</p>
+<p>想为你的类的变量添加 setter 和 getter 方法吗? 像这样:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Foo</span> &#123;</span><br><span class="line">    <span class="meta">@Getter</span> <span class="meta">@Setter</span> <span class="keyword">private</span> <span class="type">int</span> <span class="keyword">var</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在你就可以这么用了:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">Foo</span> <span class="variable">foo</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Foo</span>();</span><br><span class="line">foo.setVar(<span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这还有<a target="_blank" rel="noopener" href="http://jnb.ociweb.com/jnb/jnbJan2010.html">很多在新窗口打开</a>例子。我在之前的产品中还没有用过 Lombok，但是现在我等不急了。</p>
+<h4 id="Play-framework"><a href="#Play-framework" class="headerlink" title="Play framework"></a>Play framework</h4><p><strong>好的替代品</strong>: <a target="_blank" rel="noopener" href="https://jersey.java.net/">Jersey在新窗口打开</a> 或者 <a target="_blank" rel="noopener" href="http://sparkjava.com/">Spark在新窗口打开</a></p>
+<p>在 Java 实现 RESTful web services 有两大主要阵营: <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_API_for_RESTful_Web_Services">JAX-RS在新窗口打开</a> 和其他。</p>
+<p>JAX-RS 是传统的实现方式。你可以用像 <a target="_blank" rel="noopener" href="https://jersey.java.net/">Jersey在新窗口打开</a> 这样的框架，以注解的方式来实现接口及其实现的结合。这样你就可以很容易的根据接口类来开发客户端。</p>
+<p><a target="_blank" rel="noopener" href="https://www.playframework.com/">Play 框架在新窗口打开</a> 基于 JVM 的 web services 实现和其他根本框架不同: 它有一个路由文件，你写的类要和路由文件中的路由信息关联起来。Play 框架其实是一个<a target="_blank" rel="noopener" href="https://www.playframework.com/documentation/2.3.x/Anatomy">完整的 MVC 框架在新窗口打开</a>，但是你可以很简单地仅仅使用它的 REST web services 部分的功能。</p>
+<p>它同时支持 Java 和 Scala。虽然对重点支持的 Scala 稍有不足，但是对 Java 的支持还是很好用的。</p>
+<p>如果你在 Python 中用过像 Flask 这样的微框架，你对 <a target="_blank" rel="noopener" href="http://sparkjava.com/">Spark在新窗口打开</a> 肯定会很熟悉。它对 Java 8 的支持尤其的好。</p>
+<h4 id="SLF4J"><a href="#SLF4J" class="headerlink" title="SLF4J"></a>SLF4J</h4><p>有很多 Java 日志解决方案。我最喜欢的是 <a target="_blank" rel="noopener" href="http://www.slf4j.org/">SLF4J在新窗口打开</a>，因为它拥有非常棒的可插拔性，同时能够和很多的日志框架想结合。有没有做过同时使用 java.util.logging，JCL，和 log4j 的奇葩项目? SLF4J 就是为你而生。</p>
+<p>这<a target="_blank" rel="noopener" href="http://www.slf4j.org/manual.html">两页手册在新窗口打开</a>足够你可以开始入门使用 SLF4J 了。</p>
+<h4 id="jOOQ"><a href="#jOOQ" class="headerlink" title="jOOQ"></a>jOOQ</h4><p>我不喜欢重量级的 ORM 框架，因为我喜欢 SQL。所以我写了很多 <a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/4.0.3.RELEASE/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html">JDBC 模板在新窗口打开</a>，但是很难去维护它。<a target="_blank" rel="noopener" href="http://www.jooq.org/">jOOQ在新窗口打开</a> 是一个更好的解决方案。</p>
+<p>它让你在 Java 中用类型安全的方式编写 SQL:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Typesafely execute the SQL statement directly with jOOQ</span></span><br><span class="line">Result&lt;Record3&lt;String, String, String&gt;&gt; result = </span><br><span class="line">create.select(BOOK.TITLE, AUTHOR.FIRST_NAME, AUTHOR.LAST_NAME)</span><br><span class="line">    .from(BOOK)</span><br><span class="line">    .join(AUTHOR)</span><br><span class="line">    .on(BOOK.AUTHOR_ID.equal(AUTHOR.ID))</span><br><span class="line">    .where(BOOK.PUBLISHED_IN.equal(<span class="number">1948</span>))</span><br><span class="line">    .fetch();</span><br></pre></td></tr></table></figure>
+
+<p>使用 jOOQ 和 <a target="_blank" rel="noopener" href="http://www.javapractices.com/topic/TopicAction.do?Id=66">DAO在新窗口打开</a> 的模式让你的数据库访问变得轻而易举。</p>
+<h3 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h3><p>测试是软件的关键环节。下面这些软件包能够让你更容易地测试。</p>
+<h4 id="jUnit-4"><a href="#jUnit-4" class="headerlink" title="jUnit 4"></a>jUnit 4</h4><p><strong>好的替代品</strong>: <a target="_blank" rel="noopener" href="http://testng.org/">TestNG在新窗口打开</a>.</p>
+<p><a target="_blank" rel="noopener" href="http://junit.org/">jUnit在新窗口打开</a> 就无需多言了。它是 Java 单元测试中的标准工具。</p>
+<p>但是很可能你使用的 jUnit 并没有发挥它的全部潜力。jUnit 支持<a target="_blank" rel="noopener" href="https://github.com/junit-team/junit/wiki/Parameterized-tests">参数化测试在新窗口打开</a>，<a target="_blank" rel="noopener" href="https://github.com/junit-team/junit/wiki/Rules">规则化在新窗口打开</a>测试，<a target="_blank" rel="noopener" href="https://github.com/junit-team/junit/wiki/Theories">theories在新窗口打开</a> 可以随机测试特定代码，还有 <a target="_blank" rel="noopener" href="https://github.com/junit-team/junit/wiki/Assumptions-with-assume">assumptions在新窗口打开</a>，可以让你少写很多样板代码。</p>
+<h4 id="jMock"><a href="#jMock" class="headerlink" title="jMock"></a>jMock</h4><p>如果你完成了依赖注入，这是它的回报: 可以 mock 出有副作用(比如和 REST 服务器交互)的代码，并且可以断言调用这段代码的行为。</p>
+<p><a target="_blank" rel="noopener" href="http://www.jmock.org/">jMock在新窗口打开</a> 是标准的 Java mock 工具。像这样使用:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FooWidgetTest</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">Mockery</span> <span class="variable">context</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Mockery</span>();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">basicTest</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="type">FooWidgetDependency</span> <span class="variable">dep</span> <span class="operator">=</span> context.mock(FooWidgetDependency.class);</span><br><span class="line">        </span><br><span class="line">        context.checking(<span class="keyword">new</span> <span class="title class_">Expectations</span>() &#123;&#123;</span><br><span class="line">            oneOf(dep).call(with(any(String.class)));</span><br><span class="line">            atLeast(<span class="number">0</span>).of(dep).optionalCall();</span><br><span class="line">        &#125;&#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> <span class="type">FooWidget</span> <span class="variable">foo</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FooWidget</span>(dep);</span><br><span class="line"></span><br><span class="line">        Assert.assertTrue(foo.doThing());</span><br><span class="line">        context.assertIsSatisfied();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码通过 jMock 建立了一个 <em>FooWidgetDependency</em>，然后添加你所期望结果的条件。我们期望 <em>dep</em> 的 <em>call</em> 方法会被以一个字符串为参数的形式调用，并且会被调用 0 次或者多次。</p>
+<p>如果你想一遍又一遍地设置相同的依赖，你应该把它放到 <a target="_blank" rel="noopener" href="https://github.com/junit-team/junit/wiki/Test-fixtures">test fixture在新窗口打开</a> 中，并且把<em>assertIsSatisfied</em> 放在以 <em>@After</em> 注解的 fixture 中。</p>
+<h4 id="AssertJ"><a href="#AssertJ" class="headerlink" title="AssertJ"></a>AssertJ</h4><p>你曾经用 jUnit 干过这个吗?</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> List&lt;String&gt; result = some.testMethod();</span><br><span class="line">assertEquals(<span class="number">4</span>, result.size());</span><br><span class="line">assertTrue(result.contains(<span class="string">&quot;some result&quot;</span>));</span><br><span class="line">assertTrue(result.contains(<span class="string">&quot;some other result&quot;</span>));</span><br><span class="line">assertFalse(result.contains(<span class="string">&quot;shouldn&#x27;t be here&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>这是很恶心的样板代码。<a target="_blank" rel="noopener" href="http://joel-costigliola.github.io/assertj/index.html">AssertJ在新窗口打开</a> 可以解决这个问题。你可以把相同的代码转换成这个样子:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">assertThat(some.testMethod()).hasSize(<span class="number">4</span>)</span><br><span class="line">                             .contains(<span class="string">&quot;some result&quot;</span>, <span class="string">&quot;some other result&quot;</span>)</span><br><span class="line">                             .doesNotContain(<span class="string">&quot;shouldn&#x27;t be here&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这样的流畅接口让你的测试更具有可读性。你还想咋地?</p>
+<h2 id="Tools"><a href="#Tools" class="headerlink" title="Tools"></a>Tools</h2><h3 id="IntelliJ-IDEA"><a href="#IntelliJ-IDEA" class="headerlink" title="IntelliJ IDEA"></a>IntelliJ IDEA</h3><p><strong>好的替代品</strong>: <a target="_blank" rel="noopener" href="https://www.eclipse.org/">Eclipse在新窗口打开</a> 和 <a target="_blank" rel="noopener" href="https://netbeans.org/">Netbeans在新窗口打开</a></p>
+<p>Java 最好的 IDE 是 <a target="_blank" rel="noopener" href="http://www.jetbrains.com/idea/">IntelliJ IDEA在新窗口打开</a>。它有大量的牛逼的特性，它是真正的能让 Java 用来像不戴套做爱那么爽的工具。自动完成功能超棒，<a target="_blank" rel="noopener" href="http://i.imgur.com/92ztcCd.png">代码检查功能也是顶尖的在新窗口打开</a>，重构工具那是相当有帮助。</p>
+<p>免费的社区版对我来说已经足够好了，但是它的旗舰版加载了更多的牛逼的特性，如数据库工具，Spring 框架的支持和对 Chronon 的支持。</p>
+<h4 id="Chronon"><a href="#Chronon" class="headerlink" title="Chronon"></a>Chronon</h4><p>我最喜欢 GDB 7 的特性之一就是调试的时候能够按照时间跟踪回来。当你拥有了旗舰版的 IntelliJ，你可以通过安装 <a target="_blank" rel="noopener" href="http://blog.jetbrains.com/idea/2014/03/try-chronon-debugger-with-intellij-idea-13-1-eap/">Chronon IntelliJ 插件在新窗口打开</a>实现。</p>
+<p>你可以获取到变量的变化历史，后退，方法的历史以及更多的信息。如果你是第一次用会觉得有点怪，但是它真的能够帮你解决很复杂的 bug，诸如海森堡类的 bug。</p>
+<h3 id="JRebel"><a href="#JRebel" class="headerlink" title="JRebel"></a>JRebel</h3><p><strong>好的替代品</strong>: <a target="_blank" rel="noopener" href="https://github.com/dcevm/dcevm">DCEVM在新窗口打开</a></p>
+<p>持续集成往往以软件即服务为产品目标。想象一下如果你不用等待代码构建完成而能实时看到代码的变化会是怎样?</p>
+<p>这就是 <a target="_blank" rel="noopener" href="http://zeroturnaround.com/software/jrebel/">JRebel在新窗口打开</a> 所做的。一旦你将你的服务器和你的 JReble 以 hook 方式连接，你就可以从服务器看到实时变化。当你想快速试验的时候它能为你节省大量的时间。</p>
+<h3 id="The-Checker-Framework"><a href="#The-Checker-Framework" class="headerlink" title="The Checker Framework"></a>The Checker Framework</h3><p>Java 的类型系统很差劲。它不能够区分正常的字符串和正则表达式字符串，更不用说<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Taint_checking">坏点检查在新窗口打开</a>了。不过 <a target="_blank" rel="noopener" href="http://types.cs.washington.edu/checker-framework/">Checker Framework在新窗口打开</a> 可以完成这个功能并且能够实现更多的东西。</p>
+<p>它使用像 <em>@Nullable</em> 这样的注解来检查类型。你甚至可以使用<a target="_blank" rel="noopener" href="http://types.cs.washington.edu/checker-framework/tutorial/webpages/encryption-checker-cmd.html">自定义注解在新窗口打开</a>来实现静态分析，甚至更强大的功能。</p>
+<h3 id="Code-Quality"><a href="#Code-Quality" class="headerlink" title="Code Quality"></a>Code Quality</h3><p>即使遵循着最佳实践的原则，即使是最好的开发者，也都会犯错误。这有很多工具，你可以使用它们验证你的代码从而检查代码是否有问题。下面是选出的最流行的一部分工具。很多这些工具都可以和流行的 IDE 如 Eclipse 或者 IntelliJ 集成，可以让你更快地发现代码中的错误。</p>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="http://checkstyle.sourceforge.net/" title="Checkstyle">Checkstyle在新窗口打开</a></strong>: 一个静态代码分析工具，它主要着力于保证你的代码符合代码标准。检查规则在一个 XML 文件中定义，你可以把它检入你的版本控制工具，和你的代码放在一起。</li>
+<li><strong><a target="_blank" rel="noopener" href="http://findbugs.sourceforge.net/" title="FindBugs">FindBugs在新窗口打开</a></strong>: 主要集中于发现你的代码中可能导致产生 bug 或者错误的部分。虽然作为独立的进程运行，但是对流行的 IDE 和构建工具的支持也很好。</li>
+<li><strong><a target="_blank" rel="noopener" href="https://pmd.github.io/" title="PMD">PMD在新窗口打开</a></strong>: 和 FindBugs 很相似，PMD 着力于发现你代码中的错误和整理的你的代码。你可以把针对你的代码的检查规则控制在 XML 文件中，和你的代码放在一块儿提交。</li>
+<li><strong><a target="_blank" rel="noopener" href="http://www.sonarqube.org/" title="SonarQube">SonarQube在新窗口打开</a></strong>: 和前面所述的工具不同，它是在本地运行的，SonarQube 启动一个服务器，你把你代码提交到这个服务器来进行分析。它提供了 web 界面，你可以看到你的代码的健康状况信息，如不好的做法，潜在的 bug，测试覆盖率百分比，和你写代码的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Technical_debt" title="Technical Debt on Wikipedia">技术水平在新窗口打开</a></li>
+</ul>
+<p>除了在开发工程中使用这些工具，把它们用在你的构建阶段往往也是一个不错的想法。它可以和想 Maven 或者 Gradle 这样的构建工具绑定到一起，也可以和持续集成工具绑定使用。</p>
+<h3 id="Eclipse-Memory-Analyzer"><a href="#Eclipse-Memory-Analyzer" class="headerlink" title="Eclipse Memory Analyzer"></a>Eclipse Memory Analyzer</h3><p>即使在 Java 中内存泄露也时有发生。幸运的是，我们有一些工具就是为此而生。<a target="_blank" rel="noopener" href="http://www.eclipse.org/mat/">Eclipse Memory Analyzer在新窗口打开</a> 是我用过的最好用的解决内存泄露问题的工具。它能够获取到堆栈信息让你查阅，去发现问题所在。</p>
+<p>有几种方法可以获取到 JVM 进程的堆栈信息，但是我用 <a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jmap.html">jmap在新窗口打开</a> 工具实现:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ jmap -dump:live,format=b,file=heapdump.hprof -F 8152</span><br><span class="line">Attaching to process ID 8152, please <span class="built_in">wait</span>...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 23.25-b01</span><br><span class="line">Dumping heap to heapdump.hprof ...</span><br><span class="line">... snip ...</span><br><span class="line">Heap dump file created</span><br></pre></td></tr></table></figure>
+
+<p>然后你可以用内存分析器打开 <em>heapdump.hprof</em> 文件，快看看到底是怎么回事。</p>
+<h2 id="Resources"><a href="#Resources" class="headerlink" title="Resources"></a>Resources</h2><p>这些资源能够帮你成为 Java 大牛。</p>
+<h3 id="Books"><a href="#Books" class="headerlink" title="Books"></a>Books</h3><ul>
+<li><a target="_blank" rel="noopener" href="http://www.amazon.com/Effective-Java-Edition-Joshua-Bloch/dp/0321356683">Effective Java在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.amazon.com/Java-Concurrency-Practice-Brian-Goetz/dp/0321349601">Java Concurrency in Practice在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882/">Clean Code在新窗口打开</a></li>
+</ul>
+<h3 id="Podcasts"><a href="#Podcasts" class="headerlink" title="Podcasts"></a>Podcasts</h3><ul>
+<li><a target="_blank" rel="noopener" href="http://www.javaposse.com/">The Java Posse在新窗口打开</a> (<em>discontinued</em>)</li>
+<li><a target="_blank" rel="noopener" href="http://virtualjug.com/">vJUG在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://lescastcodeurs.com/">Les Cast Codeurs在新窗口打开</a> (<em>French</em>)</li>
+<li><a target="_blank" rel="noopener" href="http://www.javapubhouse.com/">Java Pub House在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.javaoffheap.com/">Java Off Heap在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.enterprisejavanews.com/">Enterprise Java Newscast在新窗口打开</a></li>
+</ul>
+<h3 id="Videos"><a href="#Videos" class="headerlink" title="Videos"></a>Videos</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=V1vQf4qyMXg">Effective Java - Still Effective After All These Years在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.infoq.com/">InfoQ在新窗口打开</a> - see especially <a target="_blank" rel="noopener" href="http://www.infoq.com/java/presentations/">presentations在新窗口打开</a> and <a target="_blank" rel="noopener" href="http://www.infoq.com/java/interviews/">interviews在新窗口打开</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.parleys.com/">Parleys在新窗口打开</a></li>
+</ul>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2017 王云生
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
