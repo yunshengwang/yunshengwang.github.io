@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Java8CompletableFuture用法全解 | Mr.Wang Blog</title>
+  <meta name="keywords" content=" java , 多线程 ">
+  <meta name="description" content="Java8CompletableFuture用法全解 | Mr.Wang Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="目录   问题引入 解决方案 方式一： 硬核捕获 方式二： 动态代理 JDK 动态代理 spring 注入代理 工具类 CGlib 动态代理   方式三：Spring Aop实现 方式四：Spring 自带重试工具 方式五：Gavua 重试用法   总结  问题引入 现有一个接口，调用4次后才可已返回正常结果  12345678910111213141516171819public class R">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java接口重试的几种实现">
+<meta property="og:url" content="http://example.com/2023/01/23/Java%E6%8E%A5%E5%8F%A3%E9%87%8D%E8%AF%95%E7%9A%84%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Mr.Wang Blog">
+<meta property="og:description" content="目录   问题引入 解决方案 方式一： 硬核捕获 方式二： 动态代理 JDK 动态代理 spring 注入代理 工具类 CGlib 动态代理   方式三：Spring Aop实现 方式四：Spring 自带重试工具 方式五：Gavua 重试用法   总结  问题引入 现有一个接口，调用4次后才可已返回正常结果  12345678910111213141516171819public class R">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-23T05:36:59.000Z">
+<meta property="article:modified_time" content="2023-01-23T05:43:26.823Z">
+<meta property="article:author" content="王云生">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="retry">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>王云生</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="cnblogs"
+               href="https://home.cnblogs.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-cnblogs"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/a996358a335f"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/yun-sheng-10-62-26"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="csdn"
+               href="https://blog.csdn.net/u011593571?type=collect"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-csdn"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/u/4978723"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="juejin"
+               href="https://juejin.cn/user/2604099346111086"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-juejin"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:w_huilong@163.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(69)</small>
+            
+        </div>
+    </li>
+    
+        
+            
+                <li>
+                    <div data-rel="导读">
+                        
+                        导读
+                        <small>(1)</small>
+                        
+                    </div>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="JAVA">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        JAVA
+                        <small>(64)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA8特性">
+                                        
+                                        JAVA8特性
+                                        
+                                            <small>(2
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA8以上版本特性">
+                                        
+                                        JAVA8以上版本特性
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA多线程">
+                                        
+                                        JAVA多线程
+                                        
+                                            <small>(27
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA基础">
+                                        
+                                        JAVA基础
+                                        
+                                            <small>(8
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java集合框架">
+                                        
+                                        Java集合框架
+                                        
+                                            <small>(9
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java其他相关">
+                                        
+                                        Java其他相关
+                                        
+                                            <small>(2
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java重用技能">
+                                        
+                                        Java重用技能
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVAIO">
+                                        
+                                        JAVAIO
+                                        
+                                            <small>(13
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JVM相关">
+                                        
+                                        JVM相关
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="Spring">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        Spring
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringBoot2.5.X系列">
+                                        
+                                        SpringBoot2.5.X系列
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringFrameWork5基础">
+                                        
+                                        SpringFrameWork5基础
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->百宝箱">
+                                        
+                                        百宝箱
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="69">
+<input type="hidden" id="yelog_site_word_count" value="357k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>多线程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>aio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ArrayList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>bio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Collection</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>hexo</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>io</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java8</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java8+</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>jvm</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedHashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Map</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>nio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>PriorityQueue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Queue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>retry</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring boot</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Stack</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tool</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>WeakHashMap</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a id="top" class="全部文章 导读 "
+           href="/2022/12/11/%E5%AF%BC%E8%AF%BB/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="导读">导读</span>
+            <span class="post-date" title="2022-12-11 14:39:22">2022/12/11</span>
+        </a>
+        
+        
+        <a id="top" class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java重用技能 "
+           href="/2023/01/23/Java%E6%8E%A5%E5%8F%A3%E9%87%8D%E8%AF%95%E7%9A%84%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,retry"
+           data-author="" >
+            <span class="post-title" title="Java接口重试的几种实现">Java接口重试的几种实现</span>
+            <span class="post-date" title="2023-01-23 13:36:59">2023/01/23</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 百宝箱 "
+           href="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
+           data-tag="tool"
+           data-author="" >
+            <span class="post-title" title="开发百宝箱">开发百宝箱</span>
+            <span class="post-date" title="2022-12-11 14:35:47">2022/12/11</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8特性 "
+           href="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java8CompletableFuture用法全解">Java8CompletableFuture用法全解</span>
+            <span class="post-date" title="2022-12-11 13:31:35">2022/12/11</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java其他相关 "
+           href="/2022/12/10/Better-Java/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="Better_Java">Better_Java</span>
+            <span class="post-date" title="2022-12-10 23:26:09">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java其他相关 "
+           href="/2022/12/10/Awesome-Java/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="Awesome_Java">Awesome_Java</span>
+            <span class="post-date" title="2022-12-10 23:24:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JVM相关 "
+           href="/2022/12/10/JVM%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,jvm"
+           data-author="" >
+            <span class="post-title" title="JVM相关知识体系详解">JVM相关知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:23:42">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8以上版本特性 "
+           href="/2022/12/10/Java8%E4%BB%A5%E4%B8%8A%E7%89%88%E6%9C%AC%E7%89%B9%E6%80%A7%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,java8+"
+           data-author="" >
+            <span class="post-title" title="Java8以上版本特性知识体系详解">Java8以上版本特性知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:22:38">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8特性 "
+           href="/2022/12/10/Java8%E7%89%B9%E6%80%A7%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,java8"
+           data-author="" >
+            <span class="post-title" title="Java8特性知识体系详解">Java8特性知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:20:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_零拷贝实现">JavaNIO_零拷贝实现</span>
+            <span class="post-date" title="2022-12-10 23:17:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-Netty/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="JavaIO_Netty">JavaIO_Netty</span>
+            <span class="post-date" title="2022-12-10 23:16:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaAIO-%E5%BC%82%E6%AD%A5IO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,aio"
+           data-author="" >
+            <span class="post-title" title="JavaAIO_异步IO详解">JavaAIO_异步IO详解</span>
+            <span class="post-date" title="2022-12-10 23:15:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_IO多路复用详解">JavaNIO_IO多路复用详解</span>
+            <span class="post-date" title="2022-12-10 23:15:03">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E5%9F%BA%E7%A1%80%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_基础详解">JavaNIO_基础详解</span>
+            <span class="post-date" title="2022-12-10 23:13:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-BIO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,bio"
+           data-author="" >
+            <span class="post-title" title="JavaIO_BIO详解">JavaIO_BIO详解</span>
+            <span class="post-date" title="2022-12-10 23:13:00">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/IO%E6%A8%A1%E5%9E%8B-UnixIO%E6%A8%A1%E5%9E%8B/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="IO模型_UnixIO模型">IO模型_UnixIO模型</span>
+            <span class="post-date" title="2022-12-10 23:11:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%B8%B8%E8%A7%81%E7%B1%BB%E4%BD%BF%E7%94%A8/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="常见类使用">常见类使用</span>
+            <span class="post-date" title="2022-12-10 23:10:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-OutputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_OutputStream">源码_OutputStream</span>
+            <span class="post-date" title="2022-12-10 23:09:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-InputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_InputStream">源码_InputStream</span>
+            <span class="post-date" title="2022-12-10 23:08:23">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="设计模式_装饰者模式">设计模式_装饰者模式</span>
+            <span class="post-date" title="2022-12-10 23:06:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%88%86%E7%B1%BB-%E4%BC%A0%E8%BE%93-%E6%93%8D%E4%BD%9C/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="分类_传输_操作">分类_传输_操作</span>
+            <span class="post-date" title="2022-12-10 23:06:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/Java-IO%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="Java_IO知识体系详解">Java_IO知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:04:43">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="ThreadLocal详解">ThreadLocal详解</span>
+            <span class="post-date" title="2022-12-10 22:58:20">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Exchanger%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Exchanger详解">JUC工具类_Exchanger详解</span>
+            <span class="post-date" title="2022-12-10 22:57:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Phaser%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Phaser详解">JUC工具类_Phaser详解</span>
+            <span class="post-date" title="2022-12-10 22:56:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Semaphore详解">JUC工具类_Semaphore详解</span>
+            <span class="post-date" title="2022-12-10 22:56:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CyclicBarrier%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CyclicBarrier详解">JUC工具类_CyclicBarrier详解</span>
+            <span class="post-date" title="2022-12-10 22:55:21">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CountDownLatch详解">JUC工具类_CountDownLatch详解</span>
+            <span class="post-date" title="2022-12-10 22:54:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-Fork-Join%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_Fork_Join框架详解">JUC线程池_Fork_Join框架详解</span>
+            <span class="post-date" title="2022-12-10 22:53:19">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ScheduledThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ScheduledThreadPoolExecutor详解">JUC线程池_ScheduledThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:52:28">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ThreadPoolExecutor详解">JUC线程池_ThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:51:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-FutureTask%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_FutureTask详解">JUC线程池_FutureTask详解</span>
+            <span class="post-date" title="2022-12-10 22:50:52">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-BlockingQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_BlockingQueue详解">JUC集合_BlockingQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:50:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentLinkedQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentLinkedQueue详解">JUC集合_ConcurrentLinkedQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:49:05">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-CopyOnWriteArrayList%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_CopyOnWriteArrayList详解">JUC集合_CopyOnWriteArrayList详解</span>
+            <span class="post-date" title="2022-12-10 22:48:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentHashMap%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentHashMap详解">JUC集合_ConcurrentHashMap详解</span>
+            <span class="post-date" title="2022-12-10 22:47:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantReadWriteLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantReadWriteLock详解">JUC锁_ReentrantReadWriteLock详解</span>
+            <span class="post-date" title="2022-12-10 22:46:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantLock详解">JUC锁_ReentrantLock详解</span>
+            <span class="post-date" title="2022-12-10 22:45:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-%E9%94%81%E6%A0%B8%E5%BF%83%E7%B1%BBAQS%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_锁核心类AQS详解">JUC锁_锁核心类AQS详解</span>
+            <span class="post-date" title="2022-12-10 22:44:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-LockSupport%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_LockSupport详解">JUC锁_LockSupport详解</span>
+            <span class="post-date" title="2022-12-10 22:43:25">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-CAS-Unsafe%E5%92%8C%E5%8E%9F%E5%AD%90%E7%B1%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC原子类_CAS_Unsafe和原子类详解">JUC原子类_CAS_Unsafe和原子类详解</span>
+            <span class="post-date" title="2022-12-10 22:42:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%B1%BB%E6%B1%87%E6%80%BB%E5%92%8C%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC类汇总和学习指南">JUC类汇总和学习指南</span>
+            <span class="post-date" title="2022-12-10 22:41:01">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/final%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="final详解">final详解</span>
+            <span class="post-date" title="2022-12-10 22:39:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/volatile%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="volatile详解">volatile详解</span>
+            <span class="post-date" title="2022-12-10 22:39:02">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/synchronized%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="synchronized详解">synchronized详解</span>
+            <span class="post-date" title="2022-12-10 22:37:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="线程基础">线程基础</span>
+            <span class="post-date" title="2022-12-10 22:31:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="理论基础">理论基础</span>
+            <span class="post-date" title="2022-12-10 22:30:46">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/WeakHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,WeakHashMap"
+           data-author="" >
+            <span class="post-title" title="WeakHashMap源码解析">WeakHashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:26:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/TreeSet-TreeMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,TreeSet,TreeMap"
+           data-author="" >
+            <span class="post-title" title="TreeSet&amp;TreeMap源码解析">TreeSet&amp;TreeMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:25:45">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedHashSet-Map%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedHashSet,Map"
+           data-author="" >
+            <span class="post-title" title="LinkedHashSet&amp;Map源码解析">LinkedHashSet&amp;Map源码解析</span>
+            <span class="post-date" title="2022-12-10 22:24:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/HashSet-HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,HashSet,HashMap"
+           data-author="" >
+            <span class="post-title" title="HashSet&amp;HashMap源码解析">HashSet&amp;HashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:23:24">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/PriorityQueue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,PriorityQueue"
+           data-author="" >
+            <span class="post-title" title="PriorityQueue源码解析">PriorityQueue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:22:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Stack-Queue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Stack,Queue"
+           data-author="" >
+            <span class="post-title" title="Stack&amp;Queue源码解析">Stack&amp;Queue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:21:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedList"
+           data-author="" >
+            <span class="post-title" title="LinkedList源码解析">LinkedList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:19:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/ArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,ArrayList"
+           data-author="" >
+            <span class="post-title" title="ArrayList源码解析">ArrayList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:18:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringBoot2.5.X系列 "
+           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring,spring boot"
+           data-author="" >
+            <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:14:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringFrameWork5基础 "
+           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring"
+           data-author="" >
+            <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:10:47">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/"
+           data-tag="java,Collection"
+           data-author="" >
+            <span class="post-title" title="Collection类关系图">Collection类关系图</span>
+            <span class="post-date" title="2022-12-10 21:59:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/SPI%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="SPI机制详解">SPI机制详解</span>
+            <span class="post-date" title="2022-12-10 21:58:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="反射机制详解">反射机制详解</span>
+            <span class="post-date" title="2022-12-10 21:57:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%BC%82%E5%B8%B8%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="异常机制详解">异常机制详解</span>
+            <span class="post-date" title="2022-12-10 21:56:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="注解机制详解">注解机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="泛型机制详解">泛型机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%9B%BE%E8%B0%B1-Q-A/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="图谱&amp;Q/A">图谱&amp;Q/A</span>
+            <span class="post-date" title="2022-12-10 21:53:16">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E7%9F%A5%E8%AF%86%E7%82%B9/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="知识点">知识点</span>
+            <span class="post-date" title="2022-12-10 21:52:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="面向对象">面向对象</span>
+            <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁">Java并发 - Java中所有的锁</span>
+            <span class="post-date" title="2022-12-10 21:25:40">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 HEXO "
+           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           data-tag="hexo,tool"
+           data-author="" >
+            <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
+            <span class="post-date" title="2022-12-10 19:02:24">2022/12/10</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-Java8CompletableFuture用法全解" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Java8CompletableFuture用法全解</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="JAVA">JAVA</a> > 
+            
+            <a  data-rel="JAVA&lt;---&gt;JAVA8特性">JAVA8特性</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">java</a>
+            
+            <a class="color4">多线程</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-11 13:32:29'>2022-12-11 13:31</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:5.8k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9B%E5%BB%BA%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1"><span class="toc-text">一、创建异步任务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81Future-submit"><span class="toc-text">1、Future.submit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81supplyAsync-x2F-runAsync"><span class="toc-text">2、supplyAsync &#x2F; runAsync</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83"><span class="toc-text">二、异步回调</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81thenApply-x2F-thenApplyAsync"><span class="toc-text">1、thenApply &#x2F; thenApplyAsync</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81thenAccept-x2F-thenRun"><span class="toc-text">2、thenAccept &#x2F; thenRun</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81-exceptionally"><span class="toc-text">3、 exceptionally</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81whenComplete"><span class="toc-text">4、whenComplete</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81handle"><span class="toc-text">5、handle</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E7%BB%84%E5%90%88%E5%A4%84%E7%90%86"><span class="toc-text">三、组合处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81thenCombine-x2F-thenAcceptBoth-x2F-runAfterBoth"><span class="toc-text">1、thenCombine &#x2F; thenAcceptBoth &#x2F; runAfterBoth</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81applyToEither-x2F-acceptEither-x2F-runAfterEither"><span class="toc-text">2、applyToEither &#x2F; acceptEither &#x2F; runAfterEither</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81thenCompose"><span class="toc-text">3、thenCompose</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81allOf-x2F-anyOf"><span class="toc-text">4、allOf &#x2F; anyOf</span></a></li></ol></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>  <strong>目录</strong></p>
+<p><a href="#%E4%B8%80%E3%80%81%E5%88%9B%E5%BB%BA%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1">一、创建异步任务</a></p>
+<p><a href="#1%E3%80%81Future.submit">1、Future.submit</a></p>
+<p><a href="#2%E3%80%81supplyAsync%20/%C2%A0runAsync">2、supplyAsync &#x2F; runAsync</a></p>
+<p><a href="#%E4%BA%8C%E3%80%81%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83">二、异步回调</a></p>
+<p><a href="#1%E3%80%81thenApply%20/%C2%A0thenApplyAsync">1、thenApply &#x2F; thenApplyAsync</a></p>
+<p><a href="#2%E3%80%81thenAccept%20/%C2%A0thenRun">2、thenAccept &#x2F; thenRun</a></p>
+<p><a href="#3%E3%80%81%C2%A0exceptionally">3、 exceptionally</a></p>
+<p><a href="#4%E3%80%81whenComplete">4、whenComplete</a></p>
+<p><a href="#5%E3%80%81handle">5、handle</a></p>
+<p><a href="#%E4%B8%89%E3%80%81%E7%BB%84%E5%90%88%E5%A4%84%E7%90%86">三、组合处理</a></p>
+<p><a href="#1%E3%80%81thenCombine%20/%C2%A0thenAcceptBoth%20/%C2%A0runAfterBoth">1、thenCombine &#x2F; thenAcceptBoth &#x2F; runAfterBoth</a></p>
+<p><a href="#2%E3%80%81applyToEither%20/%C2%A0acceptEither%20/%C2%A0runAfterEither">2、applyToEither &#x2F; acceptEither &#x2F; runAfterEither</a></p>
+<p><a href="#3%E3%80%81thenCompose">3、thenCompose</a></p>
+<p><a href="#4%E3%80%81allOf%20/%C2%A0anyOf">4、allOf &#x2F; anyOf</a></p>
+<hr>
+<pre><code> CompletableFuture实现了CompletionStage接口和Future接口，前者是对后者的一个扩展，增加了异步回调、流式处理、多个Future组合处理的能力，使Java在处理多任务的协同工作时更加顺畅便利。
+</code></pre>
+<h2 id="一、创建异步任务"><a href="#一、创建异步任务" class="headerlink" title="一、创建异步任务"></a>一、创建异步任务</h2><h3 id="1、Future-submit"><a href="#1、Future-submit" class="headerlink" title="1、Future.submit"></a>1、Future.submit</h3><pre><code> 通常的线程池接口类ExecutorService，其中execute方法的返回值是void，即无法获取异步任务的执行状态，3个重载的submit方法的返回值是Future，可以据此获取任务执行的状态和结果，示例如下：
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test3</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">    ExecutorService executorService= Executors.newSingleThreadExecutor();</span><br><span class="line">    Future&lt;Double&gt; cf = executorService.submit(()-&gt;&#123;</span><br><span class="line">        System.out.println(Thread.currentThread()+<span class="string">&quot; start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(<span class="literal">false</span>)&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    System.out.println(<span class="string">&quot;main thread start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    <span class="comment">//等待子任务执行完成,如果已完成则直接返回结果</span></span><br><span class="line">    <span class="comment">//如果执行任务异常，则get方法会把之前捕获的异常重新抛出</span></span><br><span class="line">    System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf.get());</span><br><span class="line">    System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70.png"></p>
+<p>子线程是异步执行的，主线程休眠等待子线程执行完成，子线程执行完成后唤醒主线程，主线程获取任务执行结果后退出。</p>
+<p>很多博客说使用不带等待时间限制的get方法时，如果子线程执行异常了会导致主线程长期阻塞，这其实是错误的，子线程执行异常时其异常会被捕获，然后修改任务的状态为异常结束并唤醒等待的主线程，get方法判断任务状态发生变更，就终止等待了，并抛出异常，可参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_31865983/article/details/105668586">《Java8 AbstractExecutorService 和 FutureTask 源码解析》</a>中FutureTask的实现。将上述用例中if(false)改成if(true) ，执行结果如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734610-758.png"></p>
+<p>get方法抛出异常导致主线程异常终止。 </p>
+<h3 id="2、supplyAsync-x2F-runAsync"><a href="#2、supplyAsync-x2F-runAsync" class="headerlink" title="2、supplyAsync &#x2F; runAsync"></a>2、supplyAsync &#x2F; runAsync</h3><pre><code> supplyAsync表示创建带返回值的异步任务的，相当于ExecutorService submit(Callable&lt;T&gt; task) 方法，runAsync表示创建无返回值的异步任务，相当于ExecutorService submit(Runnable task)方法，这两方法的效果跟submit是一样的，测试用例如下：
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@Test</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test2</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">     <span class="comment">// 创建异步执行任务，有返回值</span></span><br><span class="line">     CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">         System.out.println(Thread.currentThread()+<span class="string">&quot; start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">             Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">         &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">if</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">             <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">         &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">             System.out.println(Thread.currentThread()+<span class="string">&quot; exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">             <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;);</span><br><span class="line">     System.out.println(<span class="string">&quot;main thread start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">     <span class="comment">//等待子任务执行完成</span></span><br><span class="line">     System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf.get());</span><br><span class="line">     System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test4</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">     <span class="comment">// 创建异步执行任务，无返回值</span></span><br><span class="line">     <span class="type">CompletableFuture</span> <span class="variable">cf</span> <span class="operator">=</span> CompletableFuture.runAsync(()-&gt;&#123;</span><br><span class="line">         System.out.println(Thread.currentThread()+<span class="string">&quot; start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">             Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">         &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">if</span>(<span class="literal">false</span>)&#123;</span><br><span class="line">             <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">         &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">             System.out.println(Thread.currentThread()+<span class="string">&quot; exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;);</span><br><span class="line">     System.out.println(<span class="string">&quot;main thread start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">     <span class="comment">//等待子任务执行完成</span></span><br><span class="line">     System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf.get());</span><br><span class="line">     System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p> 这两方法各有一个重载版本，可以指定执行异步任务的Executor实现，如果不指定，默认使用ForkJoinPool.commonPool()，如果机器是单核的，则默认使用ThreadPerTaskExecutor，该类是一个内部类，每次执行execute都会创建一个新线程。测试用例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">   <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test2</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        ForkJoinPool pool=<span class="keyword">new</span> <span class="title class_">ForkJoinPool</span>();</span><br><span class="line">        <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                System.out.println(Thread.currentThread()+<span class="string">&quot; exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,pool);</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="comment">//等待子任务执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test4</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        ExecutorService executorService= Executors.newSingleThreadExecutor();</span><br><span class="line">        <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">        <span class="type">CompletableFuture</span> <span class="variable">cf</span> <span class="operator">=</span> CompletableFuture.runAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(<span class="literal">false</span>)&#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                System.out.println(Thread.currentThread()+<span class="string">&quot; exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,executorService);</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="comment">//等待子任务执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、异步回调"><a href="#二、异步回调" class="headerlink" title="二、异步回调"></a>二、异步回调</h2><h3 id="1、thenApply-x2F-thenApplyAsync"><a href="#1、thenApply-x2F-thenApplyAsync" class="headerlink" title="1、thenApply &#x2F; thenApplyAsync"></a>1、thenApply &#x2F; thenApplyAsync</h3><pre><code> thenApply 表示某个任务执行完成后执行的动作，即回调方法，会将该任务的执行结果即方法返回值作为入参传递到回调方法中，测试用例如下：
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test5</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        ForkJoinPool pool=<span class="keyword">new</span> <span class="title class_">ForkJoinPool</span>();</span><br><span class="line">        <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">        &#125;,pool);</span><br><span class="line">        <span class="comment">//cf关联的异步任务的返回值作为方法入参，传入到thenApply的方法中</span></span><br><span class="line">        <span class="comment">//thenApply这里实际创建了一个新的CompletableFuture实例</span></span><br><span class="line">        CompletableFuture&lt;String&gt; cf2=cf.thenApply((result)-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;test:&quot;</span>+result;</span><br><span class="line">        &#125;);</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start cf.get(),time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="comment">//等待子任务执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start cf2.get(),time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf2.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p> 其执行结果如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734610-759.png"></p>
+<p>job1执行结束后，将job1的方法返回值作为入参传递到job2中并立即执行job2。thenApplyAsync与thenApply的区别在于，前者是将job2提交到线程池中异步执行，实际执行job2的线程可能是另外一个线程，后者是由执行job1的线程立即执行job2，即两个job都是同一个线程执行的。将上述测试用例中thenApply改成thenApplyAsync后，执行结果如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734610-760.png"></p>
+<p>从输出可知，执行job1和job2是两个不同的线程。thenApplyAsync有一个重载版本，可以指定执行异步任务的Executor实现，如果不指定，默认使用ForkJoinPool.commonPool()。 下述的多个方法，每个方法都有两个以Async结尾的方法，一个使用默认的Executor实现，一个使用指定的Executor实现，不带Async的方法是由触发该任务的线程执行该任务，带Async的方法是由触发该任务的线程将任务提交到线程池，执行任务的线程跟触发任务的线程不一定是同一个。</p>
+<h3 id="2、thenAccept-x2F-thenRun"><a href="#2、thenAccept-x2F-thenRun" class="headerlink" title="2、thenAccept &#x2F; thenRun"></a>2、thenAccept &#x2F; thenRun</h3><pre><code>thenAccept 同 thenApply 接收上一个任务的返回值作为参数，但是无返回值；thenRun 的方法没有入参，也买有返回值，测试用例如下：
+</code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">@<span class="function">Test</span></span><br><span class="line"><span class="function">    <span class="keyword">public</span> <span class="type">void</span> <span class="title">test6</span><span class="params">()</span> throws Exception </span>&#123;</span><br><span class="line">        ForkJoinPool pool=<span class="keyword">new</span> <span class="built_in">ForkJoinPool</span>();</span><br><span class="line">        <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf = CompletableFuture.<span class="built_in">supplyAsync</span>(()-&gt;&#123;</span><br><span class="line">            System.out.<span class="built_in">println</span>(Thread.<span class="built_in">currentThread</span>()+<span class="string">&quot; start job1,time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.<span class="built_in">sleep</span>(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="built_in">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.<span class="built_in">println</span>(Thread.<span class="built_in">currentThread</span>()+<span class="string">&quot; exit job1,time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">        &#125;,pool);</span><br><span class="line">        <span class="comment">//cf关联的异步任务的返回值作为方法入参，传入到thenApply的方法中</span></span><br><span class="line">        CompletableFuture cf2=cf.<span class="built_in">thenApply</span>((result)-&gt;&#123;</span><br><span class="line">            System.out.<span class="built_in">println</span>(Thread.<span class="built_in">currentThread</span>()+<span class="string">&quot; start job2,time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.<span class="built_in">sleep</span>(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="built_in">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.<span class="built_in">println</span>(Thread.<span class="built_in">currentThread</span>()+<span class="string">&quot; exit job2,time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;test:&quot;</span>+result;</span><br><span class="line">        &#125;).<span class="built_in">thenAccept</span>((result)-&gt; &#123; <span class="comment">//接收上一个任务的执行结果作为入参，但是没有返回值</span></span><br><span class="line">            System.out.<span class="built_in">println</span>(Thread.<span class="built_in">currentThread</span>()+<span class="string">&quot; start job3,time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.<span class="built_in">sleep</span>(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="built_in">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.<span class="built_in">println</span>(result);</span><br><span class="line">            System.out.<span class="built_in">println</span>(Thread.<span class="built_in">currentThread</span>()+<span class="string">&quot; exit job3,time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">        &#125;).<span class="built_in">thenRun</span>(()-&gt;&#123; <span class="comment">//无入参，也没有返回值</span></span><br><span class="line">            System.out.<span class="built_in">println</span>(Thread.<span class="built_in">currentThread</span>()+<span class="string">&quot; start job4,time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.<span class="built_in">sleep</span>(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="built_in">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.<span class="built_in">println</span>(<span class="string">&quot;thenRun do something&quot;</span>);</span><br><span class="line">            System.out.<span class="built_in">println</span>(Thread.<span class="built_in">currentThread</span>()+<span class="string">&quot; exit job4,time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">        &#125;);</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">&quot;main thread start cf.get(),time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">        <span class="comment">//等待子任务执行完成</span></span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">&quot;run result-&gt;&quot;</span>+cf.<span class="built_in">get</span>());</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">&quot;main thread start cf2.get(),time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">        <span class="comment">//cf2 等待最后一个thenRun执行完成</span></span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">&quot;run result-&gt;&quot;</span>+cf2.<span class="built_in">get</span>());</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.<span class="built_in">currentTimeMillis</span>());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>其执行结果如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734610-761.png"></p>
+<h3 id="3、-exceptionally"><a href="#3、-exceptionally" class="headerlink" title="3、 exceptionally"></a>3、 exceptionally</h3><pre><code>  exceptionally方法指定某个任务执行异常时执行的回调方法，会将抛出异常作为参数传递到回调方法中，如果该任务正常执行则会exceptionally方法返回的CompletionStage的result就是该任务正常执行的结果，测试用例如下：
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test2</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        ForkJoinPool pool=<span class="keyword">new</span> <span class="title class_">ForkJoinPool</span>();</span><br><span class="line">        <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot;job1 start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                System.out.println(Thread.currentThread()+<span class="string">&quot;job1 exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,pool);</span><br><span class="line">        <span class="comment">//cf执行异常时，将抛出的异常作为入参传递给回调方法</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf2= cf.exceptionally((param)-&gt;&#123;</span><br><span class="line">             System.out.println(Thread.currentThread()+<span class="string">&quot; start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;error stack trace-&gt;&quot;</span>);</span><br><span class="line">            param.printStackTrace();</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">             <span class="keyword">return</span> -<span class="number">1.1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//cf正常执行时执行的逻辑，如果执行异常则不调用此逻辑</span></span><br><span class="line">        CompletableFuture cf3=cf.thenAccept((param)-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot;job2 start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;param-&gt;&quot;</span>+param);</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot;job2 exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        &#125;);</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="comment">//等待子任务执行完成,此处无论是job2和job3都可以实现job2退出，主线程才退出，如果是cf，则主线程不会等待job2执行完成自动退出了</span></span><br><span class="line">        <span class="comment">//cf2.get时，没有异常，但是依然有返回值，就是cf的返回值</span></span><br><span class="line">        System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf2.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>其输出如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734610-762.png"></p>
+<p>抛出异常后，只有cf2执行了，cf3没有执行。将上述示例中的if(true) 改成if(false)，其输出如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734610-763.png"></p>
+<p>cf2没有指定，其result就是cf执行的结果，理论上cf2.get应该立即返回的，此处是等待了cf3，即job2执行完成后才返回，具体原因且待下篇源码分析时再做探讨。 </p>
+<h3 id="4、whenComplete"><a href="#4、whenComplete" class="headerlink" title="4、whenComplete"></a>4、whenComplete</h3><pre><code>  whenComplete是当某个任务执行完成后执行的回调方法，会将执行结果或者执行期间抛出的异常传递给回调方法，如果是正常执行则异常为null，回调方法对应的CompletableFuture的result和该任务一致，如果该任务正常执行，则get方法返回执行结果，如果是执行异常，则get方法抛出异常。测试用例如下：
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test10</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot;job1 start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(<span class="literal">false</span>)&#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                System.out.println(Thread.currentThread()+<span class="string">&quot;job1 exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//cf执行完成后会将执行结果和执行过程中抛出的异常传入回调方法，如果是正常执行的则传入的异常为null</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf2=cf.whenComplete((a,b)-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot;job2 start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(b!=<span class="literal">null</span>)&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;error stack trace-&gt;&quot;</span>);</span><br><span class="line">                b.printStackTrace();</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;run succ,result-&gt;&quot;</span>+a);</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot;job2 exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//等待子任务执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start wait,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="comment">//如果cf是正常执行的，cf2.get的结果就是cf执行的结果</span></span><br><span class="line">        <span class="comment">//如果cf是执行异常，则cf2.get会抛出异常</span></span><br><span class="line">        System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf2.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734610-764.png"></p>
+<p> 将上述示例中的if(false) 改成if(true)，其输出如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734611-765.png"></p>
+<h3 id="5、handle"><a href="#5、handle" class="headerlink" title="5、handle"></a>5、handle</h3><pre><code> 跟whenComplete基本一致，区别在于handle的回调方法有返回值，且handle方法返回的CompletableFuture的result是回调方法的执行结果或者回调方法执行期间抛出的异常，与原始CompletableFuture的result无关了。测试用例如下：
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test10</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">       <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">       CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">           System.out.println(Thread.currentThread()+<span class="string">&quot;job1 start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">           <span class="keyword">try</span> &#123;</span><br><span class="line">               Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">           &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="keyword">if</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">           &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">               System.out.println(Thread.currentThread()+<span class="string">&quot;job1 exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">               <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line">       <span class="comment">//cf执行完成后会将执行结果和执行过程中抛出的异常传入回调方法，如果是正常执行的则传入的异常为null</span></span><br><span class="line">       CompletableFuture&lt;String&gt; cf2=cf.handle((a,b)-&gt;&#123;</span><br><span class="line">           System.out.println(Thread.currentThread()+<span class="string">&quot;job2 start,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">           <span class="keyword">try</span> &#123;</span><br><span class="line">               Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">           &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="keyword">if</span>(b!=<span class="literal">null</span>)&#123;</span><br><span class="line">               System.out.println(<span class="string">&quot;error stack trace-&gt;&quot;</span>);</span><br><span class="line">               b.printStackTrace();</span><br><span class="line">           &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">               System.out.println(<span class="string">&quot;run succ,result-&gt;&quot;</span>+a);</span><br><span class="line">           &#125;</span><br><span class="line">           System.out.println(Thread.currentThread()+<span class="string">&quot;job2 exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">           <span class="keyword">if</span>(b!=<span class="literal">null</span>)&#123;</span><br><span class="line">               <span class="keyword">return</span> <span class="string">&quot;run error&quot;</span>;</span><br><span class="line">           &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">               <span class="keyword">return</span> <span class="string">&quot;run succ&quot;</span>;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line">       <span class="comment">//等待子任务执行完成</span></span><br><span class="line">       System.out.println(<span class="string">&quot;main thread start wait,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">       <span class="comment">//get的结果是cf2的返回值，跟cf没关系了</span></span><br><span class="line">       System.out.println(<span class="string">&quot;run result-&gt;&quot;</span>+cf2.get());</span><br><span class="line">       System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p> 其执行结果如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734611-766.png"></p>
+<p>将上述示例中的if(true) 改成if(false)，其输出如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734611-767.png"></p>
+<h2 id="三、组合处理"><a href="#三、组合处理" class="headerlink" title="三、组合处理"></a>三、组合处理</h2><h3 id="1、thenCombine-x2F-thenAcceptBoth-x2F-runAfterBoth"><a href="#1、thenCombine-x2F-thenAcceptBoth-x2F-runAfterBoth" class="headerlink" title="1、thenCombine &#x2F; thenAcceptBoth &#x2F; runAfterBoth"></a>1、thenCombine &#x2F; thenAcceptBoth &#x2F; runAfterBoth</h3><pre><code>   这三个方法都是将两个CompletableFuture组合起来，只有这两个都正常执行完了才会执行某个任务，区别在于，thenCombine会将两个任务的执行结果作为方法入参传递到指定方法中，且该方法有返回值；thenAcceptBoth同样将两个任务的执行结果作为方法入参，但是无返回值；runAfterBoth没有入参，也没有返回值。注意两个任务中只要有一个执行异常，则将该异常信息作为指定任务的执行结果。测试用例如下：
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test7</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        ForkJoinPool pool=<span class="keyword">new</span> <span class="title class_">ForkJoinPool</span>();</span><br><span class="line">        <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        CompletableFuture&lt;Double&gt; cf2 = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1500</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">3.2</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//cf和cf2的异步任务都执行完成后，会将其执行结果作为方法入参传递给cf3,且有返回值</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf3=cf.thenCombine(cf2,(a,b)-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job3,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            System.out.println(<span class="string">&quot;job3 param a-&gt;&quot;</span>+a+<span class="string">&quot;,b-&gt;&quot;</span>+b);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job3,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> a+b;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//cf和cf2的异步任务都执行完成后，会将其执行结果作为方法入参传递给cf3,无返回值</span></span><br><span class="line">        CompletableFuture cf4=cf.thenAcceptBoth(cf2,(a,b)-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job4,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            System.out.println(<span class="string">&quot;job4 param a-&gt;&quot;</span>+a+<span class="string">&quot;,b-&gt;&quot;</span>+b);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1500</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job4,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//cf4和cf3都执行完成后，执行cf5，无入参，无返回值</span></span><br><span class="line">        CompletableFuture cf5=cf4.runAfterBoth(cf3,()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job5,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;cf5 do something&quot;</span>);</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job5,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start cf.get(),time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="comment">//等待子任务执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;cf run result-&gt;&quot;</span>+cf.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start cf5.get(),time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        System.out.println(<span class="string">&quot;cf5 run result-&gt;&quot;</span>+cf5.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p> 其运行结果如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734611-768.png"></p>
+<p>job1 和 job2几乎同时运行，job2比job1先执行完成，等job1退出后，job3和job4几乎同时开始运行，job4先退出，等job3执行完成，job5开始了，等job5执行完成后，主线程退出。</p>
+<h3 id="2、applyToEither-x2F-acceptEither-x2F-runAfterEither"><a href="#2、applyToEither-x2F-acceptEither-x2F-runAfterEither" class="headerlink" title="2、applyToEither &#x2F; acceptEither &#x2F; runAfterEither"></a>2、applyToEither &#x2F; acceptEither &#x2F; runAfterEither</h3><pre><code> 这三个方法都是将两个CompletableFuture组合起来，只要其中一个执行完了就会执行某个任务，其区别在于applyToEither会将已经执行完成的任务的执行结果作为方法入参，并有返回值；acceptEither同样将已经执行完成的任务的执行结果作为方法入参，但是没有返回值；runAfterEither没有方法入参，也没有返回值。注意两个任务中只要有一个执行异常，则将该异常信息作为指定任务的执行结果。测试用例如下：
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test8</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        CompletableFuture&lt;Double&gt; cf2 = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1500</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">3.2</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//cf和cf2的异步任务都执行完成后，会将其执行结果作为方法入参传递给cf3,且有返回值</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf3=cf.applyToEither(cf2,(result)-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job3,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            System.out.println(<span class="string">&quot;job3 param result-&gt;&quot;</span>+result);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job3,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//cf和cf2的异步任务都执行完成后，会将其执行结果作为方法入参传递给cf3,无返回值</span></span><br><span class="line">        CompletableFuture cf4=cf.acceptEither(cf2,(result)-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job4,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            System.out.println(<span class="string">&quot;job4 param result-&gt;&quot;</span>+result);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1500</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job4,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//cf4和cf3都执行完成后，执行cf5，无入参，无返回值</span></span><br><span class="line">        CompletableFuture cf5=cf4.runAfterEither(cf3,()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job5,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;cf5 do something&quot;</span>);</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job5,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start cf.get(),time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="comment">//等待子任务执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;cf run result-&gt;&quot;</span>+cf.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start cf5.get(),time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        System.out.println(<span class="string">&quot;cf5 run result-&gt;&quot;</span>+cf5.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p> 其运行结果如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734611-769.png"></p>
+<p>job1 和job2 同时开始运行，job2先执行完成，然后job4开始执行，理论上job3和job4应该同时开始运行，但是此时只有job4开始执行了，job3是等待job1执行完成后才开始执行，job4先于job3执行完成，然后job5开始执行，等job5执行完成后，主线程退出。上述差异且到下篇源码分析时再做探讨。</p>
+<h3 id="3、thenCompose"><a href="#3、thenCompose" class="headerlink" title="3、thenCompose"></a>3、thenCompose</h3><pre><code> thenCompose方法会在某个任务执行完成后，将该任务的执行结果作为方法入参然后执行指定的方法，该方法会返回一个新的CompletableFuture实例，如果该CompletableFuture实例的result不为null，则返回一个基于该result的新的CompletableFuture实例；如果该CompletableFuture实例为null，则，然后执行这个新任务，测试用例如下：
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test9</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">    CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">        System.out.println(Thread.currentThread()+<span class="string">&quot; start job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(Thread.currentThread()+<span class="string">&quot; exit job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">    CompletableFuture&lt;String&gt; cf2= cf.thenCompose((param)-&gt;&#123;</span><br><span class="line">        System.out.println(Thread.currentThread()+<span class="string">&quot; start job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(Thread.currentThread()+<span class="string">&quot; exit job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="keyword">return</span> CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job3,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job3,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;job3 test&quot;</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">    System.out.println(<span class="string">&quot;main thread start cf.get(),time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    <span class="comment">//等待子任务执行完成</span></span><br><span class="line">    System.out.println(<span class="string">&quot;cf run result-&gt;&quot;</span>+cf.get());</span><br><span class="line">    System.out.println(<span class="string">&quot;main thread start cf2.get(),time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    System.out.println(<span class="string">&quot;cf2 run result-&gt;&quot;</span>+cf2.get());</span><br><span class="line">    System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其输出如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734611-770.png"></p>
+<p>job1执行完成后job2开始执行，等job2执行完成后会把job3返回，然后执行job3，等job3执行完成后，主线程退出。</p>
+<h3 id="4、allOf-x2F-anyOf"><a href="#4、allOf-x2F-anyOf" class="headerlink" title="4、allOf &#x2F; anyOf"></a>4、allOf &#x2F; anyOf</h3><pre><code>  allOf返回的CompletableFuture是多个任务都执行完成后才会执行，只有有一个任务执行异常，则返回的CompletableFuture执行get方法时会抛出异常，如果都是正常执行，则get返回null。
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test11</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 创建异步执行任务:</span></span><br><span class="line">        CompletableFuture&lt;Double&gt; cf = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job1,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1.2</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        CompletableFuture&lt;Double&gt; cf2 = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1500</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job2,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">3.2</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        CompletableFuture&lt;Double&gt; cf3 = CompletableFuture.supplyAsync(()-&gt;&#123;</span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; start job3,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1300</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line"><span class="comment">//            throw new RuntimeException(&quot;test&quot;);</span></span><br><span class="line">            System.out.println(Thread.currentThread()+<span class="string">&quot; exit job3,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">2.2</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//allof等待所有任务执行完成才执行cf4，如果有一个任务异常终止，则cf4.get时会抛出异常，都是正常执行，cf4.get返回null</span></span><br><span class="line">        <span class="comment">//anyOf是只有一个任务执行完成，无论是正常执行或者执行异常，都会执行cf4，cf4.get的结果就是已执行完成的任务的执行结果</span></span><br><span class="line">        CompletableFuture cf4=CompletableFuture.allOf(cf,cf2,cf3).whenComplete((a,b)-&gt;&#123;</span><br><span class="line">           <span class="keyword">if</span>(b!=<span class="literal">null</span>)&#123;</span><br><span class="line">               System.out.println(<span class="string">&quot;error stack trace-&gt;&quot;</span>);</span><br><span class="line">               b.printStackTrace();</span><br><span class="line">           &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">               System.out.println(<span class="string">&quot;run succ,result-&gt;&quot;</span>+a);</span><br><span class="line">           &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;main thread start cf4.get(),time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">        <span class="comment">//等待子任务执行完成</span></span><br><span class="line">        System.out.println(<span class="string">&quot;cf4 run result-&gt;&quot;</span>+cf4.get());</span><br><span class="line">        System.out.println(<span class="string">&quot;main thread exit,time-&gt;&quot;</span>+System.currentTimeMillis());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p> 其输出如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734611-771.png"></p>
+<p> 主线程等待最后一个job1执行完成后退出。anyOf返回的CompletableFuture是多个任务只要其中一个执行完成就会执行，其get返回的是已经执行完成的任务的执行结果，如果该任务执行异常，则抛出异常。将上述测试用例中allOf改成anyOf后，其输出如下：</p>
+<p><img src="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMxODY1OTgz,size_16,color_FFFFFF,t_70-1670736734611-772.png"></p>
+
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2017 王云生
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

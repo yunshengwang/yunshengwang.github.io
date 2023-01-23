@@ -6,17 +6,18 @@
   <meta name="keywords" content=" java , 多线程 ">
   <meta name="description" content="JUC原子类_CAS_Unsafe和原子类详解 | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="Better Java 这不是一本书，国外一个小哥总结的better java 的工具和实践参考。他的博客在新窗口打开. @pdai  目录 Better Java 目录 Style Structs The Builder Pattern Immutable Object Generation   Exceptions Dependency injection Avoid Nulls Immuta">
+<meta name="description" content="目录   问题引入 解决方案 方式一： 硬核捕获 方式二： 动态代理 JDK 动态代理 spring 注入代理 工具类 CGlib 动态代理   方式三：Spring Aop实现 方式四：Spring 自带重试工具 方式五：Gavua 重试用法   总结  问题引入 现有一个接口，调用4次后才可已返回正常结果  12345678910111213141516171819public class R">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Better_Java">
-<meta property="og:url" content="http://example.com/2022/12/10/Better-Java/index.html">
+<meta property="og:title" content="Java接口重试的几种实现">
+<meta property="og:url" content="http://example.com/2023/01/23/Java%E6%8E%A5%E5%8F%A3%E9%87%8D%E8%AF%95%E7%9A%84%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="Mr.Wang Blog">
-<meta property="og:description" content="Better Java 这不是一本书，国外一个小哥总结的better java 的工具和实践参考。他的博客在新窗口打开. @pdai  目录 Better Java 目录 Style Structs The Builder Pattern Immutable Object Generation   Exceptions Dependency injection Avoid Nulls Immuta">
+<meta property="og:description" content="目录   问题引入 解决方案 方式一： 硬核捕获 方式二： 动态代理 JDK 动态代理 spring 注入代理 工具类 CGlib 动态代理   方式三：Spring Aop实现 方式四：Spring 自带重试工具 方式五：Gavua 重试用法   总结  问题引入 现有一个接口，调用4次后才可已返回正常结果  12345678910111213141516171819public class R">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-12-10T15:26:09.000Z">
-<meta property="article:modified_time" content="2022-12-10T15:26:29.096Z">
+<meta property="article:published_time" content="2023-01-23T05:36:59.000Z">
+<meta property="article:modified_time" content="2023-01-23T05:43:26.823Z">
 <meta property="article:author" content="王云生">
 <meta property="article:tag" content="java">
+<meta property="article:tag" content="retry">
 <meta name="twitter:card" content="summary">
 
 
@@ -163,7 +164,7 @@
     <li>
         <div class="all active" data-rel="全部文章">全部文章
             
-                <small>(65)</small>
+                <small>(69)</small>
             
         </div>
     </li>
@@ -171,29 +172,12 @@
         
             
                 <li>
-                    <div data-rel="工具">
-                        <i class="fold iconfont icon-right"></i>
+                    <div data-rel="导读">
                         
-                        工具
+                        导读
                         <small>(1)</small>
                         
                     </div>
-                    
-                        <ul class="sub hide">
-                            
-                                <li>
-                                    <div data-rel="工具<--->HEXO">
-                                        
-                                        HEXO
-                                        
-                                            <small>(1
-                                                )</small>
-                                        
-                                    </div>
-                                    
-                                </li>
-                            
-                        </ul>
                     
                 </li>
             
@@ -206,7 +190,7 @@
                         <i class="fold iconfont icon-right"></i>
                         
                         JAVA
-                        <small>(62)</small>
+                        <small>(64)</small>
                         
                     </div>
                     
@@ -217,7 +201,7 @@
                                         
                                         JAVA8特性
                                         
-                                            <small>(1
+                                            <small>(2
                                                 )</small>
                                         
                                     </div>
@@ -285,6 +269,18 @@
                                 </li>
                             
                                 <li>
+                                    <div data-rel="JAVA<--->Java重用技能">
+                                        
+                                        Java重用技能
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
                                     <div data-rel="JAVA<--->JAVAIO">
                                         
                                         JAVAIO
@@ -311,42 +307,6 @@
                         </ul>
                     
                 </li>
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
             
         
     
@@ -395,6 +355,93 @@
     
         
             
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->百宝箱">
+                                        
+                                        百宝箱
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
         
     
         
@@ -414,8 +461,8 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="65">
-<input type="hidden" id="yelog_site_word_count" value="297.3k">
+<input type="hidden" id="yelog_site_posts_number" value="69">
+<input type="hidden" id="yelog_site_word_count" value="357k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -537,6 +584,10 @@
             </li>
         
             <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>retry</a>
+            </li>
+        
+            <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>spring</a>
             </li>
         
@@ -570,6 +621,51 @@
 
     
     <nav id="title-list-nav">
+        
+        
+        <a id="top" class="全部文章 导读 "
+           href="/2022/12/11/%E5%AF%BC%E8%AF%BB/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="导读">导读</span>
+            <span class="post-date" title="2022-12-11 14:39:22">2022/12/11</span>
+        </a>
+        
+        
+        <a id="top" class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java重用技能 "
+           href="/2023/01/23/Java%E6%8E%A5%E5%8F%A3%E9%87%8D%E8%AF%95%E7%9A%84%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,retry"
+           data-author="" >
+            <span class="post-title" title="Java接口重试的几种实现">Java接口重试的几种实现</span>
+            <span class="post-date" title="2023-01-23 13:36:59">2023/01/23</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 百宝箱 "
+           href="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
+           data-tag="tool"
+           data-author="" >
+            <span class="post-title" title="开发百宝箱">开发百宝箱</span>
+            <span class="post-date" title="2022-12-11 14:35:47">2022/12/11</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8特性 "
+           href="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java8CompletableFuture用法全解">Java8CompletableFuture用法全解</span>
+            <span class="post-date" title="2022-12-11 13:31:35">2022/12/11</span>
+        </a>
         
         
         <a  class="全部文章 JAVA Java其他相关 "
@@ -1127,15 +1223,6 @@
            data-author="" >
             <span class="post-title" title="面向对象">面向对象</span>
             <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
-        </a>
-        
-        
-        <a  class="全部文章 JAVA JAVA多线程 "
-           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
-           data-tag="java,多线程"
-           data-author="" >
-            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
-            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
         </a>
         
         

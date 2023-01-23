@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>开发百宝箱 | Mr.Wang Blog</title>
+  <meta name="keywords" content=" tool ">
+  <meta name="description" content="开发百宝箱 | Mr.Wang Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="目录   问题引入 解决方案 方式一： 硬核捕获 方式二： 动态代理 JDK 动态代理 spring 注入代理 工具类 CGlib 动态代理   方式三：Spring Aop实现 方式四：Spring 自带重试工具 方式五：Gavua 重试用法   总结  问题引入 现有一个接口，调用4次后才可已返回正常结果  12345678910111213141516171819public class R">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java接口重试的几种实现">
+<meta property="og:url" content="http://example.com/2023/01/23/Java%E6%8E%A5%E5%8F%A3%E9%87%8D%E8%AF%95%E7%9A%84%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Mr.Wang Blog">
+<meta property="og:description" content="目录   问题引入 解决方案 方式一： 硬核捕获 方式二： 动态代理 JDK 动态代理 spring 注入代理 工具类 CGlib 动态代理   方式三：Spring Aop实现 方式四：Spring 自带重试工具 方式五：Gavua 重试用法   总结  问题引入 现有一个接口，调用4次后才可已返回正常结果  12345678910111213141516171819public class R">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-23T05:36:59.000Z">
+<meta property="article:modified_time" content="2023-01-23T05:43:26.823Z">
+<meta property="article:author" content="王云生">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="retry">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/avatar.jpg"/>
+</a>
+<div class="author">
+    <span>王云生</span>
+</div>
+
+<div class="icon">
+    
+        
+            <a title="cnblogs"
+               href="https://home.cnblogs.com/"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-cnblogs"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="jianshu"
+               href="https://www.jianshu.com/u/a996358a335f"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-jianshu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="zhihu"
+               href="https://www.zhihu.com/people/yun-sheng-10-62-26"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-zhihu"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="csdn"
+               href="https://blog.csdn.net/u011593571?type=collect"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-csdn"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="oschina"
+               href="https://my.oschina.net/u/4978723"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-oschina"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="juejin"
+               href="https://juejin.cn/user/2604099346111086"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-juejin"></use>
+                    </svg>
+                
+            </a>
+        
+    
+        
+            <a title="email"
+               href="mailto:w_huilong@163.com"
+               target="_blank">
+                
+                    <svg class="iconfont-svg" aria-hidden="true">
+                        <use xlink:href="#icon-email"></use>
+                    </svg>
+                
+            </a>
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(69)</small>
+            
+        </div>
+    </li>
+    
+        
+            
+                <li>
+                    <div data-rel="导读">
+                        
+                        导读
+                        <small>(1)</small>
+                        
+                    </div>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="JAVA">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        JAVA
+                        <small>(64)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA8特性">
+                                        
+                                        JAVA8特性
+                                        
+                                            <small>(2
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA8以上版本特性">
+                                        
+                                        JAVA8以上版本特性
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA多线程">
+                                        
+                                        JAVA多线程
+                                        
+                                            <small>(27
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVA基础">
+                                        
+                                        JAVA基础
+                                        
+                                            <small>(8
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java集合框架">
+                                        
+                                        Java集合框架
+                                        
+                                            <small>(9
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java其他相关">
+                                        
+                                        Java其他相关
+                                        
+                                            <small>(2
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->Java重用技能">
+                                        
+                                        Java重用技能
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JAVAIO">
+                                        
+                                        JAVAIO
+                                        
+                                            <small>(13
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="JAVA<--->JVM相关">
+                                        
+                                        JVM相关
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="Spring">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        Spring
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringBoot2.5.X系列">
+                                        
+                                        SpringBoot2.5.X系列
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="Spring<--->SpringFrameWork5基础">
+                                        
+                                        SpringFrameWork5基础
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+                <li>
+                    <div data-rel="工具">
+                        <i class="fold iconfont icon-right"></i>
+                        
+                        工具
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                        <ul class="sub hide">
+                            
+                                <li>
+                                    <div data-rel="工具<--->百宝箱">
+                                        
+                                        百宝箱
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                                <li>
+                                    <div data-rel="工具<--->HEXO">
+                                        
+                                        HEXO
+                                        
+                                            <small>(1
+                                                )</small>
+                                        
+                                    </div>
+                                    
+                                </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
+            
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="69">
+<input type="hidden" id="yelog_site_word_count" value="357k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://yelog.org/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" autocomplete="off"/>
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>多线程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>aio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ArrayList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>bio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Collection</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>HashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>hexo</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>io</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java8</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java8+</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>jvm</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedHashSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>LinkedList</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Map</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>nio</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>PriorityQueue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Queue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>retry</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>spring boot</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Stack</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tool</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeMap</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>TreeSet</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>WeakHashMap</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        
+        <a id="top" class="全部文章 导读 "
+           href="/2022/12/11/%E5%AF%BC%E8%AF%BB/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="导读">导读</span>
+            <span class="post-date" title="2022-12-11 14:39:22">2022/12/11</span>
+        </a>
+        
+        
+        <a id="top" class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发知识体系详解">Java并发知识体系详解</span>
+            <span class="post-date" title="2022-12-10 21:46:29">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java重用技能 "
+           href="/2023/01/23/Java%E6%8E%A5%E5%8F%A3%E9%87%8D%E8%AF%95%E7%9A%84%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,retry"
+           data-author="" >
+            <span class="post-title" title="Java接口重试的几种实现">Java接口重试的几种实现</span>
+            <span class="post-date" title="2023-01-23 13:36:59">2023/01/23</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 百宝箱 "
+           href="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
+           data-tag="tool"
+           data-author="" >
+            <span class="post-title" title="开发百宝箱">开发百宝箱</span>
+            <span class="post-date" title="2022-12-11 14:35:47">2022/12/11</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8特性 "
+           href="/2022/12/11/Java8CompletableFuture%E7%94%A8%E6%B3%95%E5%85%A8%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java8CompletableFuture用法全解">Java8CompletableFuture用法全解</span>
+            <span class="post-date" title="2022-12-11 13:31:35">2022/12/11</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java其他相关 "
+           href="/2022/12/10/Better-Java/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="Better_Java">Better_Java</span>
+            <span class="post-date" title="2022-12-10 23:26:09">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java其他相关 "
+           href="/2022/12/10/Awesome-Java/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="Awesome_Java">Awesome_Java</span>
+            <span class="post-date" title="2022-12-10 23:24:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JVM相关 "
+           href="/2022/12/10/JVM%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,jvm"
+           data-author="" >
+            <span class="post-title" title="JVM相关知识体系详解">JVM相关知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:23:42">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8以上版本特性 "
+           href="/2022/12/10/Java8%E4%BB%A5%E4%B8%8A%E7%89%88%E6%9C%AC%E7%89%B9%E6%80%A7%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,java8+"
+           data-author="" >
+            <span class="post-title" title="Java8以上版本特性知识体系详解">Java8以上版本特性知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:22:38">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA8特性 "
+           href="/2022/12/10/Java8%E7%89%B9%E6%80%A7%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,java8"
+           data-author="" >
+            <span class="post-title" title="Java8特性知识体系详解">Java8特性知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:20:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%AE%9E%E7%8E%B0/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_零拷贝实现">JavaNIO_零拷贝实现</span>
+            <span class="post-date" title="2022-12-10 23:17:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-Netty/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="JavaIO_Netty">JavaIO_Netty</span>
+            <span class="post-date" title="2022-12-10 23:16:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaAIO-%E5%BC%82%E6%AD%A5IO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,aio"
+           data-author="" >
+            <span class="post-title" title="JavaAIO_异步IO详解">JavaAIO_异步IO详解</span>
+            <span class="post-date" title="2022-12-10 23:15:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_IO多路复用详解">JavaNIO_IO多路复用详解</span>
+            <span class="post-date" title="2022-12-10 23:15:03">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaNIO-%E5%9F%BA%E7%A1%80%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,nio"
+           data-author="" >
+            <span class="post-title" title="JavaNIO_基础详解">JavaNIO_基础详解</span>
+            <span class="post-date" title="2022-12-10 23:13:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/JavaIO-BIO%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io,bio"
+           data-author="" >
+            <span class="post-title" title="JavaIO_BIO详解">JavaIO_BIO详解</span>
+            <span class="post-date" title="2022-12-10 23:13:00">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/IO%E6%A8%A1%E5%9E%8B-UnixIO%E6%A8%A1%E5%9E%8B/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="IO模型_UnixIO模型">IO模型_UnixIO模型</span>
+            <span class="post-date" title="2022-12-10 23:11:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%B8%B8%E8%A7%81%E7%B1%BB%E4%BD%BF%E7%94%A8/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="常见类使用">常见类使用</span>
+            <span class="post-date" title="2022-12-10 23:10:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-OutputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_OutputStream">源码_OutputStream</span>
+            <span class="post-date" title="2022-12-10 23:09:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E6%BA%90%E7%A0%81-InputStream/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="源码_InputStream">源码_InputStream</span>
+            <span class="post-date" title="2022-12-10 23:08:23">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="设计模式_装饰者模式">设计模式_装饰者模式</span>
+            <span class="post-date" title="2022-12-10 23:06:57">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/%E5%88%86%E7%B1%BB-%E4%BC%A0%E8%BE%93-%E6%93%8D%E4%BD%9C/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="分类_传输_操作">分类_传输_操作</span>
+            <span class="post-date" title="2022-12-10 23:06:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVAIO "
+           href="/2022/12/10/Java-IO%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,io"
+           data-author="" >
+            <span class="post-title" title="Java_IO知识体系详解">Java_IO知识体系详解</span>
+            <span class="post-date" title="2022-12-10 23:04:43">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/ThreadLocal%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="ThreadLocal详解">ThreadLocal详解</span>
+            <span class="post-date" title="2022-12-10 22:58:20">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Exchanger%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Exchanger详解">JUC工具类_Exchanger详解</span>
+            <span class="post-date" title="2022-12-10 22:57:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Phaser%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Phaser详解">JUC工具类_Phaser详解</span>
+            <span class="post-date" title="2022-12-10 22:56:48">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-Semaphore%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_Semaphore详解">JUC工具类_Semaphore详解</span>
+            <span class="post-date" title="2022-12-10 22:56:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CyclicBarrier%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CyclicBarrier详解">JUC工具类_CyclicBarrier详解</span>
+            <span class="post-date" title="2022-12-10 22:55:21">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC工具类_CountDownLatch详解">JUC工具类_CountDownLatch详解</span>
+            <span class="post-date" title="2022-12-10 22:54:36">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-Fork-Join%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_Fork_Join框架详解">JUC线程池_Fork_Join框架详解</span>
+            <span class="post-date" title="2022-12-10 22:53:19">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ScheduledThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ScheduledThreadPoolExecutor详解">JUC线程池_ScheduledThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:52:28">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-ThreadPoolExecutor%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_ThreadPoolExecutor详解">JUC线程池_ThreadPoolExecutor详解</span>
+            <span class="post-date" title="2022-12-10 22:51:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%BA%BF%E7%A8%8B%E6%B1%A0-FutureTask%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC线程池_FutureTask详解">JUC线程池_FutureTask详解</span>
+            <span class="post-date" title="2022-12-10 22:50:52">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-BlockingQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_BlockingQueue详解">JUC集合_BlockingQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:50:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentLinkedQueue%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentLinkedQueue详解">JUC集合_ConcurrentLinkedQueue详解</span>
+            <span class="post-date" title="2022-12-10 22:49:05">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-CopyOnWriteArrayList%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_CopyOnWriteArrayList详解">JUC集合_CopyOnWriteArrayList详解</span>
+            <span class="post-date" title="2022-12-10 22:48:13">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%9B%86%E5%90%88-ConcurrentHashMap%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC集合_ConcurrentHashMap详解">JUC集合_ConcurrentHashMap详解</span>
+            <span class="post-date" title="2022-12-10 22:47:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantReadWriteLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantReadWriteLock详解">JUC锁_ReentrantReadWriteLock详解</span>
+            <span class="post-date" title="2022-12-10 22:46:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-ReentrantLock%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_ReentrantLock详解">JUC锁_ReentrantLock详解</span>
+            <span class="post-date" title="2022-12-10 22:45:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-%E9%94%81%E6%A0%B8%E5%BF%83%E7%B1%BBAQS%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_锁核心类AQS详解">JUC锁_锁核心类AQS详解</span>
+            <span class="post-date" title="2022-12-10 22:44:15">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E9%94%81-LockSupport%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC锁_LockSupport详解">JUC锁_LockSupport详解</span>
+            <span class="post-date" title="2022-12-10 22:43:25">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-CAS-Unsafe%E5%92%8C%E5%8E%9F%E5%AD%90%E7%B1%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC原子类_CAS_Unsafe和原子类详解">JUC原子类_CAS_Unsafe和原子类详解</span>
+            <span class="post-date" title="2022-12-10 22:42:34">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/JUC%E7%B1%BB%E6%B1%87%E6%80%BB%E5%92%8C%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="JUC类汇总和学习指南">JUC类汇总和学习指南</span>
+            <span class="post-date" title="2022-12-10 22:41:01">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/final%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="final详解">final详解</span>
+            <span class="post-date" title="2022-12-10 22:39:53">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/volatile%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="volatile详解">volatile详解</span>
+            <span class="post-date" title="2022-12-10 22:39:02">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/synchronized%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="synchronized详解">synchronized详解</span>
+            <span class="post-date" title="2022-12-10 22:37:04">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="线程基础">线程基础</span>
+            <span class="post-date" title="2022-12-10 22:31:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="理论基础">理论基础</span>
+            <span class="post-date" title="2022-12-10 22:30:46">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/WeakHashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,WeakHashMap"
+           data-author="" >
+            <span class="post-title" title="WeakHashMap源码解析">WeakHashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:26:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/TreeSet-TreeMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Map,TreeSet,TreeMap"
+           data-author="" >
+            <span class="post-title" title="TreeSet&amp;TreeMap源码解析">TreeSet&amp;TreeMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:25:45">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedHashSet-Map%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedHashSet,Map"
+           data-author="" >
+            <span class="post-title" title="LinkedHashSet&amp;Map源码解析">LinkedHashSet&amp;Map源码解析</span>
+            <span class="post-date" title="2022-12-10 22:24:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/HashSet-HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,HashSet,HashMap"
+           data-author="" >
+            <span class="post-title" title="HashSet&amp;HashMap源码解析">HashSet&amp;HashMap源码解析</span>
+            <span class="post-date" title="2022-12-10 22:23:24">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/PriorityQueue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,PriorityQueue"
+           data-author="" >
+            <span class="post-title" title="PriorityQueue源码解析">PriorityQueue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:22:22">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Stack-Queue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,Stack,Queue"
+           data-author="" >
+            <span class="post-title" title="Stack&amp;Queue源码解析">Stack&amp;Queue源码解析</span>
+            <span class="post-date" title="2022-12-10 22:21:07">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/LinkedList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,LinkedList"
+           data-author="" >
+            <span class="post-title" title="LinkedList源码解析">LinkedList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:19:50">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/ArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+           data-tag="java,Collection,ArrayList"
+           data-author="" >
+            <span class="post-title" title="ArrayList源码解析">ArrayList源码解析</span>
+            <span class="post-date" title="2022-12-10 22:18:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringBoot2.5.X系列 "
+           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring,spring boot"
+           data-author="" >
+            <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:14:55">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 Spring SpringFrameWork5基础 "
+           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           data-tag="java,spring"
+           data-author="" >
+            <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
+            <span class="post-date" title="2022-12-10 22:10:47">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA Java集合框架 "
+           href="/2022/12/10/Collection%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE/"
+           data-tag="java,Collection"
+           data-author="" >
+            <span class="post-title" title="Collection类关系图">Collection类关系图</span>
+            <span class="post-date" title="2022-12-10 21:59:49">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/SPI%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="SPI机制详解">SPI机制详解</span>
+            <span class="post-date" title="2022-12-10 21:58:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="反射机制详解">反射机制详解</span>
+            <span class="post-date" title="2022-12-10 21:57:59">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%BC%82%E5%B8%B8%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="异常机制详解">异常机制详解</span>
+            <span class="post-date" title="2022-12-10 21:56:33">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="注解机制详解">注解机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="泛型机制详解">泛型机制详解</span>
+            <span class="post-date" title="2022-12-10 21:54:06">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E5%9B%BE%E8%B0%B1-Q-A/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="图谱&amp;Q/A">图谱&amp;Q/A</span>
+            <span class="post-date" title="2022-12-10 21:53:16">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E7%9F%A5%E8%AF%86%E7%82%B9/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="知识点">知识点</span>
+            <span class="post-date" title="2022-12-10 21:52:41">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA基础 "
+           href="/2022/12/10/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="面向对象">面向对象</span>
+            <span class="post-date" title="2022-12-10 21:50:56">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 JAVA JAVA多线程 "
+           href="/2022/12/10/Java%E5%B9%B6%E5%8F%91-Java%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E9%94%81/"
+           data-tag="java,多线程"
+           data-author="" >
+            <span class="post-title" title="Java并发 - Java中所有的锁">Java并发 - Java中所有的锁</span>
+            <span class="post-date" title="2022-12-10 21:25:40">2022/12/10</span>
+        </a>
+        
+        
+        <a  class="全部文章 工具 HEXO "
+           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           data-tag="hexo,tool"
+           data-author="" >
+            <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
+            <span class="post-date" title="2022-12-10 19:02:24">2022/12/10</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-开发百宝箱" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">开发百宝箱</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="工具">工具</a> > 
+            
+            <a  data-rel="工具&lt;---&gt;百宝箱">百宝箱</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">tool</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2022-12-11 14:38:03'>2022-12-11 14:35</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:2.4k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1-New"><span class="toc-text">开发百宝箱 New</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E6%90%9C%E7%B4%A2"><span class="toc-text">常用搜索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%89%98%E7%AE%A1"><span class="toc-text">代码托管</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E7%A4%BE%E5%8C%BA"><span class="toc-text">技术社区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E5%90%88%E9%9B%86"><span class="toc-text">工具合集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B"><span class="toc-text">基础教程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E5%B7%A5%E5%85%B7"><span class="toc-text">文档工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91"><span class="toc-text">后端开发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91"><span class="toc-text">前端开发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E5%9B%BE%E8%A1%A8"><span class="toc-text">动态图表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E5%9B%BE%E6%A0%87"><span class="toc-text">图片图标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSS%E6%A0%B7%E5%BC%8F"><span class="toc-text">CSS样式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E8%B5%84%E6%BA%90"><span class="toc-text">其它资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8B%E9%93%BE%E4%BA%A4%E6%8D%A2"><span class="toc-text">友链交换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A8%E8%8D%90%E8%B5%84%E6%BA%90"><span class="toc-text">推荐资源</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="开发百宝箱-New"><a href="#开发百宝箱-New" class="headerlink" title="开发百宝箱 New"></a>开发百宝箱 New</h2><h2 id="常用搜索"><a href="#常用搜索" class="headerlink" title="常用搜索"></a>常用搜索</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/baidu.png"></p>
+<p>百度</p>
+<p>百度——全球最大的中文搜索引擎及最大的中文网站，全球领先的人工智能公司。</p>
+<p>](<a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/google.png"></p>
+<p>Google</p>
+<p>全球最大的搜索引擎公司</p>
+<p>](<a target="_blank" rel="noopener" href="http://www.google.com/">http://www.google.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/bing.png"></p>
+<p>Bing</p>
+<p>微软公司推出的用以取代Live Search的搜索引擎</p>
+<p>](<a target="_blank" rel="noopener" href="http://www.bing.com/">http://www.bing.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/magi.png"></p>
+<p>Magi</p>
+<p>Magi 是由 Peak Labs 研发的基于机器学习的信息抽取和检索系统，它能将任何领域的自然语言文本中的知识提取成结构化的数据，通过终身学习持续聚合和纠错，进而为人类用户和其他人工智能提供可解析、可检索、可溯源的知识体系。</p>
+<p>](<a target="_blank" rel="noopener" href="https://magi.com/">https://magi.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/java.jpg"></p>
+<p>搜代码</p>
+<p>不知道某个类如何使用? 来这里搜索Java 代码吧…</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.programcreek.com/java-api-examples/index.php">https://www.programcreek.com/java-api-examples/index.php</a>)</p>
+<h2 id="代码托管"><a href="#代码托管" class="headerlink" title="代码托管"></a>代码托管</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github.png"></p>
+<p>Github</p>
+<p>GitHub是一个面向开源及私有软件项目的托管平台</p>
+<p>](<a target="_blank" rel="noopener" href="https://github.com/">https://github.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/gitee.png"></p>
+<p>Gitee</p>
+<p>开源中国旗下的代码托管平台：码云</p>
+<p>](<a target="_blank" rel="noopener" href="https://gitee.com/">https://gitee.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/codingnet.png"></p>
+<p>Coding</p>
+<p>一站式 DevOps，提升研发效能</p>
+<p>](<a target="_blank" rel="noopener" href="https://coding.net/">https://coding.net/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/bitbucket.png"></p>
+<p>Bitbucket</p>
+<p>Bitbucket is more than just Git code management.</p>
+<p>](<a target="_blank" rel="noopener" href="https://bitbucket.org/">https://bitbucket.org/</a>)</p>
+<h2 id="技术社区"><a href="#技术社区" class="headerlink" title="技术社区"></a>技术社区</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/csdn.gif"></p>
+<p>CSDN</p>
+<p>中国专业IT社区CSDN</p>
+<p>](<a target="_blank" rel="noopener" href="http://www.csdn.net/">http://www.csdn.net/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/cnblog.gif"></p>
+<p>博客园</p>
+<p>开发者的网上家园</p>
+<p>](<a target="_blank" rel="noopener" href="http://www.cnblogs.com/">http://www.cnblogs.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/oschina.gif"></p>
+<p>OSChina</p>
+<p>中国最大的开源技术社区</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.oschina.net/">https://www.oschina.net/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/segmentfault.png"></p>
+<p>知否</p>
+<p>中国领先的开发者技术社区</p>
+<p>](<a target="_blank" rel="noopener" href="https://segmentfault.com/">https://segmentfault.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/juejin.svg+xml"></p>
+<p>掘金</p>
+<p>掘金是一个帮助开发者成长的社区，是一个面向互联网技术人的内容分享平台</p>
+<p>](<a target="_blank" rel="noopener" href="https://juejin.im/">https://juejin.im/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/51cto.gif"></p>
+<p>51CTO</p>
+<p>中国领先的IT技术网站</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.51cto.com/">https://www.51cto.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/linuxidc.jpg"></p>
+<p>Linux公社</p>
+<p>Linux系统门户网站</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.linuxidc.com/">https://www.linuxidc.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/ibm.jpeg"></p>
+<p>IBM 开发者</p>
+<p>IBM开发者社区</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.ibm.com/developerworks/cn/">https://www.ibm.com/developerworks/cn/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/stackoverflow.png"></p>
+<p>StackOverflow</p>
+<p>Stack Overflow是一个与程序相关的IT技术问答网站</p>
+<p>](<a target="_blank" rel="noopener" href="https://stackoverflow.com/">https://stackoverflow.com/</a>)</p>
+<h2 id="工具合集"><a href="#工具合集" class="headerlink" title="工具合集"></a>工具合集</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/cainiaotool.png"></p>
+<p>菜鸟工具</p>
+<p>菜鸟教程提供的工具集</p>
+<p>](<a target="_blank" rel="noopener" href="https://c.runoob.com/">https://c.runoob.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/oschina.gif"></p>
+<p>工具</p>
+<p>开源中国在线工具</p>
+<p>](<a target="_blank" rel="noopener" href="https://tool.oschina.net/">https://tool.oschina.net/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/toollu.png"></p>
+<p>Tool工具箱</p>
+<p>程序员的工具箱</p>
+<p>](<a target="_blank" rel="noopener" href="https://tool.lu/">https://tool.lu/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/jiaobenzhijia.png"></p>
+<p>脚本之家</p>
+<p>脚本之家旗下的工具箱</p>
+<p>](<a target="_blank" rel="noopener" href="http://tools.jb51.net/">http://tools.jb51.net/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/w3cschooltool.png"></p>
+<p>W3Cschool</p>
+<p>W3Cschool旗下的工具箱</p>
+<p>](<a target="_blank" rel="noopener" href="https://123.w3cschool.cn/webtools">https://123.w3cschool.cn/webtools</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/gitee.png"></p>
+<p>Gitee开源</p>
+<p>Gitee 开源项目推荐列表</p>
+<p>](<a target="_blank" rel="noopener" href="https://gitee.com/explore/all">https://gitee.com/explore/all</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/cloudconvert.png"></p>
+<p>云转换</p>
+<p>在线转化压缩包、字体、图片、视频、电子书</p>
+<p>](<a target="_blank" rel="noopener" href="https://cloudconvert.com/">https://cloudconvert.com/</a>)</p>
+<h2 id="基础教程"><a href="#基础教程" class="headerlink" title="基础教程"></a>基础教程</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/cainiao.png"></p>
+<p>菜鸟教程</p>
+<p>菜鸟教程集合</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.runoob.com/">https://www.runoob.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/w3cschool.png"></p>
+<p>W3Cschool</p>
+<p>w3cschool主要为初学者技术的人员提供在线学习教程和日常技术资料查询服务</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.w3cschool.cn/tutorial">https://www.w3cschool.cn/tutorial</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/w3school.png"></p>
+<p>W3School</p>
+<p>W3School 是因特网上最大的 WEB 开发者资源，其中包括全面的教程、完善的参考手册以及庞大的代码库</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.w3school.com.cn/">https://www.w3school.com.cn/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/mdn.png"></p>
+<p>MDN</p>
+<p>源于开发者，服务开发者</p>
+<p>](<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Learn">https://developer.mozilla.org/zh-CN/docs/Learn</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/javatpoint.png"></p>
+<p>JavaPoint</p>
+<p>The Best Portal to Learn Technologies</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.javatpoint.com/">https://www.javatpoint.com/</a>)</p>
+<h2 id="文档工具"><a href="#文档工具" class="headerlink" title="文档工具"></a>文档工具</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/gitbook.png"></p>
+<p>Gitbook</p>
+<p>一个先进可定制的文档格式工具</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.gitbook.com/">https://www.gitbook.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/docsify.png"></p>
+<p>Docsify</p>
+<p>一个神奇的文档网站生成工具</p>
+<p>](<a target="_blank" rel="noopener" href="https://docsify.js.org/#/zh-cn/">https://docsify.js.org/#/zh-cn/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/vuepress.png"></p>
+<p>VuePress</p>
+<p>Vue 驱动的静态网站生成器, 本项目就是使用VuePress开发的</p>
+<p>](<a target="_blank" rel="noopener" href="https://vuepress.vuejs.org/zh/">https://vuepress.vuejs.org/zh/</a>)</p>
+<h2 id="后端开发"><a href="#后端开发" class="headerlink" title="后端开发"></a>后端开发</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/spring.png"></p>
+<p>Spring</p>
+<p>Spring框架是一个开放源代码的J2EE应用程序框架</p>
+<p>](<a target="_blank" rel="noopener" href="https://spring.io/projects/spring-boot">https://spring.io/projects/spring-boot</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/mybatis.png"></p>
+<p>MyBatis</p>
+<p>MyBatis 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。</p>
+<p>](<a target="_blank" rel="noopener" href="https://mybatis.org/mybatis-3/zh/index.html">https://mybatis.org/mybatis-3/zh/index.html</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/mybatisplus.png"></p>
+<p>MyBatis Plus</p>
+<p>MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。</p>
+<p>](<a target="_blank" rel="noopener" href="https://mybatis.plus/">https://mybatis.plus/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/maven.png"></p>
+<p>Maven Repo</p>
+<p>Maven 仓库检索, 非常常用</p>
+<p>](<a target="_blank" rel="noopener" href="https://mvnrepository.com/">https://mvnrepository.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/gradle.png"></p>
+<p>Gradle</p>
+<p>基于Apache Ant和Apache Maven概念的项目自动化构建开源工具。</p>
+<p>](<a target="_blank" rel="noopener" href="https://docs.gradle.org/current/userguide/userguide.html">https://docs.gradle.org/current/userguide/userguide.html</a>)</p>
+<h2 id="前端开发"><a href="#前端开发" class="headerlink" title="前端开发"></a>前端开发</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/bootstrap.png"></p>
+<p>BootStrap</p>
+<p>简洁、直观、强悍的前端开发框架，让web开发更迅速、简单</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.bootcss.com/">https://www.bootcss.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/npm.png"></p>
+<p>NPM</p>
+<p>NodeJS 包管理文档</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.npmjs.cn/">https://www.npmjs.cn/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/vuejs.png"></p>
+<p>Vue</p>
+<p>渐进式JavaScript 框架</p>
+<p>](<a target="_blank" rel="noopener" href="https://cn.vuejs.org/">https://cn.vuejs.org/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/reactjs.png"></p>
+<p>React</p>
+<p>用于构建用户界面的 JavaScript 库</p>
+<p>](<a target="_blank" rel="noopener" href="https://react.docschina.org/">https://react.docschina.org/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/angularjs.png"></p>
+<p>AngularJS</p>
+<p>AngularJS是一款优秀的前端JS框架</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.angularjs.net.cn/">https://www.angularjs.net.cn/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/antdesignpro.png"></p>
+<p>AntDesignPro</p>
+<p>开箱即用的中台前端&#x2F;设计解决方案</p>
+<p>](<a target="_blank" rel="noopener" href="https://pro.ant.design/index-cn">https://pro.ant.design/index-cn</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/element.png"></p>
+<p>Element-UI</p>
+<p>Element，一套为开发者、设计师和产品经理准备的基于 Vue 2.0 的桌面端组件库</p>
+<p>](<a target="_blank" rel="noopener" href="https://element.eleme.cn/#/zh-CN">https://element.eleme.cn/#/zh-CN</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/iview.png"></p>
+<p>View UI</p>
+<p>View UI 是一套基于 Vue.js 的高质量UI 组件库</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.iviewui.com/">https://www.iviewui.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/electron.png"></p>
+<p>Electron</p>
+<p>Electron 是一个赋力前端进行跨平台开发的框架,让开发人员使用 JavaScript, HTML 和 CSS 等前端技术构建跨平台的桌面应用</p>
+<p>](<a target="_blank" rel="noopener" href="https://electronjs.org/">https://electronjs.org/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/caniuse.png"></p>
+<p>can i use</p>
+<p>前端常用网站了,查看不同属性和方法的兼容性</p>
+<p>](<a target="_blank" rel="noopener" href="https://caniuse.com/">https://caniuse.com/</a>)</p>
+<h2 id="动态图表"><a href="#动态图表" class="headerlink" title="动态图表"></a>动态图表</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/echarts.png"></p>
+<p>Echarts</p>
+<p>百度开发的可定制的数据可视化图表, 已经捐给Apache</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.echartsjs.com/examples/zh/index.html">https://www.echartsjs.com/examples/zh/index.html</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/antv.png"></p>
+<p>AntV</p>
+<p>蚂蚁金服全新一代数据可视化解决方案，致力于提供一套简单方便、专业可靠、无限可能的数据可视化最佳实践</p>
+<p>](<a target="_blank" rel="noopener" href="https://antv.vision/zh">https://antv.vision/zh</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/d3.png"></p>
+<p>D3</p>
+<p>用动态图形显示数据的JavaScript库</p>
+<p>](<a target="_blank" rel="noopener" href="https://d3js.org/">https://d3js.org/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/threejs.png"></p>
+<p>ThreeJs</p>
+<p>运行在浏览器中的3D 引擎</p>
+<p>](<a target="_blank" rel="noopener" href="https://threejs.org/">https://threejs.org/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/highcharts.png"></p>
+<p>HighCharts</p>
+<p>兼容 IE6+、支持移动端、图表类型丰富的HTML5交互性图表库</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.highcharts.com/">https://www.highcharts.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/chartjs.png"></p>
+<p>ChartJs</p>
+<p>基于 HTML5 的 JavaScript 图表库</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.chartjs.org/">https://www.chartjs.org/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/flotjs.png"></p>
+<p>FlotCharts</p>
+<p>基于jQuery的Charts，Grafana就是用的它</p>
+<p>](<a target="_blank" rel="noopener" href="http://www.flotcharts.org/">http://www.flotcharts.org/</a>)</p>
+<h2 id="图片图标"><a href="#图片图标" class="headerlink" title="图片图标"></a>图片图标</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/fontawesome.png"></p>
+<p>Font-awesome</p>
+<p>完美的图标字体库</p>
+<p>](<a target="_blank" rel="noopener" href="http://fontawesome.dashgame.com/">http://fontawesome.dashgame.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/squoosh.png"></p>
+<p>Squoosh</p>
+<p>谷歌出品在线免费图片压缩工具 神器</p>
+<p>](<a target="_blank" rel="noopener" href="https://squoosh.app/">https://squoosh.app/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/zhitu.png"></p>
+<p>智图</p>
+<p>腾讯出品 在线图片压缩 支持转成 webP 处理静态图片时候很好用</p>
+<p>](<a target="_blank" rel="noopener" href="http://zhitu.isux.us/">http://zhitu.isux.us/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/picdiet.png"></p>
+<p>Picdiet</p>
+<p>Picdiet是一款在线批量压缩图片神器，它不需要后端服务器或者API的支持，仅通过你的浏览器来压缩图片大小，这意味着它压缩图片极快并且不会导致隐私或敏感图片泄漏。</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.picdiet.com/zh-cn">https://www.picdiet.com/zh-cn</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/aigei.png"></p>
+<p>Bgremover</p>
+<p>在线图片去底工具</p>
+<p>](<a target="_blank" rel="noopener" href="http://www.aigei.com/bgremover">http://www.aigei.com/bgremover</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/photopea.png"></p>
+<p>Photopea</p>
+<p>网页版本 Photoshop，非常强大</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.photopea.com/">https://www.photopea.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/iconfont.png"></p>
+<p>Iconfont</p>
+<p>阿里妈妈MUX倾力打造的矢量图标管理、交流平台。设计师将图标上传到Iconfont平台，用户可以自定义下载多种格式的icon，平台也可将图标转换为字体，便于前端工程师自由调整与调用。</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.iconfont.cn/">https://www.iconfont.cn/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/cssicon.png"></p>
+<p>Css Icon</p>
+<p>所有的 icon 都是纯 css 画的 缺点：icon 不够多</p>
+<p>](<a target="_blank" rel="noopener" href="http://cssicon.space/">http://cssicon.space/</a>)</p>
+<h2 id="CSS样式"><a href="#CSS样式" class="headerlink" title="CSS样式"></a>CSS样式</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/saas.png"></p>
+<p>SAAS</p>
+<p>Sass 是成熟、稳定、强大的 CSS 扩展语言。</p>
+<p>](<a target="_blank" rel="noopener" href="http://sass.bootcss.com/">http://sass.bootcss.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/stylus.png"></p>
+<p>Stylus</p>
+<p>富于表现力、动态的、健壮的 CSS</p>
+<p>](<a target="_blank" rel="noopener" href="https://stylus.bootcss.com/">https://stylus.bootcss.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/less.png"></p>
+<p>Less</p>
+<p>给 CSS 加点料</p>
+<p>](<a target="_blank" rel="noopener" href="https://less.bootcss.com/">https://less.bootcss.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>zeplin</p>
+<p>前端和设计师神器，有标注、Style Guide、版本管理、简单的团队协作，重点是前端不用写css 了，复制就可以了。</p>
+<p>](<a target="_blank" rel="noopener" href="https://app.zeplin.io/">https://app.zeplin.io/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/csstriangle.png"></p>
+<p>CSS triangle</p>
+<p>帮你快速用 css 做出三角形</p>
+<p>](<a target="_blank" rel="noopener" href="http://apps.eky.hk/css-triangle-generator/">http://apps.eky.hk/css-triangle-generator/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/cssarrow.png"></p>
+<p>CSS Arrow</p>
+<p>帮你做对话框三角的</p>
+<p>](<a target="_blank" rel="noopener" href="http://www.cssarrowplease.com/">http://www.cssarrowplease.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/imageeffects.png"></p>
+<p>CSS Effects</p>
+<p>图片CSS样式控制</p>
+<p>](<a target="_blank" rel="noopener" href="https://bennettfeely.com/image-effects/">https://bennettfeely.com/image-effects/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>clippy</p>
+<p>在线帮你使用 css clip-path 做出各种形状的图形</p>
+<p>](<a target="_blank" rel="noopener" href="http://bennettfeely.com/clippy/">http://bennettfeely.com/clippy/</a>)</p>
+<h2 id="其它资源"><a href="#其它资源" class="headerlink" title="其它资源"></a>其它资源</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>zeplin</p>
+<p>前端和设计师神器，有标注、Style Guide、版本管理、简单的团队协作，重点是前端不用写css 了，复制就可以了。</p>
+<p>](<a target="_blank" rel="noopener" href="https://app.zeplin.io/">https://app.zeplin.io/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>astexplorer</p>
+<p>一个在线 ast 生成器</p>
+<p>](<a target="_blank" rel="noopener" href="https://github.com/fkling/astexplorer">https://github.com/fkling/astexplorer</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>30 seconds of code</p>
+<p>收集了许多有用的代码小片段</p>
+<p>](<a target="_blank" rel="noopener" href="https://30secondsofcode.org/">https://30secondsofcode.org/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>jex</p>
+<p>正则可视化网站，配合上面的 Regular Expressions，写正则方便很多</p>
+<p>](<a target="_blank" rel="noopener" href="https://jex.im/regulex/">https://jex.im/regulex/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>jsfiddle</p>
+<p>在线运行代码网站 很不错，可惜要翻墙</p>
+<p>](<a target="_blank" rel="noopener" href="https://jsfiddle.net/">https://jsfiddle.net/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>codepan</p>
+<p>在线运行代码网站 不用翻墙，可以自己部署</p>
+<p>](<a target="_blank" rel="noopener" href="https://codepan.net/">https://codepan.net/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>fiddle.md</p>
+<p>一个方便的在线共享 markdown 在线笔试题一般都用这个</p>
+<p>](<a target="_blank" rel="noopener" href="https://fiddle.md/">https://fiddle.md/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>jsdelivr</p>
+<p>cdn 服务</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.jsdelivr.com/">https://www.jsdelivr.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>unpkg</p>
+<p>常用的 cdn 服务</p>
+<p>](<a target="_blank" rel="noopener" href="https://unpkg.com/">https://unpkg.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>coderpad</p>
+<p>远程面试的神器，可以让面试者远程写代码 不过需要翻墙</p>
+<p>](<a target="_blank" rel="noopener" href="https://coderpad.io/">https://coderpad.io/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>icode</p>
+<p>有赞团队出品的 coderpad 可以互补，它不需要翻墙</p>
+<p>](<a target="_blank" rel="noopener" href="http://www.icode.live/">http://www.icode.live/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>codeadvice</p>
+<p>又一个让面试者远程写代码的网址</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.codeadvice.io/">https://www.codeadvice.io/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>snipper</p>
+<p>一个代码协同的网站。你新建一个代码片段，然后把网址分享给其他人，就可以看到他们的实时编辑。</p>
+<p>](<a target="_blank" rel="noopener" href="https://snipper.io/">https://snipper.io/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>codesandbox</p>
+<p>一个可以在线编辑且提供在线 demo 的网站 支持 vue react angular 多种框架 神器</p>
+<p>](<a target="_blank" rel="noopener" href="https://codesandbox.io/">https://codesandbox.io/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>codrops</p>
+<p>上面的交互都非常酷炫</p>
+<p>](<a target="_blank" rel="noopener" href="https://tympanus.net/codrops/">https://tympanus.net/codrops/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>bestofjs</p>
+<p>查看一个项目增长经历，Star 数变化的网站，辅助你判断这个库的质量</p>
+<p>](<a target="_blank" rel="noopener" href="https://bestofjs.org/">https://bestofjs.org/</a>)</p>
+<hr>
+<blockquote>
+<p>其它资源正在整理中…</p>
+</blockquote>
+<h2 id="友链交换"><a href="#友链交换" class="headerlink" title="友链交换"></a>友链交换</h2><p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>汪明鑫个人博客</p>
+<p>汪明鑫的个人博客</p>
+<p>](<a target="_blank" rel="noopener" href="http://xinyeshuaiqi.cn/">http://xinyeshuaiqi.cn/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/github2.jpg"></p>
+<p>Java架构师必看</p>
+<p>Java架构师必看致力于分享优质文章教程【java程序员从初级到中级进阶高级架构师黑马】;搜集全网高质量学习书籍面试题视频项目;让您系统提升java架构技术,免培训工资翻倍。</p>
+<p>](<a target="_blank" rel="noopener" href="https://javajgs.com/">https://javajgs.com/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/jianjian.png"></p>
+<p>简简</p>
+<p>在博客上会记录自己平时的所学， 有些是想学的， 有些是好奇的， 有些是感想， 有些是之后的伏笔。</p>
+<p>](<a target="_blank" rel="noopener" href="https://jwt1399.top/">https://jwt1399.top/</a>)</p>
+<p>[</p>
+<p><img src="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/code-nav.png"></p>
+<p>编程导航</p>
+<p>东半球最好的编程资源导航</p>
+<p>](<a target="_blank" rel="noopener" href="https://www.code-nav.cn/">https://www.code-nav.cn/</a>)</p>
+<h2 id="推荐资源"><a href="#推荐资源" class="headerlink" title="推荐资源"></a>推荐资源</h2>
+      
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
+    </div>
+</article>
+
+
+
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2017 王云生
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
