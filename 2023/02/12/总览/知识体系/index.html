@@ -2,23 +2,71 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Spring框架知识体系详解 | Mr.Wang Blog</title>
-  <meta name="keywords" content=" java , spring ">
-  <meta name="description" content="Spring框架知识体系详解 | Mr.Wang Blog">
+  <title>知识体系 | Mr.Wang Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="知识体系 | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="1、配置github客户端ssh-keygen -t rsa -C &amp;#119;&amp;#x5f;&amp;#x68;&amp;#117;&amp;#x69;&amp;#x6c;&amp;#111;&amp;#110;&amp;#103;&amp;#x40;&amp;#x31;&amp;#54;&amp;#51;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;ssh -T &amp;#103;&amp;#x69;&amp;#116;&amp;#64;&amp;#103;&amp;#105;&amp;#116;&amp;#x68;&amp;#x75;&amp;#x62;&amp;">
+<meta name="description" content="BAT大厂面试题与全栈知识体系结合 Hot必读提示 你好，我是pdai。你是否也曾对未来迷茫不知方向，也曾每天在碎片化的学习中焦虑，也曾钦羡他人步入高于你的层次? 那么跟随我，结合BAT大厂面试题帮你构筑你自己的知识体系，提升靠技术实现自我价值的概率和掌控力；而往往当你将本文中知识点掌握时，你会发现那些平时高谈阔论的家伙其实都是纸老虎；但你依然要保持谦卑，闻道有先后，术业有专攻，如是而已。@pda">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hexoblog写作">
-<meta property="og:url" content="http://example.com/2023/01/23/hexoblog%E5%86%99%E4%BD%9C/index.html">
+<meta property="og:title" content="JAVA导读">
+<meta property="og:url" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Mr.Wang Blog">
-<meta property="og:description" content="1、配置github客户端ssh-keygen -t rsa -C &amp;#119;&amp;#x5f;&amp;#x68;&amp;#117;&amp;#x69;&amp;#x6c;&amp;#111;&amp;#110;&amp;#103;&amp;#x40;&amp;#x31;&amp;#54;&amp;#51;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;ssh -T &amp;#103;&amp;#x69;&amp;#116;&amp;#64;&amp;#103;&amp;#105;&amp;#116;&amp;#x68;&amp;#x75;&amp;#x62;&amp;">
+<meta property="og:description" content="BAT大厂面试题与全栈知识体系结合 Hot必读提示 你好，我是pdai。你是否也曾对未来迷茫不知方向，也曾每天在碎片化的学习中焦虑，也曾钦羡他人步入高于你的层次? 那么跟随我，结合BAT大厂面试题帮你构筑你自己的知识体系，提升靠技术实现自我价值的概率和掌控力；而往往当你将本文中知识点掌握时，你会发现那些平时高谈阔论的家伙其实都是纸老虎；但你依然要保持谦卑，闻道有先后，术业有专攻，如是而已。@pda">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-01-23T05:59:21.000Z">
-<meta property="article:modified_time" content="2024-02-12T05:54:12.939Z">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_basic.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_collections_overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-concurrent-overview-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-io-overview2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java8-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-9.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-10.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-11.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-12.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-13.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-14.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-15.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-16.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-17.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/jvm-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-debug.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-overview-x.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-sort-overview-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-domain-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-object-2-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-basic-0.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-y-echo-11.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-usage-spring-5.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/dev.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-design-2-1.jpeg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-start-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mybatis-y-arch-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-introduce-8.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-helloworld-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-aop-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-5.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-71.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-8.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-102.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-4.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-51.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-63.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-71.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-23.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-30.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/design-pattern.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-x-overview-learn2.png">
+<meta property="article:published_time" content="2023-12-11T06:39:22.000Z">
+<meta property="article:modified_time" content="2024-02-12T13:02:16.142Z">
 <meta property="article:author" content="王云生">
-<meta property="article:tag" content="hexo">
-<meta property="article:tag" content="tool">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -164,24 +212,10 @@
     <li>
         <div class="all active" data-rel="全部文章">全部文章
             
-                <small>(70)</small>
+                <small>(71)</small>
             
         </div>
     </li>
-    
-        
-            
-                <li>
-                    <div data-rel="导读">
-                        
-                        导读
-                        <small>(1)</small>
-                        
-                    </div>
-                    
-                </li>
-            
-        
     
         
             
@@ -402,6 +436,20 @@
     
         
             
+                <li>
+                    <div data-rel="总览">
+                        
+                        总览
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                </li>
+            
+        
+    
+        
+            
         
     
         
@@ -461,8 +509,8 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="70">
-<input type="hidden" id="yelog_site_word_count" value="357.2k">
+<input type="hidden" id="yelog_site_posts_number" value="71">
+<input type="hidden" id="yelog_site_word_count" value="357.6k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -623,12 +671,21 @@
     <nav id="title-list-nav">
         
         
-        <a id="top" class="全部文章 导读 "
-           href="/2022/12/11/%E5%AF%BC%E8%AF%BB/"
+        <a id="top" class="全部文章 总览 "
+           href="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/"
            data-tag="java"
            data-author="" >
-            <span class="post-title" title="导读">导读</span>
-            <span class="post-date" title="2022-12-11 14:39:22">2022/12/11</span>
+            <span class="post-title" title="JAVA导读">JAVA导读</span>
+            <span class="post-date" title="2023-12-11 14:39:22">2023/12/11</span>
+        </a>
+        
+        
+        <a id="top" class="全部文章 总览 "
+           href="/2023/02/12/%E6%80%BB%E8%A7%88/%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="知识体系">知识体系</span>
+            <span class="post-date" title="2023-02-12 14:06:42">2023/02/12</span>
         </a>
         
         
@@ -642,7 +699,7 @@
         
         
         <a  class="全部文章 工具 HEXO "
-           href="/2023/01/23/hexoblog%E5%86%99%E4%BD%9C/"
+           href="/2023/01/23/%E5%B7%A5%E5%85%B7/hexoblog%E5%86%99%E4%BD%9C/"
            data-tag="hexo,tool"
            data-author="" >
             <span class="post-title" title="hexoblog写作">hexoblog写作</span>
@@ -660,7 +717,7 @@
         
         
         <a  class="全部文章 工具 百宝箱 "
-           href="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
+           href="/2022/12/11/%E5%B7%A5%E5%85%B7/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
            data-tag="tool"
            data-author="" >
             <span class="post-title" title="开发百宝箱">开发百宝箱</span>
@@ -1137,7 +1194,7 @@
         
         
         <a  class="全部文章 Spring SpringBoot2.5.X系列 "
-           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           href="/2022/12/10/spring/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
            data-tag="java,spring,spring boot"
            data-author="" >
             <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
@@ -1146,7 +1203,7 @@
         
         
         <a  class="全部文章 Spring SpringFrameWork5基础 "
-           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           href="/2022/12/10/spring/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
            data-tag="java,spring"
            data-author="" >
             <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
@@ -1245,7 +1302,7 @@
         
         
         <a  class="全部文章 工具 HEXO "
-           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           href="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
            data-tag="hexo,tool"
            data-author="" >
             <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
@@ -1270,11 +1327,13 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="post-Spring框架知识体系详解" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-总览/知识体系" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Spring框架知识体系详解</h1>
+        <h1 class="article-title">知识体系</h1>
     
     <div class="article-meta">
+        
+        <span class="top"><a>置顶</a></span>
         
         
         
@@ -1282,31 +1341,20 @@
             <i class="iconfont icon-category"></i>
             
             
-            <a  data-rel="Spring">Spring</a> > 
-            
-            <a  data-rel="Spring&lt;---&gt;SpringFrameWork5基础">SpringFrameWork5基础</a>
+            <a  data-rel="总览">总览</a>
             
         </span>
         
         
-        <span class="tag">
-            <i class="iconfont icon-tag"></i>
-            
-            <a class="color5">java</a>
-            
-            <a class="color2">spring</a>
-            
-        </span>
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2024-02-12 21:12:19'>2023-02-12 14:06</time>
         
     </div>
     <div class="article-meta">
         
-            发布时间 : <time class="date" title='最后更新: 2022-12-10 22:13:50'>2022-12-10 22:10</time>
-        
-    </div>
-    <div class="article-meta">
-        
-        <span>字数:1.5k</span>
+        <span>字数:406</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -1325,7 +1373,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3"><span class="toc-text">Spring框架知识体系详解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E7%AB%A0"><span class="toc-text">相关文章</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JAVA%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="toc-text">JAVA技术栈</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95"><span class="toc-text">一、数据结构与算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1"><span class="toc-text">二、软件设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81java%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80"><span class="toc-text">三、java语言基础</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="toc-text">1、基本语法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="toc-text">多线程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF"><span class="toc-text">2、核心技术</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81JVM"><span class="toc-text">3、JVM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="toc-text">4、工具类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81%E5%BC%80%E6%BA%90%E6%8A%80%E6%9C%AF"><span class="toc-text">5、开源技术</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81web%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="toc-text">四、web技术栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%BA%91%E5%8E%9F%E7%94%9F%E6%8A%80%E6%9C%AF"><span class="toc-text">五、云原生技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81k8s"><span class="toc-text">1、k8s</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81docker"><span class="toc-text">2、docker</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="toc-text">六、大数据技术栈</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81spark"><span class="toc-text">1、spark</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81hadoop"><span class="toc-text">2、hadoop</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1HDFS"><span class="toc-text">2.1HDFS</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2mapreduce"><span class="toc-text">2.2mapreduce</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81hive"><span class="toc-text">3、hive</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81flink"><span class="toc-text">4、flink</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81yarn"><span class="toc-text">5、yarn</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6%E3%80%81hbase"><span class="toc-text">6、hbase</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E8%BE%85%E5%8A%A9%E8%AF%AD%E8%A8%80"><span class="toc-text">七、辅助语言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81shell"><span class="toc-text">1、shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81python"><span class="toc-text">2、python</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81scala"><span class="toc-text">3、scala</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7"><span class="toc-text">八、开发工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81maven"><span class="toc-text">1、maven</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81intellij-idea"><span class="toc-text">2、intellij idea</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81GIT"><span class="toc-text">3、GIT</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93"><span class="toc-text">九、项目总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E7%83%AD%E6%95%B0%E6%8D%AE%E8%AF%86%E5%88%AB"><span class="toc-text">1、热数据识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81kylin"><span class="toc-text">2、kylin</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="toc-text">2.1自定义类加载器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2%E9%85%8D%E7%BD%AE%E9%A1%B9"><span class="toc-text">2.2配置项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3%E6%95%B0%E6%8D%AE%E5%BA%93jdbc"><span class="toc-text">2.3数据库jdbc</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E8%BF%91%E4%BC%BC%E6%9F%A5%E8%AF%A2"><span class="toc-text">3、近似查询</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93-amp-SQL"><span class="toc-text">十、数据库&amp;SQL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="toc-text">十一、中间件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%BC%80%E6%BA%90%E7%BB%84%E4%BB%B6"><span class="toc-text">十二、常用开源组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%89%E3%80%81liunx-x2F-shell"><span class="toc-text">十三、liunx&#x2F;shell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E5%9B%9B%E3%80%81%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83"><span class="toc-text">十四、编码规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%94%E3%80%81%E6%B5%8B%E8%AF%95%E7%9B%B8%E5%85%B3"><span class="toc-text">十五、测试相关</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E5%85%AD%E3%80%81%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9B%B8%E5%85%B3"><span class="toc-text">十六、大模型相关</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -1341,119 +1389,103 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Spring框架知识体系详解"><a href="#Spring框架知识体系详解" class="headerlink" title="Spring框架知识体系详解"></a>Spring框架知识体系详解</h2><p>提示</p>
-<p>本系列主要介绍Spring框架整体架构，Spring的核心IOC，AOP的案例和具体实现机制；以及SpringMVC框架的案例和实现机制。@pdai</p>
-<h2 id="相关文章"><a href="#相关文章" class="headerlink" title="相关文章"></a>相关文章</h2><blockquote>
-<p>首先， 从Spring框架的整体架构和组成对整体框架有个认知。</p>
-</blockquote>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-introduce.html">Spring基础 - Spring和Spring框架组成</a><ul>
-<li>Spring是什么？它是怎么诞生的？有哪些主要的组件和核心功能呢? 本文通过这几个问题帮助你构筑Spring和Spring Framework的整体认知。</li>
-</ul>
+        <p><div class='inner-toc'><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JAVA%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="toc-text">JAVA技术栈</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95"><span class="toc-text">一、数据结构与算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1"><span class="toc-text">二、软件设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81java%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80"><span class="toc-text">三、java语言基础</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="toc-text">1、基本语法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="toc-text">多线程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF"><span class="toc-text">2、核心技术</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81JVM"><span class="toc-text">3、JVM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="toc-text">4、工具类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81%E5%BC%80%E6%BA%90%E6%8A%80%E6%9C%AF"><span class="toc-text">5、开源技术</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81web%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="toc-text">四、web技术栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%BA%91%E5%8E%9F%E7%94%9F%E6%8A%80%E6%9C%AF"><span class="toc-text">五、云原生技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81k8s"><span class="toc-text">1、k8s</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81docker"><span class="toc-text">2、docker</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="toc-text">六、大数据技术栈</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81spark"><span class="toc-text">1、spark</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81hadoop"><span class="toc-text">2、hadoop</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1HDFS"><span class="toc-text">2.1HDFS</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2mapreduce"><span class="toc-text">2.2mapreduce</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81hive"><span class="toc-text">3、hive</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81flink"><span class="toc-text">4、flink</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81yarn"><span class="toc-text">5、yarn</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6%E3%80%81hbase"><span class="toc-text">6、hbase</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E8%BE%85%E5%8A%A9%E8%AF%AD%E8%A8%80"><span class="toc-text">七、辅助语言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81shell"><span class="toc-text">1、shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81python"><span class="toc-text">2、python</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81scala"><span class="toc-text">3、scala</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7"><span class="toc-text">八、开发工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81maven"><span class="toc-text">1、maven</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81intellij-idea"><span class="toc-text">2、intellij idea</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81GIT"><span class="toc-text">3、GIT</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93"><span class="toc-text">九、项目总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E7%83%AD%E6%95%B0%E6%8D%AE%E8%AF%86%E5%88%AB"><span class="toc-text">1、热数据识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81kylin"><span class="toc-text">2、kylin</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="toc-text">2.1自定义类加载器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2%E9%85%8D%E7%BD%AE%E9%A1%B9"><span class="toc-text">2.2配置项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3%E6%95%B0%E6%8D%AE%E5%BA%93jdbc"><span class="toc-text">2.3数据库jdbc</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E8%BF%91%E4%BC%BC%E6%9F%A5%E8%AF%A2"><span class="toc-text">3、近似查询</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93-amp-SQL"><span class="toc-text">十、数据库&amp;SQL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="toc-text">十一、中间件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%BC%80%E6%BA%90%E7%BB%84%E4%BB%B6"><span class="toc-text">十二、常用开源组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%89%E3%80%81liunx-x2F-shell"><span class="toc-text">十三、liunx&#x2F;shell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E5%9B%9B%E3%80%81%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83"><span class="toc-text">十四、编码规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%94%E3%80%81%E6%B5%8B%E8%AF%95%E7%9B%B8%E5%85%B3"><span class="toc-text">十五、测试相关</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E5%85%AD%E3%80%81%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9B%B8%E5%85%B3"><span class="toc-text">十六、大模型相关</span></a></li></ol></li></ol></div></p>
+<h1 id="JAVA技术栈"><a href="#JAVA技术栈" class="headerlink" title="JAVA技术栈"></a>JAVA技术栈</h1><h2 id="一、数据结构与算法"><a href="#一、数据结构与算法" class="headerlink" title="一、数据结构与算法"></a>一、数据结构与算法</h2><h2 id="二、软件设计"><a href="#二、软件设计" class="headerlink" title="二、软件设计"></a>二、软件设计</h2><h2 id="三、java语言基础"><a href="#三、java语言基础" class="headerlink" title="三、java语言基础"></a>三、java语言基础</h2><h3 id="1、基本语法"><a href="#1、基本语法" class="headerlink" title="1、基本语法"></a>1、基本语法</h3><h4 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h4><ol>
+<li><p>为什么需要多线程</p>
+<p>为了合理利用 CPU 的高性能，平衡CPU 内存 IO这三者的速度差异</p>
 </li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-framework-introduce-8.png"></p>
+<li><p>什么叫线程安全</p>
+<p>一个类在可以被多个线程安全调用时就是线程安全的。</p>
+</li>
+<li><p>为什么会线程不安全</p>
+</li>
+<li><p>JAVA解决线程安全</p>
+</li>
+</ol>
 <blockquote>
-<p>其次，通过案例引出Spring的核心（IoC和AOP），同时对IoC和AOP进行案例使用分析。</p>
+<p>代码：</p>
+<p>JVM:Happens-Before规则</p>
 </blockquote>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-helloworld.html">Spring基础 - Spring简单例子引入Spring的核心</a><ul>
-<li>上文中我们简单介绍了Spring和Spring Framework的组件，那么这些Spring Framework组件是如何配合工作的呢？本文主要承接上文，向你展示Spring Framework组件的典型应用场景和基于这个场景设计出的简单案例，并以此引出Spring的核心要点，比如IOC和AOP等；在此基础上还引入了不同的配置方式， 如XML，Java配置和注解方式的差异。</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-framework-helloworld-2.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-ioc.html">Spring基础 - Spring核心之控制反转(IOC)</a><ul>
-<li>在<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-helloworld.html">Spring基础 - Spring简单例子引入Spring的核心</a>中向你展示了IoC的基础含义，同时以此发散了一些IoC相关知识点; 本节将在此基础上进一步解读IOC的含义以及IOC的使用方式</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-framework-ioc-2.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop.html">Spring基础 - Spring核心之面向切面编程(AOP)</a><ul>
-<li>在<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-helloworld.html">Spring基础 - Spring简单例子引入Spring的核心</a>中向你展示了AOP的基础含义，同时以此发散了一些AOP相关知识点; 本节将在此基础上进一步解读AOP的含义以及AOP的使用方式。</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-framework-aop-2.png"></p>
+<hr>
+<ol>
+<li>ThreadLocal</li>
+</ol>
 <blockquote>
-<p>基于Spring框架和IOC，AOP的基础，为构建上层web应用，需要进一步学习SpringMVC。</p>
+<ol>
+<li>初始化 ThreadLocal<String> a &#x3D; new ThreadLocal&lt;&gt;();</String></li>
+<li>初始化赋值ThreadLocal.withInitial(() -&gt; 6);</li>
+<li>set</li>
+<li>get</li>
+<li>子类可访问父类的值，InheritableThreadLocal</li>
+</ol>
 </blockquote>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-springmvc.html">Spring基础 - SpringMVC请求流程和案例</a><ul>
-<li>前文我们介绍了Spring框架和Spring框架中最为重要的两个技术点（IOC和AOP），那我们如何更好的构建上层的应用呢（比如web 应用），这便是SpringMVC；Spring MVC是Spring在Spring Container Core和AOP等技术基础上，遵循上述Web MVC的规范推出的web开发框架，目的是为了简化Java栈的web开发。 本文主要介绍SpringMVC的请求流程和基础案例的编写和运行。</li>
-</ul>
+<h3 id="2、核心技术"><a href="#2、核心技术" class="headerlink" title="2、核心技术"></a>2、核心技术</h3><h3 id="3、JVM"><a href="#3、JVM" class="headerlink" title="3、JVM"></a>3、JVM</h3><h3 id="4、工具类"><a href="#4、工具类" class="headerlink" title="4、工具类"></a>4、工具类</h3><h3 id="5、开源技术"><a href="#5、开源技术" class="headerlink" title="5、开源技术"></a>5、开源技术</h3><h2 id="四、web技术栈"><a href="#四、web技术栈" class="headerlink" title="四、web技术栈"></a>四、web技术栈</h2><h2 id="五、云原生技术"><a href="#五、云原生技术" class="headerlink" title="五、云原生技术"></a>五、云原生技术</h2><h3 id="1、k8s"><a href="#1、k8s" class="headerlink" title="1、k8s"></a>1、k8s</h3><h3 id="2、docker"><a href="#2、docker" class="headerlink" title="2、docker"></a>2、docker</h3><h2 id="六、大数据技术栈"><a href="#六、大数据技术栈" class="headerlink" title="六、大数据技术栈"></a>六、大数据技术栈</h2><h3 id="1、spark"><a href="#1、spark" class="headerlink" title="1、spark"></a>1、spark</h3><h3 id="2、hadoop"><a href="#2、hadoop" class="headerlink" title="2、hadoop"></a>2、hadoop</h3><h4 id="2-1HDFS"><a href="#2-1HDFS" class="headerlink" title="2.1HDFS"></a>2.1HDFS</h4><h4 id="2-2mapreduce"><a href="#2-2mapreduce" class="headerlink" title="2.2mapreduce"></a>2.2mapreduce</h4><h3 id="3、hive"><a href="#3、hive" class="headerlink" title="3、hive"></a>3、hive</h3><h3 id="4、flink"><a href="#4、flink" class="headerlink" title="4、flink"></a>4、flink</h3><h3 id="5、yarn"><a href="#5、yarn" class="headerlink" title="5、yarn"></a>5、yarn</h3><h3 id="6、hbase"><a href="#6、hbase" class="headerlink" title="6、hbase"></a>6、hbase</h3><h2 id="七、辅助语言"><a href="#七、辅助语言" class="headerlink" title="七、辅助语言"></a>七、辅助语言</h2><h3 id="1、shell"><a href="#1、shell" class="headerlink" title="1、shell"></a>1、shell</h3><h3 id="2、python"><a href="#2、python" class="headerlink" title="2、python"></a>2、python</h3><h3 id="3、scala"><a href="#3、scala" class="headerlink" title="3、scala"></a>3、scala</h3><h2 id="八、开发工具"><a href="#八、开发工具" class="headerlink" title="八、开发工具"></a>八、开发工具</h2><h3 id="1、maven"><a href="#1、maven" class="headerlink" title="1、maven"></a>1、maven</h3><h3 id="2、intellij-idea"><a href="#2、intellij-idea" class="headerlink" title="2、intellij idea"></a>2、intellij idea</h3><ol>
+<li><p>debug</p>
+<p>类型名@hashcode  对象.toString</p>
 </li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-springframework-mvc-5.png"></p>
+</ol>
+<p><img src="/2023/02/12/%E6%80%BB%E8%A7%88/%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB/Users\jiang\AppData\Roaming\Typora\typora-user-images\image-20220215221633252.png" alt="image-20220215221633252"></p>
+<h3 id="3、GIT"><a href="#3、GIT" class="headerlink" title="3、GIT"></a>3、GIT</h3><h2 id="九、项目总结"><a href="#九、项目总结" class="headerlink" title="九、项目总结"></a>九、项目总结</h2><h3 id="1、热数据识别"><a href="#1、热数据识别" class="headerlink" title="1、热数据识别"></a>1、热数据识别</h3><h3 id="2、kylin"><a href="#2、kylin" class="headerlink" title="2、kylin"></a>2、kylin</h3><h4 id="2-1自定义类加载器"><a href="#2-1自定义类加载器" class="headerlink" title="2.1自定义类加载器"></a>2.1自定义类加载器</h4><h4 id="2-2配置项"><a href="#2-2配置项" class="headerlink" title="2.2配置项"></a>2.2配置项</h4><h4 id="2-3数据库jdbc"><a href="#2-3数据库jdbc" class="headerlink" title="2.3数据库jdbc"></a>2.3数据库jdbc</h4><h3 id="3、近似查询"><a href="#3、近似查询" class="headerlink" title="3、近似查询"></a>3、近似查询</h3><h2 id="十、数据库-amp-SQL"><a href="#十、数据库-amp-SQL" class="headerlink" title="十、数据库&amp;SQL"></a>十、数据库&amp;SQL</h2><ol>
+<li><p>gaussdb</p>
+</li>
+<li><p>oracle</p>
+</li>
+<li><p>mysql</p>
+</li>
+<li><p>mppdb</p>
+</li>
+<li><p>sql语法</p>
+</li>
+</ol>
+<h2 id="十一、中间件"><a href="#十一、中间件" class="headerlink" title="十一、中间件"></a>十一、中间件</h2><ol>
+<li><p>NGINX</p>
+</li>
+<li><p>ZK</p>
+</li>
+<li><p>redis</p>
+</li>
+<li><p>缓存使用</p>
 <blockquote>
-<p>Spring进阶 - IoC，AOP以及SpringMVC的源码分析</p>
+<p>三种缓存：<a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1676912311085345745">https://baijiahao.baidu.com/s?id=1676912311085345745</a>  ConcurrentHashMap</p>
 </blockquote>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-ioc-source-1.html">Spring进阶 - Spring IOC实现原理详解之IOC体系结构设计</a><ul>
-<li>在对IoC有了初步的认知后，我们开始对IOC的实现原理进行深入理解。本文将帮助你站在设计者的角度去看IOC最顶层的结构设计</li>
-</ul>
 </li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-framework-ioc-source-71.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-ioc-source-2.html">Spring进阶 - Spring IOC实现原理详解之IOC初始化流程</a><ul>
-<li>上文，我们看了IOC设计要点和设计结构；紧接着这篇，我们可以看下源码的实现了：Spring如何实现将资源配置（以xml配置为例）通过加载，解析，生成BeanDefination并注册到IoC容器中的</li>
-</ul>
+</ol>
+<h2 id="十二、常用开源组件"><a href="#十二、常用开源组件" class="headerlink" title="十二、常用开源组件"></a>十二、常用开源组件</h2><p>开源组件很多，只要知道功能就行，具体使用时再去了解详细的使用方法</p>
+<ol>
+<li><p>sql解析相关</p>
+<blockquote>
+<p>apache calcite</p>
+<p>ant4r</p>
+</blockquote>
 </li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-framework-ioc-source-8.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-ioc-source-3.html">Spring进阶 - Spring IOC实现原理详解之Bean实例化(生命周期,循环依赖等)</a><ul>
-<li>上文，我们看了IOC设计要点和设计结构；以及Spring如何实现将资源配置（以xml配置为例）通过加载，解析，生成BeanDefination并注册到IoC容器中的；容器中存放的是Bean的定义即BeanDefinition放到beanDefinitionMap中，本质上是一个<code>ConcurrentHashMap&lt;String, Object&gt;</code>；并且BeanDefinition接口中包含了这个类的Class信息以及是否是单例等。那么如何从BeanDefinition中实例化Bean对象呢，这是本文主要研究的内容？</li>
-</ul>
+<li><p>json序列化</p>
+<blockquote>
+<p>fastjson</p>
+<p>jackson</p>
+<p>objectinputstream</p>
+<p>JSON</p>
+</blockquote>
 </li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-framework-ioc-source-102.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop-source-1.html">Spring进阶 - Spring AOP实现原理详解之切面实现</a><ul>
-<li>前文，我们分析了Spring IOC的初始化过程和Bean的生命周期等，而Spring AOP也是基于IOC的Bean加载来实现的。本文主要介绍Spring AOP原理解析的切面实现过程(将切面类的所有切面方法根据使用的注解生成对应Advice，并将Advice连同切入点匹配器和切面类等信息一并封装到Advisor，为后续交给代理增强实现做准备的过程)。</li>
-</ul>
+<li><p>远程调用</p>
+<blockquote>
+<p>RPC</p>
+<p>RMI</p>
+<p>thift</p>
+</blockquote>
 </li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-springframework-aop-4.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop-source-2.html">Spring进阶 - Spring AOP实现原理详解之AOP代理</a><ul>
-<li>上文我们介绍了Spring AOP原理解析的切面实现过程(将切面类的所有切面方法根据使用的注解生成对应Advice，并将Advice连同切入点匹配器和切面类等信息一并封装到Advisor)。本文在此基础上继续介绍，代理（cglib代理和JDK代理）的实现过程。</li>
-</ul>
+<li><p>NIO</p>
+<blockquote>
+<p>NETTY</p>
+</blockquote>
 </li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-springframework-aop-51.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop-source-3.html">Spring进阶 - Spring AOP实现原理详解之Cglib代理实现</a><ul>
-<li>我们在前文中已经介绍了SpringAOP的切面实现和创建动态代理的过程，那么动态代理是如何工作的呢？本文主要介绍Cglib动态代理的案例和SpringAOP实现的原理。</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-springframework-aop-63.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop-source-4.html">Spring进阶 - Spring AOP实现原理详解之JDK代理实现</a><ul>
-<li>上文我们学习了SpringAOP Cglib动态代理的实现，本文主要是SpringAOP JDK动态代理的案例和实现部分。</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-springframework-aop-71.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-springmvc-source-1.html">Spring进阶 - SpringMVC实现原理之DispatcherServlet初始化的过程</a><ul>
-<li>前文我们有了IOC的源码基础以及SpringMVC的基础，我们便可以进一步深入理解SpringMVC主要实现原理，包含DispatcherServlet的初始化过程和DispatcherServlet处理请求的过程的源码解析。本文是第一篇：DispatcherServlet的初始化过程的源码解析。</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-springframework-mvc-23.png"></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-springmvc-source-2.html">Spring进阶 - SpringMVC实现原理之DispatcherServlet处理请求的过程</a><ul>
-<li>前文我们有了IOC的源码基础以及SpringMVC的基础，我们便可以进一步深入理解SpringMVC主要实现原理，包含DispatcherServlet的初始化过程和DispatcherServlet处理请求的过程的源码解析。本文是第二篇：DispatcherServlet处理请求的过程的源码解析。</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/spring-springframework-mvc-30.png"></p>
-
+</ol>
+<h2 id="十三、liunx-x2F-shell"><a href="#十三、liunx-x2F-shell" class="headerlink" title="十三、liunx&#x2F;shell"></a>十三、liunx&#x2F;shell</h2><h2 id="十四、编码规范"><a href="#十四、编码规范" class="headerlink" title="十四、编码规范"></a>十四、编码规范</h2><h2 id="十五、测试相关"><a href="#十五、测试相关" class="headerlink" title="十五、测试相关"></a>十五、测试相关</h2><ol>
+<li>安全测试</li>
+<li>自动化（web&#x2F;api）自动化</li>
+<li><strong>写测试类代替main函数来做UT测试</strong></li>
+<li>IT</li>
+</ol>
+<h2 id="十六、大模型相关"><a href="#十六、大模型相关" class="headerlink" title="十六、大模型相关"></a>十六、大模型相关</h2>
       
        <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 w_huilong@163.com </span>
     </div>

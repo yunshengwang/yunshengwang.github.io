@@ -6,19 +6,67 @@
   <meta name="keywords" content=" java , io ">
   <meta name="description" content="常见类使用 | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="1、配置github客户端ssh-keygen -t rsa -C &amp;#119;&amp;#x5f;&amp;#x68;&amp;#117;&amp;#x69;&amp;#x6c;&amp;#111;&amp;#110;&amp;#103;&amp;#x40;&amp;#x31;&amp;#54;&amp;#51;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;ssh -T &amp;#103;&amp;#x69;&amp;#116;&amp;#64;&amp;#103;&amp;#105;&amp;#116;&amp;#x68;&amp;#x75;&amp;#x62;&amp;">
+<meta name="description" content="BAT大厂面试题与全栈知识体系结合 Hot必读提示 你好，我是pdai。你是否也曾对未来迷茫不知方向，也曾每天在碎片化的学习中焦虑，也曾钦羡他人步入高于你的层次? 那么跟随我，结合BAT大厂面试题帮你构筑你自己的知识体系，提升靠技术实现自我价值的概率和掌控力；而往往当你将本文中知识点掌握时，你会发现那些平时高谈阔论的家伙其实都是纸老虎；但你依然要保持谦卑，闻道有先后，术业有专攻，如是而已。@pda">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hexoblog写作">
-<meta property="og:url" content="http://example.com/2023/01/23/hexoblog%E5%86%99%E4%BD%9C/index.html">
+<meta property="og:title" content="JAVA导读">
+<meta property="og:url" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Mr.Wang Blog">
-<meta property="og:description" content="1、配置github客户端ssh-keygen -t rsa -C &amp;#119;&amp;#x5f;&amp;#x68;&amp;#117;&amp;#x69;&amp;#x6c;&amp;#111;&amp;#110;&amp;#103;&amp;#x40;&amp;#x31;&amp;#54;&amp;#51;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;ssh -T &amp;#103;&amp;#x69;&amp;#116;&amp;#64;&amp;#103;&amp;#105;&amp;#116;&amp;#x68;&amp;#x75;&amp;#x62;&amp;">
+<meta property="og:description" content="BAT大厂面试题与全栈知识体系结合 Hot必读提示 你好，我是pdai。你是否也曾对未来迷茫不知方向，也曾每天在碎片化的学习中焦虑，也曾钦羡他人步入高于你的层次? 那么跟随我，结合BAT大厂面试题帮你构筑你自己的知识体系，提升靠技术实现自我价值的概率和掌控力；而往往当你将本文中知识点掌握时，你会发现那些平时高谈阔论的家伙其实都是纸老虎；但你依然要保持谦卑，闻道有先后，术业有专攻，如是而已。@pda">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-01-23T05:59:21.000Z">
-<meta property="article:modified_time" content="2024-02-12T05:54:12.939Z">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_basic.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_collections_overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-concurrent-overview-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-io-overview2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java8-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-9.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-10.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-11.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-12.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-13.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-14.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-15.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-16.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-17.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/jvm-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-debug.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-overview-x.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-sort-overview-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-domain-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-object-2-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-basic-0.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-y-echo-11.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-usage-spring-5.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/dev.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-design-2-1.jpeg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-start-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mybatis-y-arch-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-introduce-8.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-helloworld-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-aop-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-5.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-71.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-8.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-102.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-4.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-51.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-63.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-71.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-23.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-30.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/design-pattern.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-x-overview-learn2.png">
+<meta property="article:published_time" content="2023-12-11T06:39:22.000Z">
+<meta property="article:modified_time" content="2024-02-12T13:02:16.142Z">
 <meta property="article:author" content="王云生">
-<meta property="article:tag" content="hexo">
-<meta property="article:tag" content="tool">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -164,24 +212,10 @@
     <li>
         <div class="all active" data-rel="全部文章">全部文章
             
-                <small>(70)</small>
+                <small>(71)</small>
             
         </div>
     </li>
-    
-        
-            
-                <li>
-                    <div data-rel="导读">
-                        
-                        导读
-                        <small>(1)</small>
-                        
-                    </div>
-                    
-                </li>
-            
-        
     
         
             
@@ -402,6 +436,20 @@
     
         
             
+                <li>
+                    <div data-rel="总览">
+                        
+                        总览
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                </li>
+            
+        
+    
+        
+            
         
     
         
@@ -461,8 +509,8 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="70">
-<input type="hidden" id="yelog_site_word_count" value="357.2k">
+<input type="hidden" id="yelog_site_posts_number" value="71">
+<input type="hidden" id="yelog_site_word_count" value="357.6k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -623,12 +671,21 @@
     <nav id="title-list-nav">
         
         
-        <a id="top" class="全部文章 导读 "
-           href="/2022/12/11/%E5%AF%BC%E8%AF%BB/"
+        <a id="top" class="全部文章 总览 "
+           href="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/"
            data-tag="java"
            data-author="" >
-            <span class="post-title" title="导读">导读</span>
-            <span class="post-date" title="2022-12-11 14:39:22">2022/12/11</span>
+            <span class="post-title" title="JAVA导读">JAVA导读</span>
+            <span class="post-date" title="2023-12-11 14:39:22">2023/12/11</span>
+        </a>
+        
+        
+        <a id="top" class="全部文章 总览 "
+           href="/2023/02/12/%E6%80%BB%E8%A7%88/%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="知识体系">知识体系</span>
+            <span class="post-date" title="2023-02-12 14:06:42">2023/02/12</span>
         </a>
         
         
@@ -642,7 +699,7 @@
         
         
         <a  class="全部文章 工具 HEXO "
-           href="/2023/01/23/hexoblog%E5%86%99%E4%BD%9C/"
+           href="/2023/01/23/%E5%B7%A5%E5%85%B7/hexoblog%E5%86%99%E4%BD%9C/"
            data-tag="hexo,tool"
            data-author="" >
             <span class="post-title" title="hexoblog写作">hexoblog写作</span>
@@ -660,7 +717,7 @@
         
         
         <a  class="全部文章 工具 百宝箱 "
-           href="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
+           href="/2022/12/11/%E5%B7%A5%E5%85%B7/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
            data-tag="tool"
            data-author="" >
             <span class="post-title" title="开发百宝箱">开发百宝箱</span>
@@ -1137,7 +1194,7 @@
         
         
         <a  class="全部文章 Spring SpringBoot2.5.X系列 "
-           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           href="/2022/12/10/spring/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
            data-tag="java,spring,spring boot"
            data-author="" >
             <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
@@ -1146,7 +1203,7 @@
         
         
         <a  class="全部文章 Spring SpringFrameWork5基础 "
-           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           href="/2022/12/10/spring/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
            data-tag="java,spring"
            data-author="" >
             <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
@@ -1245,7 +1302,7 @@
         
         
         <a  class="全部文章 工具 HEXO "
-           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           href="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
            data-tag="hexo,tool"
            data-author="" >
             <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>

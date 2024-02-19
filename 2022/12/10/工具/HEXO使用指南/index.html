@@ -6,19 +6,67 @@
   <meta name="keywords" content=" hexo , tool ">
   <meta name="description" content="HEXO使用指南 | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="1、配置github客户端ssh-keygen -t rsa -C &amp;#119;&amp;#x5f;&amp;#x68;&amp;#117;&amp;#x69;&amp;#x6c;&amp;#111;&amp;#110;&amp;#103;&amp;#x40;&amp;#x31;&amp;#54;&amp;#51;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;ssh -T &amp;#103;&amp;#x69;&amp;#116;&amp;#64;&amp;#103;&amp;#105;&amp;#116;&amp;#x68;&amp;#x75;&amp;#x62;&amp;">
+<meta name="description" content="BAT大厂面试题与全栈知识体系结合 Hot必读提示 你好，我是pdai。你是否也曾对未来迷茫不知方向，也曾每天在碎片化的学习中焦虑，也曾钦羡他人步入高于你的层次? 那么跟随我，结合BAT大厂面试题帮你构筑你自己的知识体系，提升靠技术实现自我价值的概率和掌控力；而往往当你将本文中知识点掌握时，你会发现那些平时高谈阔论的家伙其实都是纸老虎；但你依然要保持谦卑，闻道有先后，术业有专攻，如是而已。@pda">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hexoblog写作">
-<meta property="og:url" content="http://example.com/2023/01/23/hexoblog%E5%86%99%E4%BD%9C/index.html">
+<meta property="og:title" content="JAVA导读">
+<meta property="og:url" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Mr.Wang Blog">
-<meta property="og:description" content="1、配置github客户端ssh-keygen -t rsa -C &amp;#119;&amp;#x5f;&amp;#x68;&amp;#117;&amp;#x69;&amp;#x6c;&amp;#111;&amp;#110;&amp;#103;&amp;#x40;&amp;#x31;&amp;#54;&amp;#51;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;ssh -T &amp;#103;&amp;#x69;&amp;#116;&amp;#64;&amp;#103;&amp;#105;&amp;#116;&amp;#x68;&amp;#x75;&amp;#x62;&amp;">
+<meta property="og:description" content="BAT大厂面试题与全栈知识体系结合 Hot必读提示 你好，我是pdai。你是否也曾对未来迷茫不知方向，也曾每天在碎片化的学习中焦虑，也曾钦羡他人步入高于你的层次? 那么跟随我，结合BAT大厂面试题帮你构筑你自己的知识体系，提升靠技术实现自我价值的概率和掌控力；而往往当你将本文中知识点掌握时，你会发现那些平时高谈阔论的家伙其实都是纸老虎；但你依然要保持谦卑，闻道有先后，术业有专攻，如是而已。@pda">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-01-23T05:59:21.000Z">
-<meta property="article:modified_time" content="2024-02-12T05:54:12.939Z">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_basic.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_collections_overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-concurrent-overview-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-io-overview2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java8-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-9.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-10.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-11.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-12.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-13.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-14.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-15.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-16.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-17.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/jvm-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-debug.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-overview-x.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-sort-overview-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-domain-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-object-2-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-basic-0.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-y-echo-11.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-usage-spring-5.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/dev.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-design-2-1.jpeg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-start-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mybatis-y-arch-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-introduce-8.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-helloworld-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-aop-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-5.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-71.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-8.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-102.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-4.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-51.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-63.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-71.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-23.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-30.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/design-pattern.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-x-overview-learn2.png">
+<meta property="article:published_time" content="2023-12-11T06:39:22.000Z">
+<meta property="article:modified_time" content="2024-02-12T13:02:16.142Z">
 <meta property="article:author" content="王云生">
-<meta property="article:tag" content="hexo">
-<meta property="article:tag" content="tool">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -164,24 +212,10 @@
     <li>
         <div class="all active" data-rel="全部文章">全部文章
             
-                <small>(70)</small>
+                <small>(71)</small>
             
         </div>
     </li>
-    
-        
-            
-                <li>
-                    <div data-rel="导读">
-                        
-                        导读
-                        <small>(1)</small>
-                        
-                    </div>
-                    
-                </li>
-            
-        
     
         
             
@@ -402,6 +436,20 @@
     
         
             
+                <li>
+                    <div data-rel="总览">
+                        
+                        总览
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                </li>
+            
+        
+    
+        
+            
         
     
         
@@ -461,8 +509,8 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="70">
-<input type="hidden" id="yelog_site_word_count" value="357.2k">
+<input type="hidden" id="yelog_site_posts_number" value="71">
+<input type="hidden" id="yelog_site_word_count" value="357.6k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -623,12 +671,21 @@
     <nav id="title-list-nav">
         
         
-        <a id="top" class="全部文章 导读 "
-           href="/2022/12/11/%E5%AF%BC%E8%AF%BB/"
+        <a id="top" class="全部文章 总览 "
+           href="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/"
            data-tag="java"
            data-author="" >
-            <span class="post-title" title="导读">导读</span>
-            <span class="post-date" title="2022-12-11 14:39:22">2022/12/11</span>
+            <span class="post-title" title="JAVA导读">JAVA导读</span>
+            <span class="post-date" title="2023-12-11 14:39:22">2023/12/11</span>
+        </a>
+        
+        
+        <a id="top" class="全部文章 总览 "
+           href="/2023/02/12/%E6%80%BB%E8%A7%88/%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="知识体系">知识体系</span>
+            <span class="post-date" title="2023-02-12 14:06:42">2023/02/12</span>
         </a>
         
         
@@ -642,7 +699,7 @@
         
         
         <a  class="全部文章 工具 HEXO "
-           href="/2023/01/23/hexoblog%E5%86%99%E4%BD%9C/"
+           href="/2023/01/23/%E5%B7%A5%E5%85%B7/hexoblog%E5%86%99%E4%BD%9C/"
            data-tag="hexo,tool"
            data-author="" >
             <span class="post-title" title="hexoblog写作">hexoblog写作</span>
@@ -660,7 +717,7 @@
         
         
         <a  class="全部文章 工具 百宝箱 "
-           href="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
+           href="/2022/12/11/%E5%B7%A5%E5%85%B7/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
            data-tag="tool"
            data-author="" >
             <span class="post-title" title="开发百宝箱">开发百宝箱</span>
@@ -1137,7 +1194,7 @@
         
         
         <a  class="全部文章 Spring SpringBoot2.5.X系列 "
-           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           href="/2022/12/10/spring/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
            data-tag="java,spring,spring boot"
            data-author="" >
             <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
@@ -1146,7 +1203,7 @@
         
         
         <a  class="全部文章 Spring SpringFrameWork5基础 "
-           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           href="/2022/12/10/spring/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
            data-tag="java,spring"
            data-author="" >
             <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
@@ -1245,7 +1302,7 @@
         
         
         <a  class="全部文章 工具 HEXO "
-           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           href="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
            data-tag="hexo,tool"
            data-author="" >
             <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
@@ -1270,7 +1327,7 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="post-HEXO使用指南" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-工具/HEXO使用指南" class="article article-type-post" itemscope itemprop="blogPost">
     
         <h1 class="article-title">HEXO使用指南</h1>
     
@@ -1362,12 +1419,12 @@
 <p>仓库名字必须是：username.github.io，其中username是你的用户名；</p>
 <p>仓库创建成功不会立即生效，需要过一段时间，大概10-30分钟，或者更久；</p>
 <p>创建页面如下： </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/ca3573693ec7d4b8f30b71b7f22a2003a9bac6e8.png@942w_675h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/ca3573693ec7d4b8f30b71b7f22a2003a9bac6e8.png@942w_675h_progressive.webp" alt="img"></p>
 <h2 id="2-2-绑定域名（这步可省略）"><a href="#2-2-绑定域名（这步可省略）" class="headerlink" title="2.2 绑定域名（这步可省略）"></a>2.2 绑定域名（这步可省略）</h2><p>当然，你不绑定域名肯定也是可以的，就用默认的 xxx.github.io 来访问，如果你想更个性一点，想拥有一个属于自己的域名，那也是OK的。</p>
 <p>首先你要注册一个域名，域名注册以前总是推荐去godaddy，现在觉得其实国内的阿里云也挺不错的，价格也不贵，毕竟是大公司，放心！</p>
 <p>绑定域名分2种情况：带www和不带www的。</p>
 <p>域名配置最常见有2种方式，CNAME和A记录，CNAME填写域名，A记录填写IP，由于不带www方式只能采用A记录，所以必须先ping一下你的用户名.github.io的IP，然后到你的域名DNS设置页，将A记录指向你ping出来的IP，将CNAME指向你的用户名.github.io，这样可以保证无论是否添加www都可以访问，如下：</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/cbcef276877a15fc1108cedf88d63ba5fd25a81f.png@756w_329h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/cbcef276877a15fc1108cedf88d63ba5fd25a81f.png@756w_329h_progressive.webp" alt="img"></p>
 <p>然后到你的github项目根目录新建一个名为CNAME的文件（无后缀），里面填写你的域名，加不加www看你自己喜好，因为经测试：</p>
 <p>如果你填写的是没有www的，比如 mygit.me，那么无论是访问 <a target="_blank" rel="noopener" href="http://www.mygit.me/">http://www.mygit.me</a> 还是 <a target="_blank" rel="noopener" href="http://mygit.me/">http://mygit.me</a> ，都会自动跳转到 <a target="_blank" rel="noopener" href="http://mygit.me/">http://mygit.me</a></p>
 <p>如果你填写的是带www的，比如 <a target="_blank" rel="noopener" href="http://www.mygit.me/">www.mygit.me</a> ，那么无论是访问 <a target="_blank" rel="noopener" href="http://www.mygit.me/">http://www.mygit.me</a> 还是 <a target="_blank" rel="noopener" href="http://mygit.me/">http://mygit.me</a> ，都会自动跳转到 <a target="_blank" rel="noopener" href="http://www.mygit.me/">http://www.mygit.me</a></p>
@@ -1377,34 +1434,34 @@
 <p>操作步骤：</p>
 <p>第一步：首先打开电脑文件夹，找到C:\Users\王海洋.ssh文件夹并删除</p>
 <p>第二步：在C:\Users\王海洋文件夹下右键打开Git Bash Here输入命令：ssh-keygen -t rsa -C github邮件地址   生成.ssh秘钥，输入后连敲三次回车，出现下图情况代表成功 </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/f8fb9a4ff9e0410bdbb1e4b89f34208ae2c6ecfd.jpg@942w_407h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/f8fb9a4ff9e0410bdbb1e4b89f34208ae2c6ecfd.jpg@942w_407h_progressive.webp" alt="img"></p>
 <p>第三步：最终生成了一个新的 C:\Users\王海洋.ssh文件夹，打开这个文件夹，找到.ssh\id_rsa.pub文件，记事本打开并复制里面的内容</p>
 <p>第四步：打开你的github主页，进入个人设置 -&gt; SSH and GPG keys -&gt; New SSH key，把复制的内容粘贴进去，title随便填，保存即可，我们的公钥就添加成功了，设置好如下图：</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/cae65261511e4bf7e4ea0e7838a5bfc5f3560d20.png@942w_509h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/cae65261511e4bf7e4ea0e7838a5bfc5f3560d20.png@942w_509h_progressive.webp" alt="img"></p>
 <p>第五步：检测是否设置成功：</p>
-<p>输入命令：  $ ssh -T <a href="mailto:&#103;&#x69;&#x74;&#x40;&#103;&#x69;&#116;&#104;&#117;&#98;&#x2e;&#x63;&#111;&#x6d;">&#103;&#x69;&#x74;&#x40;&#103;&#x69;&#116;&#104;&#117;&#98;&#x2e;&#x63;&#111;&#x6d;</a> # 注意邮箱地址不用改</p>
+<p>输入命令：  $ ssh -T <a href="mailto:&#103;&#x69;&#x74;&#x40;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#x63;&#x6f;&#109;">&#103;&#x69;&#x74;&#x40;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#x63;&#x6f;&#109;</a> # 注意邮箱地址不用改</p>
 <p>如果提示Are you sure you want to continue connecting (yes&#x2F;no)?，输入yes，然后会看到：</p>
 <p>Hi liuxianan! You’ve successfully authenticated, but GitHub does not provide shell access.</p>
 <p>看到这个信息说明SSH已配置成功！</p>
 <p>第六步：此时你还需要配置：</p>
-<p>$ git config –global user.name “liuxianan”&#x2F;&#x2F; 你的github用户名，非昵称$ git config –global user.email  “<a href="mailto:&#x78;&#120;&#120;&#64;&#x71;&#113;&#46;&#x63;&#111;&#109;">&#x78;&#120;&#120;&#64;&#x71;&#113;&#46;&#x63;&#111;&#109;</a>“&#x2F;&#x2F; 填写你的github注册邮箱</p>
+<p>$ git config –global user.name “liuxianan”&#x2F;&#x2F; 你的github用户名，非昵称$ git config –global user.email  “<a href="mailto:&#x78;&#x78;&#120;&#x40;&#x71;&#x71;&#x2e;&#x63;&#111;&#x6d;">&#x78;&#x78;&#120;&#x40;&#x71;&#x71;&#x2e;&#x63;&#111;&#x6d;</a>“&#x2F;&#x2F; 填写你的github注册邮箱</p>
 <h1 id="4-使用-hexo-搭建博客"><a href="#4-使用-hexo-搭建博客" class="headerlink" title="4.使用 hexo 搭建博客"></a>4.使用 hexo 搭建博客</h1><h2 id="4-1-初始化"><a href="#4-1-初始化" class="headerlink" title="4.1 初始化"></a>4.1 初始化</h2><p>第一步：在电脑的某个地方新建一个名为hexo的文件夹（名字可以随便取），比如我的是E:\xpzsData\hexocode，由于这个文件夹将来就作为你存放代码的地方，所以最好不要随便放</p>
 <p>第二步：在E:\xpzsData\hexocode文件夹下右键打开 Git Bash Here，输入hexo init 初始化</p>
 <p>hexo会自动下载一些文件到这个目录，包括node_modules，目录结构如下图： </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/a7f5fc12b8e28b751c024e1d0f760de338e32d81.png@942w_290h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/a7f5fc12b8e28b751c024e1d0f760de338e32d81.png@942w_290h_progressive.webp" alt="img"></p>
 <p>第三步：执行以下命令之后，hexo就会在public文件夹生成相关html文件，这些文件将来都是要提交到github去的：</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/f8d1a66cf00c3dfabb1bff69c531398ef0a33679.png@942w_56h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/f8d1a66cf00c3dfabb1bff69c531398ef0a33679.png@942w_56h_progressive.webp" alt="img"></p>
 <p>第四步：hexo s 是开启本地预览服务，打开浏览器访问 <a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000</a> 即可看到内容，很多人会碰到浏览器一直在转圈但是就是加载不出来的问题，一般情况下是因为端口占用的缘故，因为4000这个端口太常见了，解决端口冲突问题请参考这篇文章<a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/windows-finds-port-usage.html">https://www.runoob.com/w3cnote/windows-finds-port-usage.html</a></p>
 <p>到这里初始化就完成了</p>
 <p>4.2 将博客部署到 github 个人主页上</p>
 <p>第一步：在E:\xpzsData\hexocode目录下安装 hexo-deployer-git 插件</p>
 <p>安装命令： npm install hexo-deployer-git –save  </p>
 <p>必须安装，否则执行hexo d 的话会报如下错误： </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/f920d62b355a1a62bb9f6f37571edfb936fc03b2.png@815w_53h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/f920d62b355a1a62bb9f6f37571edfb936fc03b2.png@815w_53h_progressive.webp" alt="img"></p>
 <p>第二步：编辑E:\xpzsData\hexocode目录下的 _config.yml 文件, 在文件末尾添加如下内容：</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/9055b0cce324c115ecb9128c391d6239cb4ccec0.png@942w_153h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/9055b0cce324c115ecb9128c391d6239cb4ccec0.png@942w_153h_progressive.webp" alt="img"></p>
 <p>注意：其中 repo 中的内容即为 github 个人主页链接地址，具体看下图：</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/9cc1855324f9f968aa56d8a94a913475b3bc1d70.png@942w_437h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/9cc1855324f9f968aa56d8a94a913475b3bc1d70.png@942w_437h_progressive.webp" alt="img"></p>
 <p>第三步：在E:\xpzsData\hexocode目录下, 输入命令：hexo d 将本地 blog 推送到 github仓库, 也可能需要输入 username &amp; pwd。</p>
 <p>推送成功后, 在浏览器中输入对应域名, 即可访问 <a target="_blank" rel="noopener" href="https://reclusew.github.io/">https://reclusew.github.io/</a></p>
 <h1 id="5-更换主题"><a href="#5-更换主题" class="headerlink" title="5.更换主题"></a>5.更换主题</h1><h2 id="5-1-寻找主题"><a href="#5-1-寻找主题" class="headerlink" title="5.1 寻找主题"></a>5.1 寻找主题</h2><p>既然默认主题很丑，那我们别的不做，首先来替换一个好看点的主题。</p>
@@ -1413,27 +1470,27 @@
 <p>链接：<a target="_blank" rel="noopener" href="https://github.com/blinkfox/hexo-theme-matery">https://github.com/blinkfox/hexo-theme-matery</a>    </p>
 <h2 id="5-2-下载主题"><a href="#5-2-下载主题" class="headerlink" title="5.2 下载主题"></a>5.2 下载主题</h2><p>第一步：Git Bash Here中先cd到E:\xpzsData\hexocode目录</p>
 <p>第二步：再输入命令 $ git clone 主题http链接  themes&#x2F;主题名称 </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/dc6cf704d5d468a2f02dcd044fc4a0b4daf78960.png@942w_507h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/dc6cf704d5d468a2f02dcd044fc4a0b4daf78960.png@942w_507h_progressive.webp" alt="img"></p>
 <p>注意：</p>
 <p>E:\xpzsData\hexocode目录下的 theme 文件夹下存放的就是博客的主题，主题是否下载成功可到该目录下查看： </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/075cf0ecdb17fd480e0a705242cf9b6cf28510ee.png@942w_225h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/075cf0ecdb17fd480e0a705242cf9b6cf28510ee.png@942w_225h_progressive.webp" alt="img"></p>
 <h2 id="5-3-使用主题"><a href="#5-3-使用主题" class="headerlink" title="5.3 使用主题"></a>5.3 使用主题</h2><p>打开E:\xpzsData\hexocode目录下的_config.yml文件，在里面找到theme: landscape改为theme: blinkfox   （blinkfox为我们要使用的主题名）,然后重新执行hexo g来重新生成。</p>
 <p>如果出现一些莫名其妙的问题，可以先执行hexo clean来清理一下public的内容，然后再执行hexo g 和 hexo s 重新生成和发布。</p>
 <p>再次在浏览器中输入对应域名, 即可发现主题已更换</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/b122a24f4e848f12e98c105e30e57fdc770d6690.png@942w_251h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/b122a24f4e848f12e98c105e30e57fdc770d6690.png@942w_251h_progressive.webp" alt="img"></p>
 <h2 id="5-4-修改主题内容"><a href="#5-4-修改主题内容" class="headerlink" title="5.4 修改主题内容"></a>5.4 修改主题内容</h2><p>在这里我使用的是blinkfox主题，后期相关修改参考这个主题文档</p>
 <p>文档链接：<a target="_blank" rel="noopener" href="https://github.com/blinkfox/hexo-theme-matery/blob/develop/README_CN.md">https://github.com/blinkfox/hexo-theme-matery/blob/develop/README_CN.md</a></p>
 <p>注意：一些非md文件可以把他们放到source文件夹下，这里的所有文件都会原样复制（除了md文件）到public目录的</p>
 <p>大致在下图的文件夹里面修改文件，记得修改后的文件需要关闭后，再在hexocode根目录右键打开Git Bash Here，输入两个命令：hexo g 重新生成，hexo s 开启本地预览服务,等修改的符合要求了，再输入 hexo d 推送到github仓库即可</p>
 <p>这样就可以输入网址查看更改后的内容了 </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/426b2c5a296d531dcae228493e6d63868179f132.png@942w_353h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/426b2c5a296d531dcae228493e6d63868179f132.png@942w_353h_progressive.webp" alt="img"></p>
 <p>文档上没有提及的修改：</p>
 <p>返回按钮样式修改：在主题下面的 blinkfox\layout_partial 文件夹中的 back-top.esj 文件中修改</p>
 <p>特别注意：</p>
 <p>修改生成的默认页面信息，要到主题下面的_config.yml文件里面去改，而不是根目录下的_config.yml文件 </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/312648b8eabe0b58395774e2742277f9690a94c6.png@942w_288h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/312648b8eabe0b58395774e2742277f9690a94c6.png@942w_288h_progressive.webp" alt="img"></p>
 <p>要把根目录下的_config.yml文件中的这些信息替换成自己的和设置中文</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/9545db7dea8f6d676b15ebe2d5542fec221d22ca.png@942w_191h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/9545db7dea8f6d676b15ebe2d5542fec221d22ca.png@942w_191h_progressive.webp" alt="img"></p>
 <h2 id="5-5-blinkfox主题的相关配置问题"><a href="#5-5-blinkfox主题的相关配置问题" class="headerlink" title="5.5 blinkfox主题的相关配置问题"></a>5.5 blinkfox主题的相关配置问题</h2><p>配置音乐播放器：使用网易云音乐id不行，这里用的是QQ音乐</p>
 <p>配置留言功能（利用Valine）：</p>
 <p>我们的评论系统其实是放在Leancloud上的，因此首先需要去注册一个账号</p>
@@ -1446,7 +1503,7 @@
 <h2 id="6-2-安装Typora"><a href="#6-2-安装Typora" class="headerlink" title="6.2 安装Typora"></a>6.2 安装Typora</h2><p>官网：<a target="_blank" rel="noopener" href="https://www.typora.io/#windows">https://www.typora.io/#windows</a></p>
 <h2 id="6-3-写博客的步骤"><a href="#6-3-写博客的步骤" class="headerlink" title="6.3  写博客的步骤"></a>6.3  写博客的步骤</h2><p>第一步：创建.md文件</p>
 <p>方法1：定位到我们的hexo根目录，Git Bash Here 中执行命令：  hexo new ‘my-first-blog’                hexo会帮我们在E:\xpzsData\hexocode\source_posts 下生成相关.md文件，用这个命令的好处是帮我们自动生成了时间，方法1默认生成如下内容：</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/0d70f8f2da7bf1cb8d0bf4f12b3b9fec5e932a73.png@942w_113h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/0d70f8f2da7bf1cb8d0bf4f12b3b9fec5e932a73.png@942w_113h_progressive.webp" alt="img"></p>
 <p>方法2：当然你也可以直接自己打开E:\xpzsData\hexocode\source_posts 目录新建.md文件</p>
 <p>第二步：编写并保存</p>
 <p>我们只需要用typora打开这个文件就可以开始写博客了，写完后Ctrl+S 保存关闭即可</p>
@@ -1460,13 +1517,13 @@
 <p>快捷键文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39533052/article/details/111115263">https://blog.csdn.net/weixin_39533052/article/details/111115263</a></p>
 <h2 id="6-5-注意：所使用的主题的文章-Front-matter-语法"><a href="#6-5-注意：所使用的主题的文章-Front-matter-语法" class="headerlink" title="6.5  注意：所使用的主题的文章 Front-matter 语法"></a>6.5  注意：所使用的主题的文章 Front-matter 语法</h2><p>依据使用的不同主题，一些文章功能所使用的语法可能不一样，例如写博客时给文章添加标签的语法等等，这些都要看所使用的主题的文档，例如我们这里使用的是 blinkfox 主题，打开主题文档，往下翻找到”  文章 Front-matter 介绍 “即可。</p>
 <p>blinkfox主题文档：<a target="_blank" rel="noopener" href="https://github.com/blinkfox/hexo-theme-matery/blob/develop/README_CN.md#%E6%96%87%E7%AB%A0-front-matter-%E4%BB%8B%E7%BB%8D">https://github.com/blinkfox/hexo-theme-matery/blob/develop/README_CN.md#%E6%96%87%E7%AB%A0-front-matter-%E4%BB%8B%E7%BB%8D</a> </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/0af1d0ecbd93998845cc275f669efdb2fa30ee8e.png@942w_1037h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/0af1d0ecbd93998845cc275f669efdb2fa30ee8e.png@942w_1037h_progressive.webp" alt="img"></p>
 <p>示例：</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/ad0a41f6a4e3350f6ade4d81c049a8e6974e8d15.png@942w_1184h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/ad0a41f6a4e3350f6ade4d81c049a8e6974e8d15.png@942w_1184h_progressive.webp" alt="img"></p>
 <h2 id="6-6-YAML语法（了解）"><a href="#6-6-YAML语法（了解）" class="headerlink" title="6.6 YAML语法（了解）"></a>6.6 YAML语法（了解）</h2><p>像在typora中添加tags时，可以直接用数组的写法，也可以使用YAML语法，如下： </p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/564b63dd8bfd17539a3b0d7f1992e27b6c5ee77d.png@942w_263h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/564b63dd8bfd17539a3b0d7f1992e27b6c5ee77d.png@942w_263h_progressive.webp" alt="img"></p>
 <p>YAML教程链接：<a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/yaml-intro.html">https://www.runoob.com/w3cnote/yaml-intro.html</a></p>
-<h1 id="7-如何向hexo博客中插入图片"><a href="#7-如何向hexo博客中插入图片" class="headerlink" title="7.如何向hexo博客中插入图片"></a>7.如何向hexo博客中插入图片</h1><h2 id="7-1-使用相对路径的方式"><a href="#7-1-使用相对路径的方式" class="headerlink" title="7.1 使用相对路径的方式"></a>7.1 使用相对路径的方式</h2><p>众所周知，在md文件中插入图片的语法为<img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/">。</p>
+<h1 id="7-如何向hexo博客中插入图片"><a href="#7-如何向hexo博客中插入图片" class="headerlink" title="7.如何向hexo博客中插入图片"></a>7.如何向hexo博客中插入图片</h1><h2 id="7-1-使用相对路径的方式"><a href="#7-1-使用相对路径的方式" class="headerlink" title="7.1 使用相对路径的方式"></a>7.1 使用相对路径的方式</h2><p>众所周知，在md文件中插入图片的语法为<img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/">。</p>
 <p>其中方括号是图片描述，圆括号是图片路径。</p>
 <p>一般来说有三种图片路径，分别是相对路径，绝对路径和网络路径。</p>
 <p>所谓的网络路径就是直接引用网上的图片，直接复制图片地址，放在圆括号中就完事了。</p>
@@ -1480,25 +1537,25 @@
 <p>在hexo中使用文章资源文件夹需要在config.yaml文件中更改一下配置：</p>
 <p>post_asset_folder: true</p>
 <p>当该配置被应用后，使用hexo new命令创建新文章时，会生成相同名字的文件夹，也就是文章资源文件夹。</p>
-<p><img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/a07fded57b1cdeceecc21d68c3703b2cb002f088.png@942w_108h_progressive.webp" alt="img"></p>
+<p><img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/a07fded57b1cdeceecc21d68c3703b2cb002f088.png@942w_108h_progressive.webp" alt="img"></p>
 <p>由于项目会生成新的文件目录，同时会解析Markdown中的图片路径，会导致一个问题。</p>
 <p>如在一个文件目录下，博客名为1.md，相应的存在一个1文件夹存放图片image.jpg。</p>
-<p>在Typora编辑器中，普通的md文件使用<img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">能在编辑器中正常显示图片。</p>
-<p>在hexo中，按理说应该是使用<img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">，但网页中却无法正常显示。</p>
+<p>在Typora编辑器中，普通的md文件使用<img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">能在编辑器中正常显示图片。</p>
+<p>在hexo中，按理说应该是使用<img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">，但网页中却无法正常显示。</p>
 <p>此时应该使用这样的方式来引入图片：</p>
 
 
 <p>虽然可以正常引用图片了，但是这种引用图片的方式只有一句话能形容，wtf。</p>
 <h2 id="7-2-hexo-renderer-marked插件的安装与配置"><a href="#7-2-hexo-renderer-marked插件的安装与配置" class="headerlink" title="7.2 hexo-renderer-marked插件的安装与配置"></a>7.2 hexo-renderer-marked插件的安装与配置</h2><p>插件hexo-renderer-marked解决了这个问题</p>
 <p>安装： npm install hexo-renderer-marked –save   ，之后在config.yaml中更改配置即可</p>
-<p>之后就可以在使用 <img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">  的方式愉快的插入图片了。</p>
+<p>之后就可以在使用 <img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">  的方式愉快的插入图片了。</p>
 <p>我们做了这么多都是为了方便，那么为什么不再方便一点呢。</p>
 <h2 id="7-3-hexo-renderer-marked插件与Typora的完美结合"><a href="#7-3-hexo-renderer-marked插件与Typora的完美结合" class="headerlink" title="7.3 hexo-renderer-marked插件与Typora的完美结合"></a>7.3 hexo-renderer-marked插件与Typora的完美结合</h2><p>如果图片数量众多的话，一张一张的放很影响效率。但是不用怕，我们有很方便的解决方法。</p>
 <p>Typora是我非常喜欢的Markdown文本编辑器，在之前的文章中也介绍过一点。</p>
 <p>Typora对于插入图片的支持做得非常好，在文件-&gt;偏好设置或者直接&lt;C-,&gt;进入设置。</p>
 <p>复制网络路径的图片：</p>
 <p>使用该配置后，可以直接复制网页中的图片地址，粘贴到Typora中后，会直接复制该图片到文章资源文件夹，同时自动更改路径。</p>
-<p>如复制网络路径的图片https:&#x2F;&#x2F;…..&#x2F;image.jpg粘贴到Typora中叫文章名的文章后，图片会自动变为<img src="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">。</p>
+<p>如复制网络路径的图片https:&#x2F;&#x2F;…..&#x2F;image.jpg粘贴到Typora中叫文章名的文章后，图片会自动变为<img src="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/image.jpg">。</p>
 <p>但我们知道部署后，文件路径是不同的，所以当我们插入完所有的图片后，我们还需要删除每个图片路径中的文件名&#x2F;。不慌，也很简单。</p>
 <p>在Typora编辑器中，使用<C-f>快捷键，将所有的文章名&#x2F;替换为空即可删除。</C-f></p>
 <p>然后再将博客上传，图片就会随着文章一起打包。在网页中就可以看到正常显示的图片，大功告成。</p>

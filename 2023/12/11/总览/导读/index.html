@@ -2,23 +2,71 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>导读 | Mr.Wang Blog</title>
+  <title>JAVA导读 | Mr.Wang Blog</title>
   <meta name="keywords" content=" java ">
-  <meta name="description" content="导读 | Mr.Wang Blog">
+  <meta name="description" content="JAVA导读 | Mr.Wang Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="1、配置github客户端ssh-keygen -t rsa -C &amp;#119;&amp;#x5f;&amp;#x68;&amp;#117;&amp;#x69;&amp;#x6c;&amp;#111;&amp;#110;&amp;#103;&amp;#x40;&amp;#x31;&amp;#54;&amp;#51;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;ssh -T &amp;#103;&amp;#x69;&amp;#116;&amp;#64;&amp;#103;&amp;#105;&amp;#116;&amp;#x68;&amp;#x75;&amp;#x62;&amp;">
+<meta name="description" content="BAT大厂面试题与全栈知识体系结合 Hot必读提示 你好，我是pdai。你是否也曾对未来迷茫不知方向，也曾每天在碎片化的学习中焦虑，也曾钦羡他人步入高于你的层次? 那么跟随我，结合BAT大厂面试题帮你构筑你自己的知识体系，提升靠技术实现自我价值的概率和掌控力；而往往当你将本文中知识点掌握时，你会发现那些平时高谈阔论的家伙其实都是纸老虎；但你依然要保持谦卑，闻道有先后，术业有专攻，如是而已。@pda">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hexoblog写作">
-<meta property="og:url" content="http://example.com/2023/01/23/hexoblog%E5%86%99%E4%BD%9C/index.html">
+<meta property="og:title" content="JAVA导读">
+<meta property="og:url" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Mr.Wang Blog">
-<meta property="og:description" content="1、配置github客户端ssh-keygen -t rsa -C &amp;#119;&amp;#x5f;&amp;#x68;&amp;#117;&amp;#x69;&amp;#x6c;&amp;#111;&amp;#110;&amp;#103;&amp;#x40;&amp;#x31;&amp;#54;&amp;#51;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;ssh -T &amp;#103;&amp;#x69;&amp;#116;&amp;#64;&amp;#103;&amp;#105;&amp;#116;&amp;#x68;&amp;#x75;&amp;#x62;&amp;">
+<meta property="og:description" content="BAT大厂面试题与全栈知识体系结合 Hot必读提示 你好，我是pdai。你是否也曾对未来迷茫不知方向，也曾每天在碎片化的学习中焦虑，也曾钦羡他人步入高于你的层次? 那么跟随我，结合BAT大厂面试题帮你构筑你自己的知识体系，提升靠技术实现自我价值的概率和掌控力；而往往当你将本文中知识点掌握时，你会发现那些平时高谈阔论的家伙其实都是纸老虎；但你依然要保持谦卑，闻道有先后，术业有专攻，如是而已。@pda">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-01-23T05:59:21.000Z">
-<meta property="article:modified_time" content="2024-02-12T05:54:12.939Z">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_basic.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_collections_overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-concurrent-overview-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-io-overview2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java8-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-9.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-10.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-11.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-12.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-13.jpg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-14.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-15.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-16.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-17.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/jvm-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-debug.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-overview-x.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-sort-overview-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-domain-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-overview.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-object-2-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-basic-0.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-y-echo-11.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-usage-spring-5.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/dev.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-design-2-1.jpeg">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-start-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mybatis-y-arch-1.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-introduce-8.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-helloworld-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-aop-2.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-5.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-71.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-8.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-102.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-4.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-51.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-63.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-71.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-23.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-30.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/design-pattern.png">
+<meta property="og:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-x-overview-learn2.png">
+<meta property="article:published_time" content="2023-12-11T06:39:22.000Z">
+<meta property="article:modified_time" content="2024-02-12T13:02:16.142Z">
 <meta property="article:author" content="王云生">
-<meta property="article:tag" content="hexo">
-<meta property="article:tag" content="tool">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -164,24 +212,10 @@
     <li>
         <div class="all active" data-rel="全部文章">全部文章
             
-                <small>(70)</small>
+                <small>(71)</small>
             
         </div>
     </li>
-    
-        
-            
-                <li>
-                    <div data-rel="导读">
-                        
-                        导读
-                        <small>(1)</small>
-                        
-                    </div>
-                    
-                </li>
-            
-        
     
         
             
@@ -402,6 +436,20 @@
     
         
             
+                <li>
+                    <div data-rel="总览">
+                        
+                        总览
+                        <small>(2)</small>
+                        
+                    </div>
+                    
+                </li>
+            
+        
+    
+        
+            
         
     
         
@@ -461,8 +509,8 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="70">
-<input type="hidden" id="yelog_site_word_count" value="357.2k">
+<input type="hidden" id="yelog_site_posts_number" value="71">
+<input type="hidden" id="yelog_site_word_count" value="357.6k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -623,12 +671,21 @@
     <nav id="title-list-nav">
         
         
-        <a id="top" class="全部文章 导读 "
-           href="/2022/12/11/%E5%AF%BC%E8%AF%BB/"
+        <a id="top" class="全部文章 总览 "
+           href="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/"
            data-tag="java"
            data-author="" >
-            <span class="post-title" title="导读">导读</span>
-            <span class="post-date" title="2022-12-11 14:39:22">2022/12/11</span>
+            <span class="post-title" title="JAVA导读">JAVA导读</span>
+            <span class="post-date" title="2023-12-11 14:39:22">2023/12/11</span>
+        </a>
+        
+        
+        <a id="top" class="全部文章 总览 "
+           href="/2023/02/12/%E6%80%BB%E8%A7%88/%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="知识体系">知识体系</span>
+            <span class="post-date" title="2023-02-12 14:06:42">2023/02/12</span>
         </a>
         
         
@@ -642,7 +699,7 @@
         
         
         <a  class="全部文章 工具 HEXO "
-           href="/2023/01/23/hexoblog%E5%86%99%E4%BD%9C/"
+           href="/2023/01/23/%E5%B7%A5%E5%85%B7/hexoblog%E5%86%99%E4%BD%9C/"
            data-tag="hexo,tool"
            data-author="" >
             <span class="post-title" title="hexoblog写作">hexoblog写作</span>
@@ -660,7 +717,7 @@
         
         
         <a  class="全部文章 工具 百宝箱 "
-           href="/2022/12/11/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
+           href="/2022/12/11/%E5%B7%A5%E5%85%B7/%E5%BC%80%E5%8F%91%E7%99%BE%E5%AE%9D%E7%AE%B1/"
            data-tag="tool"
            data-author="" >
             <span class="post-title" title="开发百宝箱">开发百宝箱</span>
@@ -1137,7 +1194,7 @@
         
         
         <a  class="全部文章 Spring SpringBoot2.5.X系列 "
-           href="/2022/12/10/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           href="/2022/12/10/spring/SpringBoot%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
            data-tag="java,spring,spring boot"
            data-author="" >
             <span class="post-title" title="SpringBoot知识体系详解">SpringBoot知识体系详解</span>
@@ -1146,7 +1203,7 @@
         
         
         <a  class="全部文章 Spring SpringFrameWork5基础 "
-           href="/2022/12/10/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
+           href="/2022/12/10/spring/Spring%E6%A1%86%E6%9E%B6%E7%9F%A5%E8%AF%86%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/"
            data-tag="java,spring"
            data-author="" >
             <span class="post-title" title="Spring框架知识体系详解">Spring框架知识体系详解</span>
@@ -1245,7 +1302,7 @@
         
         
         <a  class="全部文章 工具 HEXO "
-           href="/2022/12/10/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
+           href="/2022/12/10/%E5%B7%A5%E5%85%B7/HEXO%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"
            data-tag="hexo,tool"
            data-author="" >
             <span class="post-title" title="HEXO使用指南">HEXO使用指南</span>
@@ -1270,9 +1327,9 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="post-导读" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-总览/导读" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">导读</h1>
+        <h1 class="article-title">JAVA导读</h1>
     
     <div class="article-meta">
         
@@ -1284,7 +1341,7 @@
             <i class="iconfont icon-category"></i>
             
             
-            <a  data-rel="导读">导读</a>
+            <a  data-rel="总览">总览</a>
             
         </span>
         
@@ -1299,7 +1356,7 @@
     </div>
     <div class="article-meta">
         
-            发布时间 : <time class="date" title='最后更新: 2022-12-11 14:42:39'>2022-12-11 14:39</time>
+            发布时间 : <time class="date" title='最后更新: 2024-02-12 21:02:16'>2023-12-11 14:39</time>
         
     </div>
     <div class="article-meta">
@@ -1344,9 +1401,9 @@
 <h2 id="全栈知识体系总览"><a href="#全栈知识体系总览" class="headerlink" title="全栈知识体系总览"></a>全栈知识体系总览</h2><blockquote>
 <p>为适配更多屏幕，切成两个图：</p>
 </blockquote>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-1.png"></p>
 <p>（点击放大看）</p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/arch-overview-2-2.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-overview-2-2.png"></p>
 <p>（点击放大看）</p>
 <h2 id="适合什么样的人群阅读"><a href="#适合什么样的人群阅读" class="headerlink" title="适合什么样的人群阅读"></a>适合什么样的人群阅读</h2><ul>
 <li><code>面试官</code>：系统性的理解不仅能帮助你理解知识的基础体系，更能帮快速甄别候选人才</li>
@@ -1356,7 +1413,7 @@
 </ul>
 <hr>
 <h2 id="Java入门与进阶"><a href="#Java入门与进阶" class="headerlink" title="Java入门与进阶"></a>Java入门与进阶</h2><h3 id="面向对象与Java基础"><a href="#面向对象与Java基础" class="headerlink" title="面向对象与Java基础"></a>面向对象与Java基础</h3><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java_basic.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_basic.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p><strong>Java入门</strong>：你可能会注意到，<code>面向对象与Java基础</code> 这个章节写的非常简单，为什么呢? 因为就语法本身而言，大多数人入门一门语言只需要两周左右，所以这里主要梳理下知识点和常见的Q&#x2F;A。</p>
@@ -1391,7 +1448,7 @@
 </ul>
 <hr>
 <h3 id="Java进阶-集合框架"><a href="#Java进阶-集合框架" class="headerlink" title="Java进阶 - 集合框架"></a>Java进阶 - 集合框架</h3><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java_collections_overview.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java_collections_overview.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p><strong>A. Java进阶 - Java 集合框架</strong>：Java 集合框架应用是极其广泛的，对于其总体框架用法及源码都必要深刻理解。@pdai</p>
@@ -1419,7 +1476,7 @@
 </ul>
 <hr>
 <h3 id="Java进阶-并发框架"><a href="#Java进阶-并发框架" class="headerlink" title="Java进阶 - 并发框架"></a>Java进阶 - 并发框架</h3><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-concurrent-overview-1.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-concurrent-overview-1.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p><strong>A. Java进阶 - Java 并发之基础</strong>：首先全局的了解并发的知识体系，同时了解并发理论基础和线程基础，并发关键字等，这些是你理解Java并发框架的基础。@pdai</p>
@@ -1730,7 +1787,7 @@
 </ul>
 <hr>
 <h3 id="Java进阶-IO框架"><a href="#Java进阶-IO框架" class="headerlink" title="Java进阶 - IO框架"></a>Java进阶 - IO框架</h3><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-io-overview2.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-io-overview2.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p><strong>A. Java进阶 - IO框架之知识体系</strong>：首先了解下Java IO框架包含什么，同时推荐下如何学习IO框架。@pdai</p>
@@ -1805,7 +1862,7 @@
 </ul>
 <hr>
 <h3 id="Java-8-新特性解读"><a href="#Java-8-新特性解读" class="headerlink" title="Java 8 新特性解读"></a>Java 8 新特性解读</h3><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java8-overview.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java8-overview.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p><strong>A. Java进阶 - Java 8 新特性知识点</strong>：JDK1.6和JDK1.8是两个大的版本，目前主流使用的是JDK1.8, 所以有必要系统的学习下Java 8相关的知识点。@pdai</p>
@@ -1913,7 +1970,7 @@
 <p>Java 9 正式发布于 2017 年 9 月 21 日。作为 Java8 之后 3 年半才发布的新版本，Java 9 带来了很多重大的变化。其中最重要的改动是 Java 平台模块系统的引入。除此之外，还有一些新的特性。本文对 Java9 中包含的新特性做了概括性的介绍，可以帮助你快速了解 Java 9。</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-9.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-9.png"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java9.html">Java 9 新特性概述</a><ul>
@@ -1941,7 +1998,7 @@
 <p>作为当今使用最广泛的编程语言之一的 Java 在 2018 年 3 月 21 日发布了第十个大版本。为了更快地迭代、更好地跟进社区反馈，Java 语言版本发布周期调整为每隔 6 个月发布一次。Java 10 是这一新规则之后，采用新发布周期的第一个大版本。Java 10 版本带来了很多新特性，其中最备受广大开发者关注的莫过于局部变量类型推断。除此之外，还有其他包括垃圾收集器改善、GC 改进、性能提升、线程管控等一批新特性。本文主要针对 Java 10 中的新特性展开介绍，希望读者能从本文的介绍中快速了解 Java 10 带来的变化。</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-10.jpg"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-10.jpg"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java10.html">Java 10 新特性概述</a><ul>
@@ -1966,7 +2023,7 @@
 <p>Java 11 已于 2018 年 9 月 25 日正式发布，之前在 Java 10 新特性介绍 中介绍过，为了加快的版本迭代、跟进社区反馈，Java 的版本发布周期调整为每六个月一次——即每半年发布一个大版本，每个季度发布一个中间特性版本，并且做出不会跳票的承诺。通过这样的方式，Java 开发团队能够将一些重要特性尽早的合并到 Java Release 版本中，以便快速得到开发者的反馈，避免出现类似 Java 9 发布时的两次延期的情况。</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-11.jpg"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-11.jpg"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java11.html">Java 11 新特性概述</a><ul>
@@ -1990,7 +2047,7 @@
 <p>JDK12 在 2019 年 3 月 19 号正式发布，不同于JDK11，JDK12并不是一个LTS版本。作为一个中间版本，JDK12版本特性增加较少。 2017年宣布的加速发布节奏要求每六个月发布一次功能，每季度更新一次，每三年发布一次长期支持（LTS）更新版本（或每六个版本一次）</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-12.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-12.png"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java12.html#java-12-%E6%96%B0%E7%89%B9%E6%80%A7%E6%A6%82%E8%BF%B0">Java 12 新特性概述</a><ul>
@@ -2021,7 +2078,7 @@
 <p>Java 13 已如期于 9 月 17 日正式发布，此次更新是继半年前 Java 12 这大版本发布之后的一次常规版本更新，在这一版中，主要带来了 ZGC 增强、更新 Socket 实现、Switch 表达式更新等方面的改动、增强。本文主要针对 Java 13 中主要的新特性展开介绍，带你快速了解 Java 13 带来的不同体验。</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-13.jpg"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-13.jpg"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java13.html#java-13-%E6%96%B0%E7%89%B9%E6%80%A7%E6%A6%82%E8%BF%B0">Java 13 新特性概述</a><ul>
@@ -2047,7 +2104,7 @@
 <p>Java 14 已如期于 2020 年 3 月 17 日正式发布，此次更新是继半年前 Java 13 这大版本发布之后的又一次常规版本更新，即便在全球疫情如此严峻形势下，依然保持每六个月的版本更新频率，为大家及时带来改进和增强，这一点值得点赞。在这一版中，主要带来了 ZGC 增强、instanceof 增强、Switch 表达式更新为标准版等方面的改动、增强和新功能。本文主要介绍 Java 14 中的主要新特性，带您快速了解 Java 14 带来了哪些不一样的体验和便利。</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-14.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-14.png"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java14.html#java-14-%E6%96%B0%E7%89%B9%E6%80%A7%E6%A6%82%E8%BF%B0">Java 14 新特性概述</a><ul>
@@ -2086,7 +2143,7 @@
 <p>JDK 15 在 2020 年 9 月 15 号正式发布了！根据发布的规划，这次发布的 JDK 15 将是一个短期的过度版，只会被 Oracle 支持（维护）6 个月，直到明年 3 月的 JDK 16 发布此版本将停止维护。而 Oracle 下一个长期支持版（LTS 版）会在明年的 9 月份候发布（Java 17），LTS 版每 3 年发布一个，上一次长期支持版是 18 年 9 月发布的 JDK 11。</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-15.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-15.png"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java15.html#java-15-%E6%96%B0%E7%89%B9%E6%80%A7%E6%A6%82%E8%BF%B0">Java 15 新特性概述</a><ul>
@@ -2127,7 +2184,7 @@
 <p>JDK 16 在 2021 年 3 月 16 号发布！根据发布的规划，这次发布的 JDK 17 是一个长期维护的版本（LTS)。Java 16 提供了数千个<strong>性能</strong>、<strong>稳定性</strong>和<strong>安全性</strong>更新，以及 <strong>17 个 JEP</strong>（JDK 增强提案），进一步改进了 Java 语言和平台，以帮助开发人员提高工作效率。</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-16.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-16.png"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java16.html#java-16-%E6%96%B0%E7%89%B9%E6%80%A7%E6%A6%82%E8%BF%B0">Java 16 新特性概述</a><ul>
@@ -2169,7 +2226,7 @@
 <p>JDK 17 在 2021 年 9 月 14 号正式发布了！根据发布的规划，这次发布的 JDK 17 是一个长期维护的版本（LTS)。Java 17 提供了数千个<strong>性能</strong>、<strong>稳定性</strong>和<strong>安全性</strong>更新，以及 <strong>14 个 JEP</strong>（JDK 增强提案），进一步改进了 Java 语言和平台，以帮助开发人员提高工作效率。JDK 17 包括新的语言增强、库更新、对新 Apple (Mx CPU)计算机的支持、旧功能的删除和弃用，并努力确保今天编写的 Java 代码在未来的 JDK 版本中继续工作而不会发生变化。它还提供语言功能预览和孵化 API，以收集 Java 社区的反馈。@pdai</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-17.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-17.png"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/java8up/java17.html#java-17-%E6%96%B0%E7%89%B9%E6%80%A7%E6%A6%82%E8%BF%B0">Java 17 新特性概述</a><ul>
@@ -2212,9 +2269,9 @@
 </ul>
 <hr>
 <h3 id="Java进阶-JVM相关"><a href="#Java进阶-JVM相关" class="headerlink" title="Java进阶 - JVM相关"></a>Java进阶 - JVM相关</h3><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/jvm-overview.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/jvm-overview.png"></p>
 <p><em>学习思路</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-jvm-overview.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-overview.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p><strong>A. Java进阶 - JVM相关 知识体系</strong>： 首先按照上述<code>学习思路</code>，理解总体知识点在全局上与知识体系之间的对应关系。</p>
@@ -2281,7 +2338,7 @@
 <blockquote>
 <p><strong>F. Java进阶 - JVM相关 排错调优</strong>： 最后围绕着调试和排错，分析理解JVM调优参数，动态字节码技术及动态在线调试的原理；学会使用常用的调工具和在线动态调试工具等。</p>
 </blockquote>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/java-jvm-debug.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/java-jvm-debug.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/java/jvm/java-jvm-param.html">调试排错 - JVM 调优参数</a><ul>
 <li>本文对JVM涉及的常见的调优参数和垃圾回收参数进行阐述</li>
@@ -2332,7 +2389,7 @@
 </ul>
 <hr>
 <h2 id="数据结构与算法"><a href="#数据结构与算法" class="headerlink" title="数据结构与算法"></a>数据结构与算法</h2><h3 id="数据结构基础"><a href="#数据结构基础" class="headerlink" title="数据结构基础"></a>数据结构基础</h3><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/alg-overview-x.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-overview-x.png"></p>
 <p><em>学习思路</em></p>
 <blockquote>
 <p>避免孤立的学习知识点，要关联学习。比如实际应用当中，我们经常使用的是<code>查找</code>和<code>排序</code>操作，这在我们的各种管理系统、数据库系统、操作系统等当中，十分常用，我们通过这个线索将知识点串联起来：</p>
@@ -2437,7 +2494,7 @@
 </ul>
 <hr>
 <h3 id="排序算法详解"><a href="#排序算法详解" class="headerlink" title="排序算法详解"></a>排序算法详解</h3><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/alg-sort-overview-1.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-sort-overview-1.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p><strong>A. 常见排序概要</strong>：重点理解几个排序之间的对比，时间和空间复杂度，以及应用。PS：越简单越要提高认知效率，做到战略上藐视战术上重视。</p>
@@ -2519,7 +2576,7 @@
 </ul>
 <hr>
 <h3 id="领域算法详解"><a href="#领域算法详解" class="headerlink" title="领域算法详解"></a>领域算法详解</h3><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/alg-domain-2.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/alg-domain-2.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p><strong>A. 领域算法 梳理知识点</strong>：在了解基础算法之后，我们还要学习和了解在不同专业领域有哪些特有的算法。这里不一定要求复杂度，而是要有知识面以及解决问题的思路。</p>
@@ -2649,7 +2706,7 @@
 </ul>
 <hr>
 <h2 id="数据库理论与实践"><a href="#数据库理论与实践" class="headerlink" title="数据库理论与实践"></a>数据库理论与实践</h2><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/db.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db.png"></p>
 <h3 id="数据库基础与理论"><a href="#数据库基础与理论" class="headerlink" title="数据库基础与理论"></a>数据库基础与理论</h3><p><em>相关文章</em></p>
 <blockquote>
 <p><strong>A. 了解数据库基础和理论知识</strong>：在学习数据库之前，不要一上来就是SQL语句；这里建议从数据结构开始切入到数据库，然后再理解数据库是如何工作的，紧接着理解数据库系统的原理知识点和相关知识体系。</p>
@@ -2744,7 +2801,7 @@
 <p><strong>D. 掌握Redis数据库</strong>：在理解了关系型数据库后，开始进阶最为常用的KV库Redis，一些大厂都在使用，面试也必问。</p>
 </blockquote>
 <p><em>知识体系</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/db-redis-overview.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-overview.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p>首先，我们通过学习Redis的概念基础，了解它适用的场景。</p>
@@ -2758,7 +2815,7 @@
 <blockquote>
 <p>其次，这些适用场景都是基于Redis支持的数据类型的，所以我们需要学习它支持的数据类型；同时在redis优化中还需要对底层数据结构了解，所以也需要了解一些底层数据结构的设计和实现。</p>
 </blockquote>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/db-redis-object-2-2.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/db-redis-object-2-2.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/db/nosql-redis/db-redis-data-types.html">Redis入门 - 数据类型：5种基础数据类型详解</a><ul>
 <li>Redis所有的key（键）都是字符串。我们在谈基础数据结构时，讨论的是存储值的数据类型，主要包括常见的5种数据类型，分别是：String、List、Set、Zset、Hash</li>
@@ -2848,9 +2905,9 @@
 <p><strong>E. 掌握MongoDB数据库</strong>：在理解了Redis后，让我们认识NoSQL数据库中最为常用的MongoDB；它在后期版本中更换了证书，使用时需要注意下；但是不妨碍我们学习。</p>
 </blockquote>
 <p><em>MongoDB学习引入</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/mongo-x-basic-0.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-basic-0.png"></p>
 <p><em>MongoDB生态</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/mongo-y-echo-11.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-y-echo-11.png"></p>
 <blockquote>
 <p><strong>1. MongoDB引入和生态介绍</strong>： 首先了解NoSQL基本的概念以及MongoDB基础概念，进而引入MongoDB的生态。</p>
 </blockquote>
@@ -2889,7 +2946,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/mongo-x-usage-spring-5.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mongo-x-usage-spring-5.png"></p>
 <blockquote>
 <p><strong>3. MongoDB进阶 - 原理和WiredTigger存储引擎</strong>： 在学习完常用的基础之后，我们再看下MongoDB的原理和WiredTigger存储引擎。</p>
 </blockquote>
@@ -3068,7 +3125,7 @@
 </ul>
 <hr>
 <h2 id="开发与常用基础"><a href="#开发与常用基础" class="headerlink" title="开发与常用基础"></a>开发与常用基础</h2><p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/dev.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/dev.png"></p>
 <h3 id="开发之常用类库"><a href="#开发之常用类库" class="headerlink" title="开发之常用类库"></a>开发之常用类库</h3><blockquote>
 <p><strong>A. 开发之常用类库</strong>：区别于学习，在开发应用时正确使用一些开源第三方工具包可以极大的提升开发效率，本章主要介绍运用极为广泛的工具包，比如Apache Common，Google Guava，Hutool等。</p>
 </blockquote>
@@ -3337,9 +3394,9 @@
 <p>包含各类常见的中间件和开发框架等。@pdai</p>
 </blockquote>
 <h3 id="Web容器-Tomcat详解"><a href="#Web容器-Tomcat详解" class="headerlink" title="Web容器 - Tomcat详解"></a>Web容器 - Tomcat详解</h3><p><em>结构图</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/tomcat-x-design-2-1.jpeg"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-design-2-1.jpeg"></p>
 <p><em>初始化和启动流程</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/tomcat-x-start-1.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/tomcat-x-start-1.png"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/framework/tomcat/tomcat-x-design-web-container.html">Tomcat - 如何设计一个简单的web容器</a><ul>
@@ -3408,7 +3465,7 @@
 </li>
 </ul>
 <h3 id="ORM框架-MyBatis详解"><a href="#ORM框架-MyBatis详解" class="headerlink" title="ORM框架 - MyBatis详解"></a>ORM框架 - MyBatis详解</h3><p><em>架构图</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/mybatis-y-arch-1.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/mybatis-y-arch-1.png"></p>
 <p><em>相关文章</em></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/framework/orm-mybatis/mybatis-y-arch.html">MyBatis详解 - 总体框架设计</a><ul>
@@ -3515,7 +3572,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-framework-introduce-8.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-introduce-8.png"></p>
 <blockquote>
 <p>其次，通过案例引出Spring的核心（IoC和AOP），同时对IoC和AOP进行案例使用分析。</p>
 </blockquote>
@@ -3525,21 +3582,21 @@
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-framework-helloworld-2.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-helloworld-2.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-ioc.html">Spring基础 - Spring核心之控制反转(IOC)</a><ul>
 <li>在<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-helloworld.html">Spring基础 - Spring简单例子引入Spring的核心</a>中向你展示了IoC的基础含义，同时以此发散了一些IoC相关知识点; 本节将在此基础上进一步解读IOC的含义以及IOC的使用方式</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-2.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-2.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop.html">Spring基础 - Spring核心之面向切面编程(AOP)</a><ul>
 <li>在<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-helloworld.html">Spring基础 - Spring简单例子引入Spring的核心</a>中向你展示了AOP的基础含义，同时以此发散了一些AOP相关知识点; 本节将在此基础上进一步解读AOP的含义以及AOP的使用方式。</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-framework-aop-2.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-aop-2.png"></p>
 <blockquote>
 <p>基于Spring框架和IOC，AOP的基础，为构建上层web应用，需要进一步学习SpringMVC。</p>
 </blockquote>
@@ -3549,7 +3606,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-5.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-5.png"></p>
 <blockquote>
 <p>Spring进阶 - IoC，AOP以及SpringMVC的源码分析</p>
 </blockquote>
@@ -3559,63 +3616,63 @@
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-71.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-71.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-ioc-source-2.html">Spring进阶 - Spring IOC实现原理详解之IOC初始化流程</a><ul>
 <li>上文，我们看了IOC设计要点和设计结构；紧接着这篇，我们可以看下源码的实现了：Spring如何实现将资源配置（以xml配置为例）通过加载，解析，生成BeanDefination并注册到IoC容器中的</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-8.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-8.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-ioc-source-3.html">Spring进阶 - Spring IOC实现原理详解之Bean实例化(生命周期,循环依赖等)</a><ul>
 <li>上文，我们看了IOC设计要点和设计结构；以及Spring如何实现将资源配置（以xml配置为例）通过加载，解析，生成BeanDefination并注册到IoC容器中的；容器中存放的是Bean的定义即BeanDefinition放到beanDefinitionMap中，本质上是一个<code>ConcurrentHashMap&lt;String, Object&gt;</code>；并且BeanDefinition接口中包含了这个类的Class信息以及是否是单例等。那么如何从BeanDefinition中实例化Bean对象呢，这是本文主要研究的内容？</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-102.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-framework-ioc-source-102.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop-source-1.html">Spring进阶 - Spring AOP实现原理详解之切面实现</a><ul>
 <li>前文，我们分析了Spring IOC的初始化过程和Bean的生命周期等，而Spring AOP也是基于IOC的Bean加载来实现的。本文主要介绍Spring AOP原理解析的切面实现过程(将切面类的所有切面方法根据使用的注解生成对应Advice，并将Advice连同切入点匹配器和切面类等信息一并封装到Advisor，为后续交给代理增强实现做准备的过程)。</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-4.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-4.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop-source-2.html">Spring进阶 - Spring AOP实现原理详解之AOP代理</a><ul>
 <li>上文我们介绍了Spring AOP原理解析的切面实现过程(将切面类的所有切面方法根据使用的注解生成对应Advice，并将Advice连同切入点匹配器和切面类等信息一并封装到Advisor)。本文在此基础上继续介绍，代理（cglib代理和JDK代理）的实现过程。</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-51.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-51.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop-source-3.html">Spring进阶 - Spring AOP实现原理详解之Cglib代理实现</a><ul>
 <li>我们在前文中已经介绍了SpringAOP的切面实现和创建动态代理的过程，那么动态代理是如何工作的呢？本文主要介绍Cglib动态代理的案例和SpringAOP实现的原理。</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-63.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-63.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-aop-source-4.html">Spring进阶 - Spring AOP实现原理详解之JDK代理实现</a><ul>
 <li>上文我们学习了SpringAOP Cglib动态代理的实现，本文主要是SpringAOP JDK动态代理的案例和实现部分。</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-71.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-aop-71.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-springmvc-source-1.html">Spring进阶 - SpringMVC实现原理之DispatcherServlet初始化的过程</a><ul>
 <li>前文我们有了IOC的源码基础以及SpringMVC的基础，我们便可以进一步深入理解SpringMVC主要实现原理，包含DispatcherServlet的初始化过程和DispatcherServlet处理请求的过程的源码解析。本文是第一篇：DispatcherServlet的初始化过程的源码解析。</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-23.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-23.png"></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.pdai.tech/md/spring/spring-x-framework-springmvc-source-2.html">Spring进阶 - SpringMVC实现原理之DispatcherServlet处理请求的过程</a><ul>
 <li>前文我们有了IOC的源码基础以及SpringMVC的基础，我们便可以进一步深入理解SpringMVC主要实现原理，包含DispatcherServlet的初始化过程和DispatcherServlet处理请求的过程的源码解析。本文是第二篇：DispatcherServlet处理请求的过程的源码解析。</li>
 </ul>
 </li>
 </ul>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-30.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/spring-springframework-mvc-30.png"></p>
 <h3 id="SpringBoot入门-helloworld-banner-logback-分层设计"><a href="#SpringBoot入门-helloworld-banner-logback-分层设计" class="headerlink" title="SpringBoot入门(helloworld,banner,logback,分层设计)"></a>SpringBoot入门(helloworld,banner,logback,分层设计)</h3><blockquote>
 <p>首先，在开始SpringBoot开发时，我们了解一些技术栈背景并通过Hello World级别应用程序开始延伸出SpringBoot入门应用的开发。</p>
 </blockquote>
@@ -4272,7 +4329,7 @@
 <p>在软件开发中，前人对软件系统的设计和开发总结了一些原则和模式， 不管用什么语言做开发，都将对我们系统设计和开发提供指导意义。本文主要将对24种设计模式和7个设计原则进行总结，和具体阐述意义。你可以通过这篇文章<a target="_blank" rel="noopener" href="https://www.pdai.tech/md/dev-spec/pattern/1_overview.html">设计模式 - Overview</a> 了解整体上的知识点。</p>
 </blockquote>
 <p><em>知识体系系统性梳理</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/design-pattern.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/design-pattern.png"></p>
 <p><em>相关文章</em></p>
 <blockquote>
 <p><strong>第一步：创建型设计模式</strong></p>
@@ -4387,7 +4444,7 @@
 </ul>
 <hr>
 <h2 id="架构与系统设计"><a href="#架构与系统设计" class="headerlink" title="架构与系统设计"></a>架构与系统设计</h2><p><em>学习思路</em></p>
-<p><img src="/2022/12/11/%E5%AF%BC%E8%AF%BB/arch-x-overview-learn2.png"></p>
+<p><img src="/2023/12/11/%E6%80%BB%E8%A7%88/%E5%AF%BC%E8%AF%BB/arch-x-overview-learn2.png"></p>
 <h3 id="基础到方法论"><a href="#基础到方法论" class="headerlink" title="基础到方法论"></a>基础到方法论</h3><blockquote>
 <p>包括架构的概述，特点，目标，本质以及方法论等</p>
 </blockquote>
